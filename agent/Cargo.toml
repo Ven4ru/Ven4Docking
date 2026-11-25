@@ -1,0 +1,39 @@
+[package]
+name = "ven4docking-agent"
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "ven4docking_agent"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ven4docking-agent"
+path = "src/main.rs"
+
+[dependencies]
+async-trait = "0.1.92"
+axum = { version = "0.8.9", default-features = false, features = ["http1", "tokio", "json", "query", "matched-path"] }
+getrandom = "0.3"
+russh = "0.45.0"
+russh-keys = "0.45.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.2"
+sysinfo = { version = "0.40.4", default-features = false, features = ["system", "disk", "network"] }
+tokio = { version = "1.54.1", default-features = false, features = ["rt", "net", "time", "sync", "macros", "io-util"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", default-features = false, features = ["fmt", "std"] }
+tray-icon = "0.27.0"
+windows = { version = "0.62.2", features = ["Wdk_Graphics_Direct3D", "Win32_Foundation", "Win32_System_Performance", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_System_Threading", "Win32_System_ProcessStatus", "Win32_Security", "Media_Control", "Foundation"] }
+
+[dev-dependencies]
+http-body-util = "0.1.5"
+tower = { version = "0.5.3", features = ["util"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

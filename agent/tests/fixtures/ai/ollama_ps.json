@@ -1,0 +1,1 @@
+{"models":[{"name":"gemma3:12b","model":"gemma3:12b","size":9000000000,"digest":"00","details":{"family":"gemma3"},"expires_at":"2026-11-25T10:00:00.000+03:00","size_vram":9000000000,"context_length":4096}]}

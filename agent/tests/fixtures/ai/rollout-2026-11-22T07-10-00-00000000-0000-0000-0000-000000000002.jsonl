@@ -1,0 +1,6 @@
+{"timestamp":"2026-11-22T07:10:00.000Z","type":"session_meta","payload":{"id":"00000000-0000-0000-0000-000000000002","cwd":"C:/example","originator":"codex_cli_rs"}}
+{"timestamp":"2026-11-22T07:12:00.000Z","type":"event_msg","payload":{"type":"token_count","info":null,"rate_limits":null}}
+{"timestamp":"2026-11-22T07:13:00.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":100}},"rate_limits":{"limit_id":"codex","plan_type":"free","primary":{"used_percent":30.0,"window_minutes":43200,"resets_at":1795918502},"secondary":null}}}
+{"timestamp":"2026-11-22T07:14:00.000Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"done"}]}}
+{"timestamp":"2026-11-22T07:15:02.500Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":200}},"rate_limits":{"limit_id":"codex","limit_name":null,"plan_type":"free","primary":{"used_percent":36.0,"window_minutes":43200,"resets_at":1795918502},"secondary":null,"credits":null}}}
+{"timestamp":"2026-11-22T07:16:00.000Z","type":"event_msg","payload":{"type":"token_cou

@@ -1,0 +1,437 @@
+//! config.json, admin.key and phone tokens.
+//!
+//! Data dir: `VEN4DOCKING_HOME` or `%APPDATA%\Ven4Docking`. Tokens are stored only as SHA-256 hex.
+
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
+use sha2::{Digest, Sha256};
+use std::path::{Path, PathBuf};
+
+pub const AGENT_VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const DEFAULT_PORT: u16 = 8765;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Weather {
+    #[serde(default)]
+    pub name: String,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct App {
+    pub id: String,
+    #[serde(default)]
+    pub title: String,
+    /// shortcut | exe | url | command
+    #[serde(default = "default_kind")]
+    pub kind: String,
+    #[serde(default)]
+    pub target: String,
+    #[serde(default)]
+    pub args: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+}
+
+fn default_kind() -> String {
+    "exe".into()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Server {
+    pub id: String,
+    #[serde(default)]
+    pub name: String,
+    pub host: String,
+    #[serde(default = "default_ssh_port")]
+    pub port: u16,
+    #[serde(default = "default_user")]
+    pub user: String,
+    /// "auto" = %USERPROFILE%\.ssh\id_ed25519 / id_rsa, otherwise a path to a private key.
+    #[serde(default = "default_key")]
+    pub key: String,
+}
+
+fn default_ssh_port() -> u16 {
+    22
+}
+fn default_user() -> String {
+    "root".into()
+}
+fn default_key() -> String {
+    "auto".into()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Night {
+    pub from: String,
+    pub to: String,
+    pub brightness: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Phone {
+    pub id: String,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub token_hash: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub android: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub night: Option<Night>,
+    #[serde(default = "yes")]
+    pub dim_when_pc_offline: bool,
+    #[serde(default = "yes")]
+    pub burn_in_shift: bool,
+    /// Anything the editor stores that the agent does not know about is kept as is.
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+fn yes() -> bool {
+    true
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct AiCfg {
+    #[serde(default = "default_ai")]
+    pub enabled: Vec<String>,
+    /// Claude Code status-line dump; default `%LOCALAPPDATA%\Ven4Docking\claude_rate_limits.json`,
+    /// then `%USERPROFILE%\.claude\rate_limits.json`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub claude_code_file: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lmstudio_port: Option<u16>,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+pub fn default_ai() -> Vec<String> {
+    ["claude-code", "claude-desktop", "codex", "ollama", "lmstudio"]
+        .iter()
+        .map(|s| s.to_string())
+        .collect()
+}
+
+impl Default for AiCfg {
+    fn default() -> Self {
+        AiCfg { enabled: default_ai(), claude_code_file: None, lmstudio_port: None, extra: Map::new() }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    pub version: u32,
+    #[serde(default = "default_port")]
+    pub port: u16,
+    #[serde(default = "default_theme")]
+    pub theme: String,
+    #[serde(default = "default_lang")]
+    pub language: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub weather: Option<Weather>,
+    #[serde(default)]
+    pub apps: Vec<App>,
+    #[serde(default)]
+    pub servers: Vec<Server>,
+    #[serde(default = "default_servers_interval")]
+    pub servers_interval: u64,
+    #[serde(default)]
+    pub ai: AiCfg,
+    #[serde(default)]
+    pub phones: Vec<Phone>,
+    /// Optional LibreHardwareMonitor web server (CPU temperature).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lhm_url: Option<String>,
+    #[serde(default = "default_overheat")]
+    pub overheat_temp: f64,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+fn default_port() -> u16 {
+    DEFAULT_PORT
+}
+fn default_theme() -> String {
+    "teal".into()
+}
+fn default_lang() -> String {
+    "ru".into()
+}
+fn default_servers_interval() -> u64 {
+    10
+}
+fn default_overheat() -> f64 {
+    45.0
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        serde_json::from_str(r#"{"version":1}"#).expect("default config")
+    }
+}
+
+#[derive(Debug)]
+pub enum ConfigError {
+    Io(std::io::Error),
+    Json(serde_json::Error),
+    Invalid(String),
+}
+
+impl std::fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ConfigError::Io(e) => write!(f, "io: {e}"),
+            ConfigError::Json(e) => write!(f, "json: {e}"),
+            ConfigError::Invalid(s) => write!(f, "{s}"),
+        }
+    }
+}
+
+impl From<std::io::Error> for ConfigError {
+    fn from(e: std::io::Error) -> Self {
+        ConfigError::Io(e)
+    }
+}
+impl From<serde_json::Error> for ConfigError {
+    fn from(e: serde_json::Error) -> Self {
+        ConfigError::Json(e)
+    }
+}
+
+/// Safe identifier for phones, apps, servers (also used as a file name).
+pub fn valid_id(id: &str) -> bool {
+    !id.is_empty() && id.len() <= 64 && id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
+impl Config {
+    pub fn parse(text: &str) -> Result<Config, ConfigError> {
+        let text = text.trim_start_matches('\u{feff}');
+        let cfg: Config = serde_json::from_str(text)?;
+        cfg.validate()?;
+        Ok(cfg)
+    }
+
+    pub fn validate(&self) -> Result<(), ConfigError> {
+        if self.version == 0 {
+            return Err(ConfigError::Invalid("version must be >= 1".into()));
+        }
+        let mut seen = std::collections::HashSet::new();
+        for a in &self.apps {
+            if !valid_id(&a.id) || !seen.insert(("app", a.id.clone())) {
+                return Err(ConfigError::Invalid(format!("bad or duplicate app id: {}", a.id)));
+            }
+            if !matches!(a.kind.as_str(), "shortcut" | "exe" | "url" | "command") {
+                return Err(ConfigError::Invalid(format!("bad app kind: {}", a.kind)));
+            }
+        }
+        for s in &self.servers {
+            if !valid_id(&s.id) || !seen.insert(("server", s.id.clone())) {
+                return Err(ConfigError::Invalid(format!("bad or duplicate server id: {}", s.id)));
+            }
+            if s.host.trim().is_empty() {
+                return Err(ConfigError::Invalid(format!("server {} has no host", s.id)));
+            }
+        }
+        for p in &self.phones {
+            if !valid_id(&p.id) || !seen.insert(("phone", p.id.clone())) {
+                return Err(ConfigError::Invalid(format!("bad or duplicate phone id: {}", p.id)));
+            }
+        }
+        Ok(())
+    }
+
+    pub fn load_or_create(path: &Path) -> Result<Config, ConfigError> {
+        if path.exists() {
+            let text = std::fs::read_to_string(path)?;
+            return Config::parse(&text);
+        }
+        let cfg = Config::default();
+        cfg.save(path)?;
+        Ok(cfg)
+    }
+
+    /// Atomic write (tmp + rename).
+    pub fn save(&self, path: &Path) -> Result<(), ConfigError> {
+        let text = serde_json::to_string_pretty(self)?;
+        write_atomic(path, text.as_bytes())?;
+        Ok(())
+    }
+
+    /// Phone whose token hashes to a stored hash (constant-time compare).
+    pub fn phone_by_token(&self, token: &str) -> Option<&Phone> {
+        if token.is_empty() {
+            return None;
+        }
+        let h = hash_token(token);
+        self.phones.iter().find(|p| !p.token_hash.is_empty() && ct_eq(p.token_hash.as_bytes(), h.as_bytes()))
+    }
+
+    pub fn next_phone_id(&self) -> String {
+        let mut n = self.phones.len() + 1;
+        loop {
+            let id = format!("p{n}");
+            if !self.phones.iter().any(|p| p.id == id) {
+                return id;
+            }
+            n += 1;
+        }
+    }
+
+    /// On PUT from the editor: phones that come without tokenHash keep the stored one
+    /// (the editor never sees tokens, only may drop the hash by accident).
+    pub fn merge_secrets_from(&mut self, old: &Config) {
+        for p in &mut self.phones {
+            if p.token_hash.is_empty() {
+                if let Some(o) = old.phones.iter().find(|o| o.id == p.id) {
+                    p.token_hash = o.token_hash.clone();
+                }
+            }
+        }
+    }
+}
+
+pub fn write_atomic(path: &Path, data: &[u8]) -> std::io::Result<()> {
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir)?;
+    }
+    let tmp = path.with_extension("tmp");
+    std::fs::write(&tmp, data)?;
+    std::fs::rename(&tmp, path)
+}
+
+pub fn hash_token(token: &str) -> String {
+    hex(&Sha256::digest(token.as_bytes()))
+}
+
+pub fn hex(bytes: &[u8]) -> String {
+    const H: &[u8; 16] = b"0123456789abcdef";
+    let mut s = String::with_capacity(bytes.len() * 2);
+    for b in bytes {
+        s.push(H[(b >> 4) as usize] as char);
+        s.push(H[(b & 15) as usize] as char);
+    }
+    s
+}
+
+pub fn ct_eq(a: &[u8], b: &[u8]) -> bool {
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut d = 0u8;
+    for (x, y) in a.iter().zip(b) {
+        d |= x ^ y;
+    }
+    d == 0
+}
+
+pub fn random_bytes<const N: usize>() -> [u8; N] {
+    let mut b = [0u8; N];
+    getrandom::fill(&mut b).expect("os random");
+    b
+}
+
+/// New phone token: 32 random bytes as hex. Returns (token, hash).
+pub fn new_token() -> (String, String) {
+    let t = hex(&random_bytes::<32>());
+    let h = hash_token(&t);
+    (t, h)
+}
+
+/// admin.key: 32 random bytes written as hex text; created once, readable only by the user.
+pub fn load_or_create_admin_key(path: &Path) -> std::io::Result<String> {
+    if let Ok(s) = std::fs::read_to_string(path) {
+        let s = s.trim().to_string();
+        if s.len() >= 32 {
+            return Ok(s);
+        }
+    }
+    let key = hex(&random_bytes::<32>());
+    write_atomic(path, key.as_bytes())?;
+    restrict_to_user(path);
+    Ok(key)
+}
+
+/// Remove inherited ACEs and grant the current user only (icacls, no console window).
+#[cfg(windows)]
+pub fn restrict_to_user(path: &Path) {
+    use std::os::windows::process::CommandExt;
+    let user = std::env::var("USERNAME").unwrap_or_default();
+    if user.is_empty() {
+        return;
+    }
+    let _ = std::process::Command::new("icacls")
+        .arg(path)
+        .args(["/inheritance:r", "/grant:r"])
+        .arg(format!("{user}:F"))
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .creation_flags(0x0800_0000)
+        .status();
+}
+
+#[cfg(not(windows))]
+pub fn restrict_to_user(_path: &Path) {}
+
+/// Where everything lives.
+#[derive(Debug, Clone)]
+pub struct Paths {
+    pub home: PathBuf,
+    pub config: PathBuf,
+    pub layouts: PathBuf,
+    pub icons: PathBuf,
+    pub admin_key: PathBuf,
+    pub log: PathBuf,
+    pub panel: PathBuf,
+    pub apk: PathBuf,
+}
+
+impl Paths {
+    pub fn from_home(home: PathBuf) -> Paths {
+        let exe_dir = std::env::current_exe()
+            .ok()
+            .and_then(|p| p.parent().map(|d| d.to_path_buf()))
+            .unwrap_or_else(|| PathBuf::from("."));
+        let panel = std::env::var_os("VEN4DOCKING_PANEL_DIR")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| exe_dir.join("..").join("panel").join("dist"));
+        let apk = std::env::var_os("VEN4DOCKING_APK_DIR")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| exe_dir.join("..").join("apk"));
+        Paths {
+            config: home.join("config.json"),
+            layouts: home.join("layouts"),
+            icons: home.join("icons"),
+            admin_key: home.join("admin.key"),
+            log: home.join("agent.log"),
+            panel,
+            apk,
+            home,
+        }
+    }
+
+    pub fn from_env() -> Paths {
+        let home = std::env::var_os("VEN4DOCKING_HOME").map(PathBuf::from).unwrap_or_else(|| {
+            let appdata = std::env::var_os("APPDATA").map(PathBuf::from).unwrap_or_else(|| PathBuf::from("."));
+            appdata.join("Ven4Docking")
+        });
+        Paths::from_home(home)
+    }
+
+    pub fn layout_file(&self, phone: &str) -> PathBuf {
+        self.layouts.join(format!("{phone}.json"))
+    }
+}

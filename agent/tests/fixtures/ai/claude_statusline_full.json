@@ -1,0 +1,1 @@
+{"hook_event_name":"Status","session_id":"00000000-0000-0000-0000-000000000001","model":{"id":"claude-model","display_name":"Model"},"workspace":{"current_dir":"C:/example"},"version":"2.0.0","rate_limits":{"five_hour":{"used_percentage":15,"resets_at":1795600800},"seven_day":{"used_percentage":40.5,"resets_at":1795981200}}}

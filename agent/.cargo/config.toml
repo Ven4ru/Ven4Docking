@@ -1,0 +1,10 @@
+# Local builds without Visual Studio: x86_64-pc-windows-gnu + rust-lld.
+# GNU ld cannot link LLVM-made import libraries for raw-dylib (windows-link) -> AV at start; rust-lld can.
+# raw-dylib also needs `dlltool.exe` on PATH (a copy of llvm-ar.exe from the llvm-tools component works).
+# CI builds pass `--target x86_64-pc-windows-msvc` and are not affected by the gnu section.
+[build]
+target = "x86_64-pc-windows-gnu"
+
+[target.x86_64-pc-windows-gnu]
+linker = "rust-lld"
+rustflags = ["-C", "linker-flavor=ld.lld", "-C", "link-self-contained=yes"]
