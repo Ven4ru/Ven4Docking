@@ -88,6 +88,27 @@ fn editor_put_keeps_token_hashes() {
 }
 
 #[test]
+fn editor_put_does_not_add_or_drop_phones() {
+    // agent: p1 (renamed by nobody), p3 paired after the editor read the config; p2 was revoked meanwhile
+    let old: Config = serde_json::from_value(serde_json::json!({"version": 1, "phones": [
+        {"id": "p1", "name": "Kitchen", "tokenHash": "h1"},
+        {"id": "p3", "name": "Desk", "tokenHash": "h3"}
+    ]})).unwrap();
+    // editor saves its stale copy: p1 renamed, p2 still listed, p3 unknown to it
+    let mut new: Config = serde_json::from_value(serde_json::json!({"version": 1, "phones": [
+        {"id": "p1", "name": "Hall"},
+        {"id": "p2", "name": "Old"}
+    ]})).unwrap();
+    new.merge_secrets_from(&old);
+    let ids: Vec<&str> = new.phones.iter().map(|p| p.id.as_str()).collect();
+    assert_eq!(ids, ["p1", "p3"]);
+    assert_eq!(new.phones[0].name, "Hall");
+    assert_eq!(new.phones[0].token_hash, "h1");
+    assert_eq!(new.phones[1].name, "Desk");
+    assert_eq!(new.phones[1].token_hash, "h3");
+}
+
+#[test]
 fn static_dirs_prefer_installed_layout() {
     let root = std::env::temp_dir().join(format!("v4d-static-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
@@ -116,6 +137,49 @@ fn static_dirs_prefer_installed_layout() {
     assert_eq!(apk, exe_dir.join("apk"));
 
     let _ = std::fs::remove_dir_all(&root);
+}
+
+#[test]
+fn phone_ids_are_never_reused() {
+    let phone = |id: &str| -> Phone { serde_json::from_value(serde_json::json!({"id": id, "tokenHash": "h"})).unwrap() };
+
+    // fresh config: p1, p2, p3; revoking p2 and p3 does not give their ids back
+    let mut cfg = Config::default();
+    for want in ["p1", "p2", "p3"] {
+        let id = cfg.alloc_phone_id::<&str>(&[]);
+        assert_eq!(id, want);
+        cfg.phones.push(phone(&id));
+    }
+    cfg.phones.retain(|p| p.id == "p1");
+    assert_eq!(cfg.alloc_phone_id::<&str>(&[]), "p4");
+    assert_eq!(cfg.next_phone_id, Some(5));
+
+    // the counter survives save/load
+    let text = serde_json::to_string(&cfg).unwrap();
+    assert!(text.contains("\"nextPhoneId\":5"), "{text}");
+    let mut back = Config::parse(&text).unwrap();
+    assert_eq!(back.alloc_phone_id::<&str>(&[]), "p5");
+
+    // config from before the counter: starts after the highest id in use, ids of other shapes ignored
+    let mut old: Config = serde_json::from_value(serde_json::json!({"version": 1, "phones": [{"id": "p3"}, {"id": "kitchen"}, {"id": "p1"}]})).unwrap();
+    assert_eq!(old.next_phone_id, None);
+    assert_eq!(old.alloc_phone_id::<&str>(&[]), "p4");
+    // ... and after layout files of phones revoked before the counter existed
+    let mut old: Config = serde_json::from_value(serde_json::json!({"version": 1, "phones": [{"id": "p1"}]})).unwrap();
+    assert_eq!(old.alloc_phone_id(&["p1", "p7", "notes"]), "p8");
+
+    // the editor PUTs a config it read before the last pairing: the counter does not go back
+    let mut stale: Config = serde_json::from_value(serde_json::json!({"version": 1, "nextPhoneId": 2, "phones": [{"id": "p1"}]})).unwrap();
+    stale.merge_secrets_from(&cfg);
+    assert_eq!(stale.next_phone_id, Some(5));
+    let mut none: Config = serde_json::from_value(serde_json::json!({"version": 1, "phones": [{"id": "p1"}]})).unwrap();
+    none.merge_secrets_from(&cfg);
+    assert_eq!(none.alloc_phone_id::<&str>(&[]), "p5");
+
+    assert_eq!(phone_id_number("p12"), Some(12));
+    assert_eq!(phone_id_number("p"), None);
+    assert_eq!(phone_id_number("p1x"), None);
+    assert_eq!(phone_id_number("x1"), None);
 }
 
 #[test]

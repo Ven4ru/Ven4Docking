@@ -129,7 +129,7 @@ async fn phone_token(st: St, body: Bytes) -> Response {
     let (token, hash) = new_token();
     let id = {
         let mut cfg = st.cfg.write().unwrap();
-        let id = cfg.next_phone_id();
+        let id = st.paths.alloc_phone_id(&mut cfg);
         let name = if req.name.is_empty() { req.model.clone() } else { req.name.clone() };
         cfg.phones.push(pair::new_phone(&id, &name, Some(&req.model), None, None, hash));
         id
@@ -155,6 +155,7 @@ async fn revoke(st: St, Path(id): Path<String>) -> Response {
         return err(StatusCode::INTERNAL_SERVER_ERROR, &e);
     }
     st.phones.lock().unwrap().remove(&id);
+    st.layouts.write().unwrap().remove(&id);
     st.reconcile_servers();
     tracing::info!("phone {id} revoked");
     ok_json(json!({"ok": true}))

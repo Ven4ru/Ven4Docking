@@ -254,6 +254,17 @@ async fn admin_token_revoke_and_config() {
     assert_eq!(s, StatusCode::OK);
     let (s, _) = call(&e.st, "10.0.0.5", "GET", "/api/v1/layout", &[("authorization", &bearer(&tok))], None).await;
     assert_eq!(s, StatusCode::UNAUTHORIZED, "revoked token");
+    // the next phone (by adb token or by pairing code) never gets the revoked id back
+    let (s, v) = call(&e.st, "127.0.0.1", "POST", "/admin/phones/token", &h, Some(json!({"name": "Спальня", "model": "SM-A105"}))).await;
+    assert_eq!(s, StatusCode::OK);
+    let id2 = v["id"].as_str().unwrap().to_string();
+    assert_ne!(id2, id, "revoked phone id reused");
+    let (s, v) = call(&e.st, "192.168.1.60", "POST", "/pair/start", &[], Some(json!({"model": "RMX2185", "android": "10", "deviceId": "dev-x"}))).await;
+    assert_eq!(s, StatusCode::OK);
+    let (s, a) = call(&e.st, "127.0.0.1", "POST", &format!("/admin/pairs/{}/accept", v["pairId"].as_str().unwrap()), &h, None).await;
+    assert_eq!(s, StatusCode::OK);
+    let id3 = a["phoneId"].as_str().unwrap().to_string();
+    assert!(id3 != id && id3 != id2, "{id} {id2} {id3}");
 
     let (_, mut cfg) = call(&e.st, "127.0.0.1", "GET", "/admin/config", &h, None).await;
     cfg["theme"] = json!("green");

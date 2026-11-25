@@ -158,6 +158,10 @@ pub struct Config {
     pub lhm_url: Option<String>,
     #[serde(default = "default_overheat")]
     pub overheat_temp: f64,
+    /// Number for the next phone id (`p<N>`). Only grows: a revoked phone's id (and its cached
+    /// layout file) is never given to another phone. Missing in older configs -> derived on first use.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub next_phone_id: Option<u64>,
     #[serde(flatten)]
     pub extra: Map<String, Value>,
 }
@@ -280,28 +284,61 @@ impl Config {
         self.phones.iter().find(|p| !p.token_hash.is_empty() && ct_eq(p.token_hash.as_bytes(), h.as_bytes()))
     }
 
-    pub fn next_phone_id(&self) -> String {
-        let mut n = self.phones.len() + 1;
-        loop {
-            let id = format!("p{n}");
-            if !self.phones.iter().any(|p| p.id == id) {
-                return id;
-            }
+    /// Allocates a new phone id `p<N>` from the monotonic counter `nextPhoneId` and advances it.
+    /// `taken` are ids used outside the config (e.g. layout files of phones revoked before the counter
+    /// existed); for configs without the counter it starts at the highest known number + 1.
+    pub fn alloc_phone_id<S: AsRef<str>>(&mut self, taken: &[S]) -> String {
+        let highest = self
+            .phones
+            .iter()
+            .map(|p| p.id.as_str())
+            .chain(taken.iter().map(|s| s.as_ref()))
+            .filter_map(phone_id_number)
+            .max()
+            .unwrap_or(0);
+        let mut n = self.next_phone_id.unwrap_or(0).max(highest + 1).max(1);
+        while self.phones.iter().any(|p| p.id == format!("p{n}")) {
             n += 1;
         }
+        self.next_phone_id = Some(n + 1);
+        format!("p{n}")
     }
 
-    /// On PUT from the editor: phones that come without tokenHash keep the stored one
-    /// (the editor never sees tokens, only may drop the hash by accident).
+    /// On PUT from the editor. The set of phones belongs to the agent (pairing, /phones/token and
+    /// /phones/{id}/revoke change it), the editor only edits fields of known phones: a phone paired after
+    /// the editor read the config is kept, a phone revoked meanwhile is not brought back. Phones that come
+    /// without tokenHash keep the stored one (the editor never sees tokens). The phone id counter never
+    /// goes back.
     pub fn merge_secrets_from(&mut self, old: &Config) {
-        for p in &mut self.phones {
-            if p.token_hash.is_empty() {
-                if let Some(o) = old.phones.iter().find(|o| o.id == p.id) {
-                    p.token_hash = o.token_hash.clone();
+        let mut edited = std::mem::take(&mut self.phones);
+        self.phones = old
+            .phones
+            .iter()
+            .map(|o| match edited.iter().position(|p| p.id == o.id) {
+                Some(i) => {
+                    let mut p = edited.swap_remove(i);
+                    if p.token_hash.is_empty() {
+                        p.token_hash = o.token_hash.clone();
+                    }
+                    p
                 }
-            }
-        }
+                None => o.clone(),
+            })
+            .collect();
+        self.next_phone_id = match (self.next_phone_id, old.next_phone_id) {
+            (Some(a), Some(b)) => Some(a.max(b)),
+            (a, b) => a.or(b),
+        };
     }
+}
+
+/// `p12` -> 12; ids of another shape -> None.
+pub fn phone_id_number(id: &str) -> Option<u64> {
+    let digits = id.strip_prefix('p')?;
+    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    digits.parse().ok()
 }
 
 pub fn write_atomic(path: &Path, data: &[u8]) -> std::io::Result<()> {
@@ -446,5 +483,26 @@ impl Paths {
 
     pub fn layout_file(&self, phone: &str) -> PathBuf {
         self.layouts.join(format!("{phone}.json"))
+    }
+
+    /// Phone ids that have a layout file (also of revoked phones: the files are kept).
+    pub fn layout_ids(&self) -> Vec<String> {
+        let Ok(rd) = std::fs::read_dir(&self.layouts) else { return Vec::new() };
+        rd.filter_map(|e| e.ok())
+            .filter_map(|e| {
+                let p = e.path();
+                let is_json = p.extension().is_some_and(|x| x.eq_ignore_ascii_case("json"));
+                if is_json {
+                    p.file_stem().and_then(|s| s.to_str()).map(String::from)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    /// New phone id for `cfg` that was never used here before (counter + existing layout files).
+    pub fn alloc_phone_id(&self, cfg: &mut Config) -> String {
+        cfg.alloc_phone_id(&self.layout_ids())
     }
 }

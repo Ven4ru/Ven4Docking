@@ -155,7 +155,7 @@ pub fn accept(st: &crate::state::AppState, id: &str) -> Result<String, Response>
                 ph.id.clone()
             }
             None => {
-                let pid = cfg.next_phone_id();
+                let pid = st.paths.alloc_phone_id(&mut cfg);
                 cfg.phones.push(new_phone(&pid, &p.model, Some(&p.model), Some(&p.android), Some(&p.device_id), hash));
                 pid
             }
