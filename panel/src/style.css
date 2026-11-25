@@ -172,6 +172,10 @@ body {
 .ai-hd .nm { font-weight: 600; font-size: .95em; }
 .ai-hd .age { color: var(--mute); font-size: .82em; margin-left: .6em; white-space: nowrap; }
 .ai-hd .age.old { color: var(--warn); }
+/* ai: more rows than the cell holds — tighter, then whole rows only */
+.ai-list.tight .ai-src + .ai-src { margin-top: .3em; }
+.ai-list.tight .ai-hd { margin: .1em 0 .15em; }
+.ai-list.tight .bars > * + * { margin-top: .15em; }
 
 /* apps */
 .blk-apps { padding: .3em; }
