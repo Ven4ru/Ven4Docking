@@ -22,3 +22,9 @@ admin.key
 docs/research/ai-limits.md
 # internal working plans (machine-specific paths)
 docs/plans/
+node_modules/
+/panel/dist/
+/android/.gradle/
+/android/app/build/
+/android/local.properties
+/android/.idea/

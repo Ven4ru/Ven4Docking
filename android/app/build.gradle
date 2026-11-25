@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ru.ven4tools.docking'
+    compileSdk 34
+    buildToolsVersion '34.0.0'
+
+    defaultConfig {
+        applicationId 'ru.ven4tools.docking'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+        // release: agent 8765, discovery 8766
+        buildConfigField 'int', 'AGENT_PORT', '8765'
+        buildConfigField 'int', 'DISCOVERY_PORT', '8766'
+    }
+
+    buildTypes {
+        debug {
+            // development agent runs next to the prototype: 18765 / 18766
+            buildConfigField 'int', 'AGENT_PORT', '18765'
+            buildConfigField 'int', 'DISCOVERY_PORT', '18766'
+        }
+        release {
+            minifyEnabled false
+            // signed in CI with the key from secrets (spec §7); local builds use the debug key
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}

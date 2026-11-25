@@ -1,0 +1,25 @@
+{
+  "name": "ven4docking-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ven4Docking phone panel page (served by the agent, target: Android 7 WebView / Chrome 51)",
+  "license": "MIT",
+  "type": "module",
+  "browserslist": [
+    "Chrome >= 51"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "lint": "eslint src build.mjs dev-server.mjs && stylelint \"src/**/*.css\"",
+    "dev": "node dev-server.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.15.0",
+    "eslint-plugin-compat": "^7.0.2",
+    "globals": "^17.14.0",
+    "stylelint": "^18.1.0",
+    "stylelint-no-unsupported-browser-features": "^8.1.2"
+  }
+}
