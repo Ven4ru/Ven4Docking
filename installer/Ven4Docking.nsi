@@ -95,10 +95,25 @@ FunctionEnd
 !insertmacro CLOSE_RUNNING ""
 !insertmacro CLOSE_RUNNING "un."
 
-; $0 = 1, если правило брандмауэра есть (чтение правил прав не требует).
-!macro FW_EXISTS UN
-Function ${UN}FirewallRuleExists
-  nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall show rule name="${FW_RULE}"'
+; Правила брандмауэра привязаны к программе агента (program=...), а не только к портам: без правила
+; на саму программу Windows при первом запуске агента показывает окно «Разрешить доступ?» и до ответа
+; (или при «Отмена») создаёт свои запрещающие правила для ven4docking-agent.exe — запрет сильнее
+; разрешения по порту, и телефон не достучится. Путь к агенту передаётся через переменную окружения
+; V4D_AGENT (в пути может быть апостроф). Правила читаются через COM HNetCfg.FwPolicy2 — без прав
+; администратора (Get-NetFirewallRule без них отвечает «Отказано в доступе»).
+!macro AGENT_ENV UN
+Function ${UN}SetAgentEnv
+  System::Call 'kernel32::SetEnvironmentVariable(t "V4D_AGENT", t "$INSTDIR\${AGENT_EXE}")i'
+FunctionEnd
+!macroend
+!insertmacro AGENT_ENV ""
+!insertmacro AGENT_ENV "un."
+
+; $0 = 1, если есть разрешающие правила «Ven4Docking» для программы агента (TCP и UDP)
+; и нет запрещающих правил для неё (их создаёт Windows после окна «Разрешить доступ?»).
+Function FirewallRuleOk
+  Call SetAgentEnv
+  nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$$p=$$env:V4D_AGENT; $$m=@((New-Object -ComObject HNetCfg.FwPolicy2).Rules | Where-Object { $$_.ApplicationName -and $$_.ApplicationName -ieq $$p }); if (@($$m | Where-Object { $$_.Name -eq '${FW_RULE}' -and $$_.Action -eq 1 -and $$_.Direction -eq 1 -and $$_.Enabled }).Count -ge 2 -and @($$m | Where-Object { $$_.Action -eq 0 }).Count -eq 0) { exit 0 }; exit 1"`
   Pop $0
   ${If} $0 == 0
     StrCpy $0 1
@@ -106,9 +121,19 @@ Function ${UN}FirewallRuleExists
     StrCpy $0 0
   ${EndIf}
 FunctionEnd
-!macroend
-!insertmacro FW_EXISTS ""
-!insertmacro FW_EXISTS "un."
+
+; $0 = 1, если есть хоть одно правило «Ven4Docking» или любое правило для программы агента.
+; Если проверка не удалась, считаем, что правила есть (лучше лишний запрос прав, чем забытое правило).
+Function un.FirewallAnyRule
+  Call un.SetAgentEnv
+  nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$$p=$$env:V4D_AGENT; if (@((New-Object -ComObject HNetCfg.FwPolicy2).Rules | Where-Object { $$_.Name -eq '${FW_RULE}' -or ($$_.ApplicationName -and $$_.ApplicationName -ieq $$p) }).Count -eq 0) { exit 0 }; exit 1"`
+  Pop $0
+  ${If} $0 == 0
+    StrCpy $0 0
+  ${Else}
+    StrCpy $0 1
+  ${EndIf}
+FunctionEnd
 
 ; ---------------------------------------------------------------------------
 ; Установка
@@ -145,7 +170,7 @@ SectionEnd
 
 ; Отдельный шаг с правами администратора: только правило брандмауэра.
 Section "-Firewall" SecFirewall
-  Call FirewallRuleExists
+  Call FirewallRuleOk
   ${If} $0 == 1
     DetailPrint "Правило брандмауэра «${FW_RULE}» уже есть."
     Return
@@ -153,9 +178,10 @@ Section "-Firewall" SecFirewall
 
   DetailPrint "Запрашиваю права администратора для правила брандмауэра «${FW_RULE}»…"
   ClearErrors
-  ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow protocol=TCP localport=8765 remoteip=localsubnet profile=any >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow protocol=UDP localport=8766 remoteip=localsubnet profile=any >nul' SW_HIDE
+  ; старые правила по имени и все правила для программы агента (в т. ч. запреты, созданные Windows) → заново
+  ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul & netsh advfirewall firewall delete rule name=all program="$INSTDIR\${AGENT_EXE}" >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow program="$INSTDIR\${AGENT_EXE}" protocol=TCP localport=8765 remoteip=localsubnet profile=any >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow program="$INSTDIR\${AGENT_EXE}" protocol=UDP localport=8766 remoteip=localsubnet profile=any >nul' SW_HIDE
 
-  Call FirewallRuleExists
+  Call FirewallRuleOk
   ${If} $0 == 1
     DetailPrint "Правило брандмауэра «${FW_RULE}» добавлено: TCP 8765, UDP 8766, локальная подсеть."
   ${Else}
@@ -199,11 +225,11 @@ Section "-un.Main"
   DeleteRegKey HKCU "${UNINST_KEY}"
 
   ; правило брандмауэра — с правами администратора
-  Call un.FirewallRuleExists
+  Call un.FirewallAnyRule
   ${If} $0 == 1
     DetailPrint "Удаляю правило брандмауэра «${FW_RULE}» (нужны права администратора)…"
-    ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul' SW_HIDE
-    Call un.FirewallRuleExists
+    ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul & netsh advfirewall firewall delete rule name=all program="$INSTDIR\${AGENT_EXE}" >nul' SW_HIDE
+    Call un.FirewallAnyRule
     ${If} $0 == 1
       MessageBox MB_OK|MB_ICONEXCLAMATION "Правило брандмауэра «${FW_RULE}» не удалено — права администратора не получены.$\r$\nЕго можно удалить вручную: «Брандмауэр Защитника Windows» → «Дополнительные параметры» → «Правила для входящих подключений»." /SD IDOK
     ${EndIf}
