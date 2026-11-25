@@ -20,3 +20,5 @@ admin.key
 *.idsig
 # research notes with workstation details (public summary later)
 docs/research/ai-limits.md
+# internal working plans (machine-specific paths)
+docs/plans/
