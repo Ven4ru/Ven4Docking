@@ -1,15 +1,21 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 //! ven4docking-agent.exe — background agent with a tray icon.
 //! Flags: --no-tray (headless), --console (log to stderr too).
+//!        --firewall add|remove: only change the firewall rules «Ven4Docking» for this exe and exit
+//!        (needs elevation; exit code 0 = done). No tray, server or data folder in this mode.
 //! Env: VEN4DOCKING_HOME (data dir), VEN4DOCKING_PORT (override config port),
 //!      VEN4DOCKING_PANEL_DIR, VEN4DOCKING_APK_DIR.
 
 use std::net::SocketAddr;
 use std::sync::Arc;
-use ven4docking_agent::{config, discovery, http, logging, metrics, platform, poll, state::AppState};
+use ven4docking_agent::{config, discovery, firewall, http, logging, metrics, platform, poll, state::AppState};
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if let Some(i) = args.iter().position(|a| a == "--firewall") {
+        let action = args.get(i + 1).map(String::as_str).unwrap_or("");
+        std::process::exit(firewall::run_cli(action));
+    }
     let no_tray = args.iter().any(|a| a == "--no-tray");
     let console = args.iter().any(|a| a == "--console");
 

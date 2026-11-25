@@ -106,9 +106,11 @@ async fn admin_is_localhost_and_key_only() {
     assert_eq!(s, StatusCode::UNAUTHORIZED);
     let (s, v) = call(&e.st, "127.0.0.1", "GET", "/admin/status", &[("x-admin-key", KEY)], None).await;
     assert_eq!(s, StatusCode::OK);
-    for k in ["version", "port", "cpuPct", "ramBytes", "activePanels", "blockErrors"] {
+    for k in ["version", "port", "cpuPct", "ramBytes", "activePanels", "blockErrors", "firewall"] {
         assert!(v.get(k).is_some(), "status.{k}");
     }
+    // the test exe has no rules of its own; the COM check works without elevation
+    assert!(matches!(v["firewall"].as_str(), Some("missing" | "blocked")), "{}", v["firewall"]);
 }
 
 #[tokio::test]

@@ -235,14 +235,33 @@ async fn status(st: St) -> Response {
     if let Some(e) = st.load_error.lock().unwrap().clone() {
         block_errors.insert("config".into(), json!(e));
     }
+    let firewall = firewall_state(&st).await;
     ok_json(json!({
         "version": AGENT_VERSION, "port": st.port, "cpuPct": cpu, "ramBytes": ram,
         "activePanels": active, "blockErrors": block_errors, "paused": st.paused(),
-        "uptime": st.started.elapsed().as_secs(),
+        "uptime": st.started.elapsed().as_secs(), "firewall": firewall,
     }))
 }
 
+/// How long a firewall check is reused; the check itself runs only when the editor asks for the status.
+const FIREWALL_CACHE: std::time::Duration = std::time::Duration::from_secs(30);
+
+/// `ok | missing | blocked | unknown` (see firewall::classify). Only `ok` is cached (30 s): a problem state is
+/// re-checked on every request (~10 ms), so the editor sees the result of «Исправить» on its next poll.
+/// POST /admin/reload drops the cache.
+async fn firewall_state(st: &AppState) -> &'static str {
+    if let Some((t, s)) = *st.firewall.lock().unwrap() {
+        if t.elapsed() < FIREWALL_CACHE {
+            return s;
+        }
+    }
+    let s = tokio::task::spawn_blocking(crate::firewall::check_self).await.unwrap_or("unknown");
+    *st.firewall.lock().unwrap() = if s == "ok" { Some((std::time::Instant::now(), s)) } else { None };
+    s
+}
+
 async fn reload(st: St) -> Response {
+    *st.firewall.lock().unwrap() = None;
     match Config::load_or_create(&st.paths.config) {
         Ok(c) => {
             *st.cfg.write().unwrap() = c;

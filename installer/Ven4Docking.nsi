@@ -101,6 +101,8 @@ FunctionEnd
 ; разрешения по порту, и телефон не достучится. Путь к агенту передаётся через переменную окружения
 ; V4D_AGENT (в пути может быть апостроф). Правила читаются через COM HNetCfg.FwPolicy2 — без прав
 ; администратора (Get-NetFirewallRule без них отвечает «Отказано в доступе»).
+; Меняет правила сам агент: «ven4docking-agent.exe --firewall add|remove» с запросом прав — так окно UAC
+; называет программу «Ven4Docking agent», а не «Обработчик команд Windows».
 !macro AGENT_ENV UN
 Function ${UN}SetAgentEnv
   System::Call 'kernel32::SetEnvironmentVariable(t "V4D_AGENT", t "$INSTDIR\${AGENT_EXE}")i'
@@ -178,8 +180,9 @@ Section "-Firewall" SecFirewall
 
   DetailPrint "Запрашиваю права администратора для правила брандмауэра «${FW_RULE}»…"
   ClearErrors
-  ; старые правила по имени и все правила для программы агента (в т. ч. запреты, созданные Windows) → заново
-  ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul & netsh advfirewall firewall delete rule name=all program="$INSTDIR\${AGENT_EXE}" >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow program="$INSTDIR\${AGENT_EXE}" protocol=TCP localport=8765 remoteip=localsubnet profile=any >nul & netsh advfirewall firewall add rule name="${FW_RULE}" dir=in action=allow program="$INSTDIR\${AGENT_EXE}" protocol=UDP localport=8766 remoteip=localsubnet profile=any >nul' SW_HIDE
+  ; агент удаляет старые правила по имени и все правила для своей программы (в т. ч. запреты,
+  ; созданные Windows) и добавляет два разрешающих: TCP 8765 и UDP 8766, локальная подсеть
+  ExecShellWait "runas" "$INSTDIR\${AGENT_EXE}" "--firewall add" SW_HIDE
 
   Call FirewallRuleOk
   ${If} $0 == 1
@@ -219,21 +222,21 @@ Section "-un.Main"
 
   Delete "$SMPROGRAMS\${APP}.lnk"
 
-  ; программа и её кэш (platform-tools, данные WebView2); настройки — отдельным пунктом
-  RMDir /r "$INSTDIR"
-  RMDir /r "$LOCALAPPDATA\${APP}"
-  DeleteRegKey HKCU "${UNINST_KEY}"
-
-  ; правило брандмауэра — с правами администратора
+  ; правило брандмауэра — с правами администратора; до удаления папки: правила снимает сам агент
   Call un.FirewallAnyRule
   ${If} $0 == 1
     DetailPrint "Удаляю правило брандмауэра «${FW_RULE}» (нужны права администратора)…"
-    ExecShellWait "runas" "$SYSDIR\cmd.exe" '/c netsh advfirewall firewall delete rule name="${FW_RULE}" >nul & netsh advfirewall firewall delete rule name=all program="$INSTDIR\${AGENT_EXE}" >nul' SW_HIDE
+    ExecShellWait "runas" "$INSTDIR\${AGENT_EXE}" "--firewall remove" SW_HIDE
     Call un.FirewallAnyRule
     ${If} $0 == 1
       MessageBox MB_OK|MB_ICONEXCLAMATION "Правило брандмауэра «${FW_RULE}» не удалено — права администратора не получены.$\r$\nЕго можно удалить вручную: «Брандмауэр Защитника Windows» → «Дополнительные параметры» → «Правила для входящих подключений»." /SD IDOK
     ${EndIf}
   ${EndIf}
+
+  ; программа и её кэш (platform-tools, данные WebView2); настройки — отдельным пунктом
+  RMDir /r "$INSTDIR"
+  RMDir /r "$LOCALAPPDATA\${APP}"
+  DeleteRegKey HKCU "${UNINST_KEY}"
 SectionEnd
 
 Section /o "un.Удалить настройки (раскладки, телефоны, серверы — папка %APPDATA%\Ven4Docking)" UnSecSettings

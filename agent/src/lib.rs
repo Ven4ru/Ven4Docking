@@ -3,6 +3,7 @@
 pub mod ai;
 pub mod config;
 pub mod discovery;
+pub mod firewall;
 pub mod http;
 pub mod layout;
 pub mod logging;

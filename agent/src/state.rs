@@ -45,6 +45,8 @@ pub struct AppState {
     pub self_cpu: Mutex<Option<(Instant, f64)>>,
     pub started: Instant,
     pub load_error: Mutex<Option<String>>,
+    /// Last firewall check for /admin/status: (when, ok|missing|blocked|unknown).
+    pub firewall: Mutex<Option<(Instant, &'static str)>>,
 }
 
 impl AppState {
@@ -68,6 +70,7 @@ impl AppState {
             self_cpu: Mutex::new(None),
             started: Instant::now(),
             load_error: Mutex::new(None),
+            firewall: Mutex::new(None),
         };
         st.load_layouts();
         st
