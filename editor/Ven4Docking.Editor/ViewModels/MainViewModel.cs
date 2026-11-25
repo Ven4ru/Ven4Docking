@@ -35,6 +35,9 @@ public sealed class SectionItem : ObservableObject
     public required string Glyph { get; init; }
     public required SectionBase ViewModel { get; init; }
     public string Title => Loc.T("Section_" + Key);
+
+    // ListBoxItem automation name (screen readers, UI tests) — otherwise it is the type name.
+    public override string ToString() => Title;
 }
 
 public sealed partial class MainViewModel : ObservableObject
