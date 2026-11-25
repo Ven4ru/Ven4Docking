@@ -97,7 +97,8 @@ function build(l) {
 
   reqKeys = Object.keys(req);
   pager.setCount(screens.length, Math.min(keepPage, screens.length - 1));
-  night.configure(l);
+  // demo (editor preview): never dim or shift — the preview must stay readable at night
+  night.configure(demo ? Object.assign({}, l, { night: null, dimWhenPcOffline: false, burnInShift: false }) : l);
   weather.configure(l.weather);
   resizeAll();
 }
