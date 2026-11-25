@@ -76,13 +76,20 @@ jobs:
           cache: gradle
       - name: NSIS
         run: |
-          $nsis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
-          # the Chocolatey feed sometimes answers 503: retry, and fail here instead of at the build step
-          for ($i = 1; $i -le 3 -and -not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path $nsis); $i++) {
-            choco install nsis -y --no-progress
-            if (-not (Test-Path $nsis)) { Start-Sleep -Seconds (20 * $i) }
+          # portable NSIS from the project's SourceForge files, pinned by hash (the Chocolatey feed was answering 503)
+          if (-not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path "${env:ProgramFiles(x86)}\NSIS\makensis.exe")) {
+            $ver = '3.12'
+            $sha = '56581F90DB321581C5381193D796FFFCF2D24B2F8FED2160A6C6A3BAA67F2C4F'
+            $zip = Join-Path $env:RUNNER_TEMP 'nsis.zip'
+            for ($i = 1; $i -le 3; $i++) {
+              curl.exe -sSfL --max-time 180 -o $zip "https://downloads.sourceforge.net/project/nsis/NSIS%203/$ver/nsis-$ver.zip"
+              if ($LASTEXITCODE -eq 0 -and (Get-FileHash $zip -Algorithm SHA256).Hash -eq $sha) { break }
+              if ($i -eq 3) { throw 'NSIS download failed or hash mismatch' }
+              Start-Sleep -Seconds (15 * $i)
+            }
+            Expand-Archive $zip -DestinationPath $env:RUNNER_TEMP -Force
+            Join-Path $env:RUNNER_TEMP "nsis-$ver" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
           }
-          if (-not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path $nsis)) { throw 'NSIS was not installed' }
 
       # ---------------------------------------------------------------- checks
       - name: Agent tests
