@@ -11,7 +11,23 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        FitToWorkArea();
         SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
+    }
+
+    /// 1440×900 does not fit 1600×900 or 1366×768 screens: the title bar ended up above the screen edge
+    /// and the bottom under the taskbar. Shrink to the primary work area and centre in it.
+    private void FitToWorkArea()
+    {
+        var wa = SystemParameters.WorkArea;
+        if (Width <= wa.Width && Height <= wa.Height) return;
+        MinWidth = Math.Min(MinWidth, wa.Width);
+        MinHeight = Math.Min(MinHeight, wa.Height);
+        Width = Math.Min(Width, wa.Width);
+        Height = Math.Min(Height, wa.Height);
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        Left = wa.Left + (wa.Width - Width) / 2;
+        Top = wa.Top + (wa.Height - Height) / 2;
     }
 
     protected override void OnClosing(CancelEventArgs e)

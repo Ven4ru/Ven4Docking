@@ -81,11 +81,29 @@ public partial class ScreensView : UserControl
 
     // ---------------- WebView2 preview ----------------
 
+    private Microsoft.Web.WebView2.Wpf.WebView2CompositionControl Preview = null!;
+
+    private static bool WebViewRuntimeInstalled()
+    {
+        try { return !string.IsNullOrEmpty(CoreWebView2Environment.GetAvailableBrowserVersionString()); }
+        catch (Exception ex) when (ex is WebView2RuntimeNotFoundException or System.Runtime.InteropServices.COMException or DllNotFoundException) { return false; }
+    }
+
     private async Task InitWebViewAsync()
     {
         if (_vm is null || _webReady) return;
+        if (!WebViewRuntimeInstalled())
+        {
+            NoWebView.Visibility = Visibility.Visible;
+            return;
+        }
         try
         {
+            Preview = new Microsoft.Web.WebView2.Wpf.WebView2CompositionControl
+            {
+                DefaultBackgroundColor = System.Drawing.Color.FromArgb(0x0B, 0x0E, 0x14),
+            };
+            PreviewHost.Content = Preview;
             Preview.CreationProperties = new Microsoft.Web.WebView2.Wpf.CoreWebView2CreationProperties
             {
                 UserDataFolder = _vm.Session.Paths.WebViewDataDir,
@@ -104,7 +122,7 @@ public partial class ScreensView : UserControl
         catch (Exception ex) when (ex is WebView2RuntimeNotFoundException or InvalidOperationException or System.Runtime.InteropServices.COMException)
         {
             NoWebView.Visibility = Visibility.Visible;
-            Preview.Visibility = Visibility.Collapsed;
+            PreviewHost.Content = null;
         }
     }
 

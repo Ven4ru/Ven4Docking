@@ -95,7 +95,9 @@
             <Viewbox Stretch="Uniform" StretchDirection="DownOnly" VerticalAlignment="Top" HorizontalAlignment="Center">
                 <Border Background="#05070B" CornerRadius="22" Padding="16" BorderBrush="#2A3240" BorderThickness="2">
                     <Grid Width="{Binding PreviewWidth}" Height="{Binding PreviewHeight}" ClipToBounds="True">
-                        <wv2:WebView2CompositionControl x:Name="Preview" DefaultBackgroundColor="#0B0E14"/>
+                        <!-- WebView2CompositionControl is created in code only when the runtime is installed:
+                             without it the control left the whole window white on first show (Windows 10 22H2). -->
+                        <ContentControl x:Name="PreviewHost" Focusable="False"/>
                         <Border x:Name="NoWebView" Background="#0B0E14" Visibility="Collapsed">
                             <TextBlock Text="{l:L Screens_NoWebView}" Style="{StaticResource Hint}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
