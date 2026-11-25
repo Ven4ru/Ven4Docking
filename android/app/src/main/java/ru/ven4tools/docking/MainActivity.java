@@ -73,6 +73,15 @@ public class MainActivity extends Activity {
 
     private final Runnable retry = () -> { if (failed) load(); };
     private final Runnable rediscover = this::rediscover;
+    /** A switched-off PC may leave the page load hanging for minutes on a blank screen: give up after 15 s. */
+    private static final long LOAD_TIMEOUT_MS = 15000;
+    private boolean loading;
+    private final Runnable loadTimeout = () -> {
+        if (!loading || web == null) return;
+        loading = false;
+        fail("ПК не отвечает");
+        web.stopLoading(); // after fail(): onPageFinished then sees failed and does not count it as online
+    };
     private final Runnable rehide = () -> { if (hasWindowFocus()) Screen.immersive(this); };
     private final Runnable report = new Runnable() {
         @Override public void run() { sendReport(); ui.postDelayed(this, REPORT_MS); }
@@ -200,6 +209,8 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView v, String url) {
                 pageOrigin = Prefs.origin(url);
+                loading = false;
+                ui.removeCallbacks(loadTimeout);
                 if (!failed) {
                     status.setVisibility(View.GONE);
                     markOnline();
@@ -234,11 +245,16 @@ public class MainActivity extends Activity {
         // until the page finishes the saved address counts as silent: a switched-off PC may leave the
         // connection hanging for minutes instead of failing, and the 30 s countdown must run meanwhile
         markOffline();
+        loading = true;
+        ui.removeCallbacks(loadTimeout);
+        ui.postDelayed(loadTimeout, LOAD_TIMEOUT_MS);
         web.loadUrl(prefs.baseUrl());
     }
 
     private void fail(String why) {
         failed = true;
+        loading = false;
+        ui.removeCallbacks(loadTimeout);
         status.setText(why + "\n\nПовтор каждые 5 секунд…");
         status.setVisibility(View.VISIBLE);
         ui.removeCallbacks(retry);
