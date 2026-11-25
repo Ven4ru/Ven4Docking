@@ -13,6 +13,10 @@ Ven4Docking превращает старый телефон на Android в п�
 часы и погода, загрузка процессора и видеокарты, память, диски, сеть, что сейчас играет, состояние ваших серверов,
 лимиты нейросетей, кнопки запуска приложений и медиакнопки. Экраны листаются свайпом, ночью панель приглушается.
 
+<p align="center"><img src="docs/screenshots/panel-main.png" width="800" alt="Главный экран панели: часы и погода, процессор, видеокарта, память, сеть, диски, нейросети, медиа и приложения"></p>
+<p align="center"><img src="docs/screenshots/panel-servers.png" width="800" alt="Экран серверов: пинг, процессор, память и диск каждого сервера"></p>
+<p align="center"><img src="docs/screenshots/editor.png" width="800" alt="Редактор: экраны и блоки на сетке с живым предпросмотром"></p>
+
 Состоит из трёх частей:
 
 - **Агент** (`ven4docking-agent.exe`) — работает в фоне со значком в трее, собирает данные и раздаёт панель телефону. Почти не нагружает ПК: опрашивает только то, что есть на экранах телефона.
@@ -23,7 +27,7 @@ Ven4Docking превращает старый телефон на Android в п�
 
 - Windows 10 или 11 (64 бит).
 - Телефон на Android 7.0 или новее.
-- ПК и телефон в одной домашней сети (Wi-Fi).
+- ПК и телефон в одной домашней сети: телефон по Wi-Fi, ПК — по Wi-Fi или кабелем к тому же роутеру.
 - Для мастера настройки — USB-кабель (рекомендуется) или Wi-Fi-отладка (Android 11+).
 
 ## Установка
@@ -77,6 +81,23 @@ Ven4Docking превращает старый телефон на Android в п�
 
 Для разработки рядом с уже работающим агентом: `VEN4DOCKING_HOME` — отдельная папка данных, `VEN4DOCKING_PORT` — другой порт (отладочная сборка лаунчера ищет агент на 18765/18766).
 
+## Частые вопросы
+
+**Телефон не загружается / нужна прошивка. Есть прошивка под Ven4Docking?**
+Нет. Ven4Docking — приложение, а не прошивка: ему нужен телефон с работающим Android 7.0 или новее. Если Android не загружается,
+телефон сначала нужно восстановить — заводской прошивкой производителя или, например, LineageOS для вашей модели. Это делается
+на ваш страх и риск, с прошивкой мы не помогаем. Когда телефон загрузится — подключайте его мастером.
+
+**На телефоне Android 6 или старше.**
+Не поддерживается: встроенный браузер страниц (WebView) там слишком старый.
+
+**Что будет, когда ПК выключен?**
+Панель пишет «ПК не отвечает», приглушает экран и сама оживает, когда ПК снова в сети и вы вошли в Windows.
+Если роутер выдал ПК новый адрес, телефон сам найдёт его в домашней сети.
+
+**Почему экран ночью тусклый?**
+Это ночной режим панели (по умолчанию 23:00–07:00). Часы и яркость меняются в редакторе: «Телефоны» → «Ночь и яркость».
+
 ## Лицензия
 
 [MIT](LICENSE) © Ven4ru
@@ -105,7 +126,7 @@ Three parts:
 
 - Windows 10 or 11 (64-bit).
 - A phone with Android 7.0 or newer.
-- PC and phone on the same home network (Wi-Fi).
+- PC and phone on the same home network: the phone on Wi-Fi, the PC on Wi-Fi or wired to the same router.
 - For the setup wizard: a USB cable (recommended) or Wireless debugging (Android 11+).
 
 ### Install
@@ -154,6 +175,23 @@ Output: `dist\Ven4Docking-Setup-X.Y.Z.exe`, `dist\Ven4Docking-X.Y.Z.zip` (a copy
 A local APK is signed with the debug key. User releases are built only by GitHub Actions (`.github/workflows/build.yml`).
 
 Layout: `agent/` (Rust), `editor/` (WPF, .NET 10), `panel/` (JS page, targets the Android 7 WebView), `android/` (launcher, Java), `installer/` (NSIS), `assets/icon/` (1024 px source; `tools/make_icons.py` makes the `.ico` and Android icons).
+
+### FAQ
+
+**My phone doesn't boot / needs flashing. Is there a Ven4Docking firmware?**
+No. Ven4Docking is an app, not a firmware: it needs a phone with a working Android 7.0 or newer. If Android doesn't boot,
+restore the phone first — with the vendor's stock firmware or, say, LineageOS for your model. That is at your own risk,
+and we can't help with flashing. Once the phone boots, connect it with the wizard.
+
+**My phone has Android 6 or older.**
+Not supported: its built-in web view (WebView) is too old.
+
+**What happens when the PC is off?**
+The panel says the PC is not responding, dims the screen and comes back by itself once the PC is on the network and you've signed in to Windows.
+If the router gave the PC a new address, the phone finds it on the home network by itself.
+
+**Why is the screen dim at night?**
+That's the panel's night mode (23:00–07:00 by default). Hours and brightness are set in the editor: Phones → Night and brightness.
 
 ### License
 
