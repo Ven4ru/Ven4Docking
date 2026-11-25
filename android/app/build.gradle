@@ -18,6 +18,22 @@ android {
         buildConfigField 'int', 'DISCOVERY_PORT', '8766'
     }
 
+    // Release signing: CI decodes the keystore from secrets and sets ANDROID_KEYSTORE_FILE,
+    // ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS (ANDROID_KEY_PASS optional, defaults to the store password).
+    // Without them (local build.ps1, forks) the release APK is signed with the debug key:
+    // same 8765/8766 ports as the installed agent, but not suitable for publishing.
+    def releaseKeystore = System.getenv('ANDROID_KEYSTORE_FILE')
+    signingConfigs {
+        release {
+            if (releaseKeystore) {
+                storeFile file(releaseKeystore)
+                storePassword System.getenv('ANDROID_KEYSTORE_PASS')
+                keyAlias System.getenv('ANDROID_KEY_ALIAS')
+                keyPassword System.getenv('ANDROID_KEY_PASS') ?: System.getenv('ANDROID_KEYSTORE_PASS')
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // development agent runs next to the prototype: 18765 / 18766
@@ -26,7 +42,7 @@ android {
         }
         release {
             minifyEnabled false
-            // signed in CI with the key from secrets (spec §7); local builds use the debug key
+            signingConfig releaseKeystore ? signingConfigs.release : signingConfigs.debug
         }
     }
 

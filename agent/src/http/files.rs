@@ -1,5 +1,5 @@
-//! Static files without a token: panel (VEN4DOCKING_PANEL_DIR or ../panel/dist next to the exe),
-//! icons (<home>/icons), APK (VEN4DOCKING_APK_DIR or ../apk next to the exe).
+//! Static files without a token: panel (VEN4DOCKING_PANEL_DIR, else `panel\` next to the exe as installed),
+//! icons (<home>/icons), APK (VEN4DOCKING_APK_DIR, else `apk\` next to the exe) — see `config::default_static_dirs`.
 
 use super::{err, St};
 use axum::extract::Path;

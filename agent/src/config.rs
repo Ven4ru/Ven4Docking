@@ -399,18 +399,31 @@ pub struct Paths {
     pub apk: PathBuf,
 }
 
+/// Default panel and APK folders for an agent exe in `exe_dir`:
+/// installed layout first (`<exe_dir>\panel\index.html`, `<exe_dir>\apk\`),
+/// then the older side-by-side layout (`<exe_dir>\..\panel\dist`, `<exe_dir>\..\apk`).
+/// When nothing exists yet, the installed layout is returned.
+pub fn default_static_dirs(exe_dir: &Path) -> (PathBuf, PathBuf) {
+    let panel_cands = [exe_dir.join("panel"), exe_dir.join("..").join("panel").join("dist")];
+    let panel = panel_cands
+        .iter()
+        .find(|d| d.join("index.html").is_file())
+        .unwrap_or(&panel_cands[0])
+        .clone();
+    let apk_cands = [exe_dir.join("apk"), exe_dir.join("..").join("apk")];
+    let apk = apk_cands.iter().find(|d| d.is_dir()).unwrap_or(&apk_cands[0]).clone();
+    (panel, apk)
+}
+
 impl Paths {
     pub fn from_home(home: PathBuf) -> Paths {
         let exe_dir = std::env::current_exe()
             .ok()
             .and_then(|p| p.parent().map(|d| d.to_path_buf()))
             .unwrap_or_else(|| PathBuf::from("."));
-        let panel = std::env::var_os("VEN4DOCKING_PANEL_DIR")
-            .map(PathBuf::from)
-            .unwrap_or_else(|| exe_dir.join("..").join("panel").join("dist"));
-        let apk = std::env::var_os("VEN4DOCKING_APK_DIR")
-            .map(PathBuf::from)
-            .unwrap_or_else(|| exe_dir.join("..").join("apk"));
+        let (panel_default, apk_default) = default_static_dirs(&exe_dir);
+        let panel = std::env::var_os("VEN4DOCKING_PANEL_DIR").map(PathBuf::from).unwrap_or(panel_default);
+        let apk = std::env::var_os("VEN4DOCKING_APK_DIR").map(PathBuf::from).unwrap_or(apk_default);
         Paths {
             config: home.join("config.json"),
             layouts: home.join("layouts"),

@@ -88,6 +88,37 @@ fn editor_put_keeps_token_hashes() {
 }
 
 #[test]
+fn static_dirs_prefer_installed_layout() {
+    let root = std::env::temp_dir().join(format!("v4d-static-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&root);
+    let exe_dir = root.join("Ven4Docking");
+    std::fs::create_dir_all(&exe_dir).unwrap();
+
+    // nothing built yet -> installed layout
+    let (panel, apk) = default_static_dirs(&exe_dir);
+    assert_eq!(panel, exe_dir.join("panel"));
+    assert_eq!(apk, exe_dir.join("apk"));
+
+    // side-by-side dev layout: <exe>\..\panel\dist, <exe>\..\apk
+    std::fs::create_dir_all(root.join("panel").join("dist")).unwrap();
+    std::fs::write(root.join("panel").join("dist").join("index.html"), "<html>").unwrap();
+    std::fs::create_dir_all(root.join("apk")).unwrap();
+    let (panel, apk) = default_static_dirs(&exe_dir);
+    assert_eq!(panel, exe_dir.join("..").join("panel").join("dist"));
+    assert_eq!(apk, exe_dir.join("..").join("apk"));
+
+    // installed layout wins when present
+    std::fs::create_dir_all(exe_dir.join("panel")).unwrap();
+    std::fs::write(exe_dir.join("panel").join("index.html"), "<html>").unwrap();
+    std::fs::create_dir_all(exe_dir.join("apk")).unwrap();
+    let (panel, apk) = default_static_dirs(&exe_dir);
+    assert_eq!(panel, exe_dir.join("panel"));
+    assert_eq!(apk, exe_dir.join("apk"));
+
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+#[test]
 fn ids_are_checked() {
     assert!(valid_id("p1") && valid_id("my-phone_2"));
     assert!(!valid_id("") && !valid_id("a/b") && !valid_id("..") && !valid_id("a b"));

@@ -6,13 +6,9 @@
         <TextBlock Text="{l:L Section_About}" Style="{StaticResource H1}"/>
         <Border Style="{StaticResource Card}">
             <DockPanel>
-                <!-- Venchik with a phone: the final picture comes with the icon work package (spec §14). -->
-                <Border DockPanel.Dock="Left" Width="96" Height="96" CornerRadius="20" Margin="0,0,18,0"
-                        Background="{DynamicResource AccentSoftBackground}" BorderBrush="{DynamicResource AccentSoftBorder}" BorderThickness="1">
-                    <Grid>
-                        <TextBlock Text="&#xE8EA;" Style="{StaticResource Icon}" FontSize="44" HorizontalAlignment="Center" Foreground="{DynamicResource AccentColor}"/>
-                    </Grid>
-                </Border>
+                <!-- Venchik with a phone (assets/icon, spec §14). -->
+                <Image DockPanel.Dock="Left" Width="96" Height="96" Margin="0,0,18,0"
+                       Source="/Assets/ven4docking-256.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="22" FontWeight="Bold"><Run Text="Ven4"/><Run Text="Docking" Foreground="{DynamicResource AccentColor}"/></TextBlock>
                     <TextBlock Text="{Binding VersionText}" Style="{StaticResource Hint}" FontSize="13"/>

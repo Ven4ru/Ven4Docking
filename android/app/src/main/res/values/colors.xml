@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_bg">#141823</color>
+    <!-- adaptive icon background: the purple of the icon picture -->
+    <color name="ic_bg">#3B2350</color>
 </resources>

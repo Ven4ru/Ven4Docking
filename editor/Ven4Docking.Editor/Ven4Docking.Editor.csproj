@@ -8,7 +8,13 @@
     <AssemblyName>Ven4Docking</AssemblyName>
     <RootNamespace>Ven4Docking.Editor</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Venchik with a phone; .ico made from assets/icon/ven4docking-1024.png by tools/make_icons.py -->
+    <ApplicationIcon>..\..\assets\icon\ven4docking.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="..\..\assets\icon\ven4docking.ico" Link="Assets\ven4docking.ico" />
+    <Resource Include="..\..\assets\icon\ven4docking-256.png" Link="Assets\ven4docking-256.png" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4078.44" />

@@ -6,19 +6,22 @@ use std::sync::Arc;
 use tray_icon::menu::{CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem};
 use tray_icon::{Icon, TrayIconBuilder};
 
-/// 32×32 teal circle with a dark "phone" in it — placeholder until the real icon (spec §14).
+/// The exe's own icon (group id 1, embedded by build.rs from assets/icon/ven4docking.ico);
+/// fallback (resource missing): a 32×32 teal square with a white "phone" drawn in code.
 fn icon() -> Icon {
+    #[cfg(windows)]
+    if let Ok(i) = Icon::from_resource(1, None) {
+        return i;
+    }
     let n = 32usize;
     let mut rgba = vec![0u8; n * n * 4];
     for y in 0..n {
         for x in 0..n {
-            let (dx, dy) = (x as f32 - 15.5, y as f32 - 15.5);
             let i = (y * n + x) * 4;
-            if dx * dx + dy * dy <= 15.5 * 15.5 {
-                let phone = (10..22).contains(&x) && (6..26).contains(&y);
-                let (r, g, b) = if phone { (20, 24, 35) } else { (0x2A, 0xB3, 0xA6) };
-                rgba[i..i + 4].copy_from_slice(&[r, g, b, 255]);
-            }
+            let phone = (10..22).contains(&x) && (5..27).contains(&y);
+            let screen = (12..20).contains(&x) && (8..22).contains(&y);
+            let (r, g, b) = if phone && !screen { (255, 255, 255) } else { (0x00, 0xBC, 0xD4) };
+            rgba[i..i + 4].copy_from_slice(&[r, g, b, 255]);
         }
     }
     Icon::from_rgba(rgba, n as u32, n as u32).expect("icon")
