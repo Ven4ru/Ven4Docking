@@ -50,7 +50,7 @@
                 <TextBlock Text="{l:L Screens_PaletteHint}" Style="{StaticResource Hint}" Margin="0,0,0,8"/>
             </StackPanel>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Palette}">
+                <ItemsControl ItemsSource="{Binding Palette}" VerticalAlignment="Top">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
@@ -82,6 +82,15 @@
                 </TextBlock>
                 <TextBlock Text="{l:L Screens_PreviewHint}" Style="{StaticResource Hint}"/>
             </StackPanel>
+            <!-- No WebView2 Runtime: a compact notice above the frame (inside it, the text collided with the grid lines). -->
+            <Border x:Name="NoWebViewNote" DockPanel.Dock="Top" Style="{StaticResource WarnNote}" Padding="10,6" Margin="0,0,0,10"
+                    HorizontalAlignment="Center" Visibility="Collapsed">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Text="&#xE946;" Style="{StaticResource Icon}" FontSize="13" Foreground="{DynamicResource StatusWarning}"
+                               VerticalAlignment="Top" Margin="0,1,8,0"/>
+                    <TextBlock Text="{l:L Screens_NoWebView}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                </DockPanel>
+            </Border>
             <Border DockPanel.Dock="Bottom" Style="{StaticResource WarnNote}" Margin="0,10,0,0"
                     Visibility="{Binding IssuesText, Converter={StaticResource Vis}}">
                 <StackPanel>
@@ -98,9 +107,8 @@
                         <!-- WebView2CompositionControl is created in code only when the runtime is installed:
                              without it the control left the whole window white on first show (Windows 10 22H2). -->
                         <ContentControl x:Name="PreviewHost" Focusable="False"/>
-                        <Border x:Name="NoWebView" Background="#0B0E14" Visibility="Collapsed">
-                            <TextBlock Text="{l:L Screens_NoWebView}" Style="{StaticResource Hint}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                        <!-- Plain panel background without WebView2; the explanation is NoWebViewNote above the frame. -->
+                        <Border x:Name="NoWebView" Background="#0B0E14" Visibility="Collapsed"/>
                         <Canvas x:Name="GridLines" IsHitTestVisible="False"/>
                         <Canvas x:Name="Overlay" Background="Transparent" AllowDrop="True"
                                 DragOver="Overlay_DragOver" Drop="Overlay_Drop" MouseLeftButtonDown="Overlay_MouseDown">

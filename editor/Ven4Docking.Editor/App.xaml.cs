@@ -8,7 +8,8 @@ namespace Ven4Docking.Editor;
 /// <summary>
 /// Command line: <c>--section Phones|Screens|Apps|Servers|Ai|Settings|About</c> opens a section,
 /// <c>--wizard</c> opens the phone wizard (used for screenshots and by the tray menu of the agent).
-/// Environment: VEN4DOCKING_HOME (data folder), VEN4DOCKING_ADB_ONLY (adb serial prefix guard).
+/// Environment: VEN4DOCKING_HOME (data folder), VEN4DOCKING_ADB_ONLY (adb serial prefix guard),
+/// VEN4DOCKING_NO_UPDATE_CHECK=1 (no GitHub check), VEN4DOCKING_NO_WEBVIEW=1 (act as if WebView2 Runtime were missing).
 /// </summary>
 public partial class App : Application
 {

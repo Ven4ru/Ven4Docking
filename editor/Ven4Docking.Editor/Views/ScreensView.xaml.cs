@@ -83,8 +83,12 @@ public partial class ScreensView : UserControl
 
     private Microsoft.Web.WebView2.Wpf.WebView2CompositionControl Preview = null!;
 
+    /// <summary>VEN4DOCKING_NO_WEBVIEW=1 behaves as if the runtime were missing (screenshots, UI checks).</summary>
+    public const string NoWebViewVariable = "VEN4DOCKING_NO_WEBVIEW";
+
     private static bool WebViewRuntimeInstalled()
     {
+        if (Environment.GetEnvironmentVariable(NoWebViewVariable) == "1") return false;
         try { return !string.IsNullOrEmpty(CoreWebView2Environment.GetAvailableBrowserVersionString()); }
         catch (Exception ex) when (ex is WebView2RuntimeNotFoundException or System.Runtime.InteropServices.COMException or DllNotFoundException) { return false; }
     }
@@ -94,7 +98,7 @@ public partial class ScreensView : UserControl
         if (_vm is null || _webReady) return;
         if (!WebViewRuntimeInstalled())
         {
-            NoWebView.Visibility = Visibility.Visible;
+            ShowNoWebView();
             return;
         }
         try
@@ -121,9 +125,15 @@ public partial class ScreensView : UserControl
         }
         catch (Exception ex) when (ex is WebView2RuntimeNotFoundException or InvalidOperationException or System.Runtime.InteropServices.COMException)
         {
-            NoWebView.Visibility = Visibility.Visible;
+            ShowNoWebView();
             PreviewHost.Content = null;
         }
+    }
+
+    private void ShowNoWebView()
+    {
+        NoWebView.Visibility = Visibility.Visible;
+        NoWebViewNote.Visibility = Visibility.Visible;
     }
 
     private Task NavigateAsync()
