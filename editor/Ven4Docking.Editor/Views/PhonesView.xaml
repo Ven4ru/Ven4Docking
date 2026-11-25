@@ -74,7 +74,7 @@
                                 <Ellipse DockPanel.Dock="Left" Width="9" Height="9" Margin="0,0,10,0" VerticalAlignment="Center"
                                          Fill="{Binding Online, Converter={StaticResource StateBrushConv}}"/>
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
                                     <TextBlock Style="{StaticResource Hint}">
                                         <Run Text="{Binding Model, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Android, Mode=OneWay}"/>
                                     </TextBlock>
@@ -92,17 +92,41 @@
                                     <Button DockPanel.Dock="Right" Content="{l:L Phone_Revoke}" Style="{StaticResource DangerButton}" VerticalAlignment="Top"
                                             Command="{Binding DataContext.RevokeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Name}" Style="{StaticResource H2}" FontSize="16"/>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource H2}" FontSize="16" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
                                         <TextBlock Text="{Binding LinkText}" Style="{StaticResource Hint}"/>
                                     </StackPanel>
                                 </DockPanel>
-                                <UniformGrid Columns="5" Margin="0,14,0,0">
-                                    <StackPanel><TextBlock Text="{l:L Phone_Model}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Model}" FontSize="14"/></StackPanel>
-                                    <StackPanel><TextBlock Text="Android" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Android}" FontSize="14"/></StackPanel>
-                                    <StackPanel><TextBlock Text="WebView" Style="{StaticResource Hint}"/><TextBlock Text="{Binding WebView}" FontSize="14"/></StackPanel>
-                                    <StackPanel><TextBlock Text="{l:L Phone_Battery}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Battery}" FontSize="14"/></StackPanel>
-                                    <StackPanel><TextBlock Text="{l:L Phone_Temp}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Temp}" FontSize="14"/></StackPanel>
-                                </UniformGrid>
+                                <!-- Proportional columns: a long model name («Xiaomi Redmi Note 12 Pro+ 5G») wraps inside its
+                                     own column instead of running under «Android»; the other values trim with a tooltip. -->
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1.2*"/>
+                                        <ColumnDefinition Width="1.4*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:L Phone_Model}" Style="{StaticResource Hint}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Model}" FontSize="14" TextWrapping="Wrap" ToolTip="{Binding Model}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                                        <TextBlock Text="Android" Style="{StaticResource Hint}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Android}" FontSize="14" TextTrimming="CharacterEllipsis" ToolTip="{Binding Android}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,16,0">
+                                        <TextBlock Text="WebView" Style="{StaticResource Hint}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding WebView}" FontSize="14" TextTrimming="CharacterEllipsis" ToolTip="{Binding WebView}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:L Phone_Battery}" Style="{StaticResource Hint}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Battery}" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Text="{l:L Phone_Temp}" Style="{StaticResource Hint}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Temp}" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </Border>
 
