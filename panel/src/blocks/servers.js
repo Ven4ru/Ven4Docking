@@ -12,8 +12,30 @@ export function render(el, opts) {
   const f = frame(el, 'servers', 'Серверы');
   const grid = h('div', 'sv-grid');
   f.body.appendChild(grid);
-  let html = '', cardW = '100%';
+  let html = '', cardW = '100%', baseCols = 1, fitFor = '';
   const o = (k, d) => (opts[k] != null ? opts[k] : d);
+
+  // All servers must fit the cell: columns by width first, then without the LA line, one more column,
+  // and smaller text. Measured in place (fonts differ between phones), only when the count or size changes.
+  function fit(n) {
+    const bw = f.body.clientWidth, bh = f.body.clientHeight;
+    if (!bw || !bh) return;
+    const fontPx = parseFloat(window.getComputedStyle(f.card).fontSize) || 12;
+    const more = Math.min(n, baseCols + 1);
+    const tries = [[baseCols, false, 1], [baseCols, true, 1]];
+    if (more > baseCols && bw / more >= fontPx * 12) tries.push([more, true, 1], [more, true, 0.9], [more, true, 0.8]);
+    else tries.push([baseCols, true, 0.9], [baseCols, true, 0.8]);
+    const cells = grid.children;
+    for (let i = 0; i < tries.length; i++) {
+      const t = tries[i];
+      cardW = (100 / t[0]).toFixed(4) + '%';
+      grid.className = 'sv-grid' + (t[1] ? ' compact' : '');
+      grid.style.fontSize = t[2] === 1 ? '' : t[2] + 'em';
+      for (let j = 0; j < cells.length; j++) cells[j].style.width = cardW;
+      if (grid.scrollHeight <= bh + 1) return;
+    }
+    // still too many: the smallest variant stays and the grid scrolls
+  }
 
   return {
     update(s, errors) {
@@ -48,11 +70,18 @@ export function render(el, opts) {
           + '<span class="pg num" style="color:' + pc + '">' + ping + '</span></div><div class="bars">' + bars + '</div>' + ft + '</div></div>';
       }).join('');
       if (out !== html) grid.innerHTML = html = out;
+      const key = String(list.length);
+      if (key !== fitFor) {
+        fitFor = key;
+        fit(list.length);
+        html = ''; // the next update renders with the chosen width
+      }
     },
     resize(w) {
       const fontPx = parseFloat(window.getComputedStyle(f.card).fontSize) || 12;
-      const cols = Math.max(1, Math.floor((w - 8) / (fontPx * 17)));
-      cardW = (100 / cols).toFixed(4) + '%';
+      baseCols = Math.max(1, Math.floor((w - 8) / (fontPx * 17)));
+      cardW = (100 / baseCols).toFixed(4) + '%';
+      fitFor = ''; // re-fit on the next update
       html = ''; // force re-render with the new width on next update
     },
   };

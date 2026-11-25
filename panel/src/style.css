@@ -237,6 +237,11 @@ body {
 .sv .ft { font-size: .85em; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sv .ft.bad { color: var(--hot); }
 .sv.down { border-color: #4a2329; }
+/* servers: more servers than the cell holds — no LA line, tighter cards */
+.sv-grid.compact .sv { padding: .5em .7em; }
+.sv-grid.compact .sv > * + * { margin-top: .35em; }
+.sv-grid.compact .sv .bars > * + * { margin-top: .25em; }
+.sv-grid.compact .sv .ft:not(.bad) { display: none; }
 .sv.old .bars { opacity: .35; }
 
 /* phone */
