@@ -10,6 +10,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- Venchik with a phone; .ico made from assets/icon/ven4docking-1024.png by tools/make_icons.py -->
     <ApplicationIcon>..\..\assets\icon\ven4docking.ico</ApplicationIcon>
+    <!-- .NET 10 marks the apphost CET_COMPAT; on Windows 10 22H2 without updates (e.g. 19045.2965) the editor then
+         dies at start with 0x80131506 (checked on a clean VM). Same fix as the Ven4Tools legacy edition. -->
+    <CETCompat>false</CETCompat>
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="..\..\assets\icon\ven4docking.ico" Link="Assets\ven4docking.ico" />
