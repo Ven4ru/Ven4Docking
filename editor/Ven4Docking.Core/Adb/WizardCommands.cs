@@ -154,6 +154,25 @@ public static class WizardCommandBuilder
 
     public static AdbCommand WebViewQuery() => AdbCommand.Shell("dumpsys", "webviewupdate");
 
+    /// <summary>
+    /// Fallback for Android 7.x, where <c>dumpsys webviewupdate</c> prints nothing (checked on API 24): versionName of
+    /// the WebView providers in the order Android 7–9 prefers them (Chrome, then the WebView packages).
+    /// Output lines: <c>&lt;package&gt; versionName=&lt;version&gt;</c>.
+    /// </summary>
+    public static AdbCommand WebViewPackagesQuery() => AdbCommand.Shell(
+        "for p in com.android.chrome com.google.android.webview com.android.webview; do " +
+        "v=$(dumpsys package $p | grep -m 1 versionName=); [ -n \"$v\" ] && echo \"$p $v\"; done");
+
+    private static readonly Regex WebViewPackageLine =
+        new(@"^\s*(?<p>[\w.]+)\s+versionName=(?<v>\S+)", RegexOptions.Compiled | RegexOptions.Multiline);
+
+    /// <summary>Parses <see cref="WebViewPackagesQuery"/> output → the first (preferred) provider found.</summary>
+    public static (string Package, string Version)? ParseWebViewPackages(string output)
+    {
+        var m = WebViewPackageLine.Match(output);
+        return m.Success ? (m.Groups["p"].Value, m.Groups["v"].Value) : null;
+    }
+
     public static AdbCommand PackageInstalledCheck() => AdbCommand.Shell("pm", "path", Package);
 
     /// <summary>The settings/appops write was refused by the OEM shell (realme/OPPO, Xiaomi).</summary>

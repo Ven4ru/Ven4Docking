@@ -159,6 +159,18 @@ public class WizardCommandTests
     }
 
     [Fact]
+    public void WebView_version_falls_back_to_provider_packages_on_android_7()
+    {
+        // real output of WebViewPackagesQuery on the API 24 emulator (dumpsys webviewupdate is empty there)
+        var wv = WizardCommandBuilder.ParseWebViewPackages("com.android.webview     versionName=52.0.2743.100\r\n");
+        Assert.Equal(("com.android.webview", "52.0.2743.100"), wv);
+        Assert.Equal(("com.android.chrome", "64.0.3282.137"),
+            WizardCommandBuilder.ParseWebViewPackages("com.android.chrome versionName=64.0.3282.137\ncom.android.webview versionName=52.0.2743.100\n"));
+        Assert.Null(WizardCommandBuilder.ParseWebViewPackages(""));
+        Assert.Equal("shell", WizardCommandBuilder.WebViewPackagesQuery().Args[0]);
+    }
+
+    [Fact]
     public void Permission_denial_is_recognised()
     {
         Assert.True(WizardCommandBuilder.IsPermissionDenied(

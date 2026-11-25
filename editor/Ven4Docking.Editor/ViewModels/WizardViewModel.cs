@@ -169,6 +169,9 @@ public sealed partial class WizardViewModel : ObservableObject
         SetupRows.Clear();
         SetupDone = false;
         TokenSent = false;
+        // a second phone must not inherit the previous phone's name (it became the name of the new panel)
+        PhoneName = "";
+        AgentUrl = "";
         PermissionDenied = false;
         WebViewText = "";
         WebViewOld = false;
@@ -545,6 +548,12 @@ public sealed partial class WizardViewModel : ObservableObject
         {
             var r = await _adb.RunAsync(SelectedDevice.Serial, WizardCommandBuilder.WebViewQuery());
             var wv = WizardCommandBuilder.ParseWebView(r.StdOut);
+            if (wv is null)
+            {
+                // Android 7.x: dumpsys webviewupdate is empty — read the provider packages' versions instead
+                var p = await _adb.RunAsync(SelectedDevice.Serial, WizardCommandBuilder.WebViewPackagesQuery());
+                wv = WizardCommandBuilder.ParseWebViewPackages(p.StdOut);
+            }
             int? major = WizardCommandBuilder.MajorVersion(wv?.Version);
             WebViewOld = major is < WizardCommandBuilder.FullPanelMinWebView;
             WebViewText = wv is null ? Loc.T("WebView_Unknown") : Loc.F("WebView_Version", wv.Value.Package, wv.Value.Version);
