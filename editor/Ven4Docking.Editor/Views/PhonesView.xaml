@@ -1,0 +1,143 @@
+<UserControl x:Class="Ven4Docking.Editor.Views.PhonesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Ven4Docking.Editor.Services"
+             xmlns:v="clr-namespace:Ven4Docking.Editor.Views">
+    <Grid>
+        <DockPanel Margin="24,18,24,18">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Content="{l:L Common_Refresh}" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
+                    <Button Content="{l:L Phones_Connect}" Command="{Binding OpenWizardCommand}" Style="{StaticResource PrimaryButton}" Padding="16,0"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="{l:L Section_Phones}" Style="{StaticResource H1}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{l:L Phones_Subtitle}" Style="{StaticResource Hint}"/>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Pairing requests: «Подключить realme C11? Код 4821» -->
+            <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Pairs}" Visibility="{Binding HasPairs, Converter={StaticResource Vis}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Note}">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Button Content="{l:L Pair_Accept}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"
+                                            Command="{Binding DataContext.AcceptPairCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                    <Button Content="{l:L Pair_Deny}" Style="{StaticResource DangerButton}"
+                                            Command="{Binding DataContext.DenyPairCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                </StackPanel>
+                                <TextBlock Text="&#xE8EA;" Style="{StaticResource Icon}" Foreground="{DynamicResource AccentColor}" Margin="0,0,10,0"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Text}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding Details}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Border DockPanel.Dock="Top" Style="{StaticResource WarnNote}" Visibility="{Binding AgentOnline, Converter={StaticResource Vis}, ConverterParameter=invert}">
+                <TextBlock Text="{l:L Phones_AgentOffline}" TextWrapping="Wrap" FontSize="12"/>
+            </Border>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" Foreground="{DynamicResource StatusInfo}" Margin="0,0,0,8"
+                       Visibility="{Binding Message, Converter={StaticResource Vis}}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- empty state -->
+                <Border Grid.ColumnSpan="2" Style="{StaticResource Card}" VerticalAlignment="Top"
+                        Visibility="{Binding HasPhones, Converter={StaticResource Vis}, ConverterParameter=invert}">
+                    <StackPanel>
+                        <TextBlock Text="{l:L Phones_Empty}" Style="{StaticResource H2}"/>
+                        <TextBlock Text="{l:L Phones_EmptyHint}" Style="{StaticResource Hint}" Margin="0,0,0,12"/>
+                        <Border Style="{StaticResource Note}" Margin="0">
+                            <StackPanel>
+                                <TextBlock Text="{l:L Cable_Title}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{l:L Cable_Text}" Style="{StaticResource Hint}" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <ListBox ItemsSource="{Binding Phones}" SelectedItem="{Binding Selected}" Margin="0,0,16,0"
+                         Visibility="{Binding HasPhones, Converter={StaticResource Vis}}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <Ellipse DockPanel.Dock="Left" Width="9" Height="9" Margin="0,0,10,0" VerticalAlignment="Center"
+                                         Fill="{Binding Online, Converter={StaticResource StateBrushConv}}"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                    <TextBlock Style="{StaticResource Hint}">
+                                        <Run Text="{Binding Model, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Android, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding HasPhones, Converter={StaticResource Vis}}">
+                    <StackPanel DataContext="{Binding Selected}">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="{l:L Phone_Revoke}" Style="{StaticResource DangerButton}" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.RevokeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource H2}" FontSize="16"/>
+                                        <TextBlock Text="{Binding LinkText}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                                <UniformGrid Columns="5" Margin="0,14,0,0">
+                                    <StackPanel><TextBlock Text="{l:L Phone_Model}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Model}" FontSize="14"/></StackPanel>
+                                    <StackPanel><TextBlock Text="Android" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Android}" FontSize="14"/></StackPanel>
+                                    <StackPanel><TextBlock Text="WebView" Style="{StaticResource Hint}"/><TextBlock Text="{Binding WebView}" FontSize="14"/></StackPanel>
+                                    <StackPanel><TextBlock Text="{l:L Phone_Battery}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Battery}" FontSize="14"/></StackPanel>
+                                    <StackPanel><TextBlock Text="{l:L Phone_Temp}" Style="{StaticResource Hint}"/><TextBlock Text="{Binding Temp}" FontSize="14"/></StackPanel>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Note}">
+                            <StackPanel>
+                                <TextBlock Text="{l:L Cable_Title}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{l:L Cable_Text}" Style="{StaticResource Hint}" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{l:L Phone_NightTitle}" Style="{StaticResource H2}"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="{l:L Phone_NightFrom}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBox Width="70" Text="{Binding NightFrom, UpdateSourceTrigger=LostFocus}"/>
+                                    <TextBlock Text="{l:L Phone_NightTo}" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                    <TextBox Width="70" Text="{Binding NightTo, UpdateSourceTrigger=LostFocus}"/>
+                                    <TextBlock Text="{l:L Phone_NightBrightness}" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                    <Slider Width="140" Minimum="0" Maximum="50" Value="{Binding NightBrightness}" VerticalAlignment="Center"
+                                            IsSnapToTickEnabled="True" TickFrequency="1"/>
+                                    <TextBlock Text="{Binding NightBrightness, StringFormat={}{0:0} %}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                </StackPanel>
+                                <CheckBox Content="{l:L Phone_DimOffline}" IsChecked="{Binding DimWhenPcOffline}"/>
+                                <CheckBox Content="{l:L Phone_BurnIn}" IsChecked="{Binding BurnInShift}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+
+        <!-- Wizard overlay -->
+        <Border Background="{DynamicResource WindowBackground}" Visibility="{Binding IsWizardOpen, Converter={StaticResource Vis}}">
+            <v:WizardView DataContext="{Binding Wizard}"/>
+        </Border>
+    </Grid>
+</UserControl>

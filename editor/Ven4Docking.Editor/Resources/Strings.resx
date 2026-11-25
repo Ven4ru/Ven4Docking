@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- shell -->
+  <data name="App_Subtitle" xml:space="preserve"><value>Редактор панели</value></data>
+  <data name="Section_Phones" xml:space="preserve"><value>Телефоны</value></data>
+  <data name="Section_Screens" xml:space="preserve"><value>Экраны</value></data>
+  <data name="Section_Apps" xml:space="preserve"><value>Приложения</value></data>
+  <data name="Section_Servers" xml:space="preserve"><value>Серверы</value></data>
+  <data name="Section_Ai" xml:space="preserve"><value>Нейросети</value></data>
+  <data name="Section_Settings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="Section_About" xml:space="preserve"><value>О программе</value></data>
+  <data name="Top_Phone" xml:space="preserve"><value>Телефон</value></data>
+  <data name="Top_Undo" xml:space="preserve"><value>Отменить</value></data>
+  <data name="Top_Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="Agent_Online" xml:space="preserve"><value>Агент работает · {0} · порт {1}</value></data>
+  <data name="Agent_Offline" xml:space="preserve"><value>Агент не запущен</value></data>
+  <data name="Agent_Start" xml:space="preserve"><value>Запустить</value></data>
+  <data name="Agent_Starting" xml:space="preserve"><value>Запускаю агент…</value></data>
+  <data name="Agent_StartFailed" xml:space="preserve"><value>Агент не ответил. Проверьте журнал agent.log в папке данных.</value></data>
+  <data name="Agent_NotFound" xml:space="preserve"><value>Не найден ven4docking-agent.exe. Переустановите Ven4Docking.</value></data>
+  <data name="Agent_NeededForThis" xml:space="preserve"><value>Для этого нужен запущенный агент.</value></data>
+  <data name="Storage_Agent" xml:space="preserve"><value>Сохранение: агент, порт {0}</value></data>
+  <data name="Storage_Files" xml:space="preserve"><value>Сохранение в файлы: {0}</value></data>
+  <data name="Saved_Agent" xml:space="preserve"><value>Сохранено в агент, версия раскладки {0}. Панель перестроится сама.</value></data>
+  <data name="Saved_File" xml:space="preserve"><value>Сохранено в файл {0}</value></data>
+  <data name="SaveError_Overlap" xml:space="preserve"><value>Не сохранено: блоки пересекаются ({0}).</value></data>
+  <data name="SaveError_Bounds" xml:space="preserve"><value>Не сохранено: блок выходит за сетку ({0}).</value></data>
+  <data name="SaveError_Screens" xml:space="preserve"><value>Не сохранено: экранов должно быть от 1 до 10.</value></data>
+  <data name="SaveError_Other" xml:space="preserve"><value>Не сохранено: {0}</value></data>
+  <data name="Ask_SaveBeforeSwitch" xml:space="preserve"><value>Есть несохранённые изменения. Сохранить перед переключением телефона?</value></data>
+  <data name="Ask_SaveOnExit" xml:space="preserve"><value>Есть несохранённые изменения. Сохранить перед выходом?</value></data>
+  <data name="Phone_Draft" xml:space="preserve"><value>Черновик (телефона ещё нет)</value></data>
+
+  <!-- common -->
+  <data name="Common_Refresh" xml:space="preserve"><value>Обновить</value></data>
+  <data name="Common_Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Common_Up" xml:space="preserve"><value>Выше</value></data>
+  <data name="Common_Down" xml:space="preserve"><value>Ниже</value></data>
+  <data name="Common_Back" xml:space="preserve"><value>Назад</value></data>
+  <data name="Common_Next" xml:space="preserve"><value>Далее</value></data>
+  <data name="Common_Finish" xml:space="preserve"><value>Готово</value></data>
+  <data name="Common_Retry" xml:space="preserve"><value>Повторить</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Выбрать…</value></data>
+
+  <!-- blocks -->
+  <data name="Block_clock" xml:space="preserve"><value>Часы</value></data>
+  <data name="Block_weather" xml:space="preserve"><value>Погода</value></data>
+  <data name="Block_cpu" xml:space="preserve"><value>Процессор</value></data>
+  <data name="Block_gpu" xml:space="preserve"><value>Видеокарта</value></data>
+  <data name="Block_ram" xml:space="preserve"><value>Память</value></data>
+  <data name="Block_disks" xml:space="preserve"><value>Диски</value></data>
+  <data name="Block_net" xml:space="preserve"><value>Сеть</value></data>
+  <data name="Block_ai" xml:space="preserve"><value>Нейросети</value></data>
+  <data name="Block_apps" xml:space="preserve"><value>Приложения</value></data>
+  <data name="Block_media" xml:space="preserve"><value>Медиа</value></data>
+  <data name="Block_servers" xml:space="preserve"><value>Серверы</value></data>
+  <data name="Block_phone" xml:space="preserve"><value>Телефон</value></data>
+  <data name="Template_classic" xml:space="preserve"><value>Классика</value></data>
+  <data name="Template_pc-monitor" xml:space="preserve"><value>Монитор ПК</value></data>
+  <data name="Template_apps-only" xml:space="preserve"><value>Только приложения</value></data>
+
+  <!-- screens -->
+  <data name="Screens_Title" xml:space="preserve"><value>Экраны</value></data>
+  <data name="Screens_BlockCount" xml:space="preserve"><value>блоков: {0}</value></data>
+  <data name="Screens_RenameHint" xml:space="preserve"><value>Название экрана</value></data>
+  <data name="Screens_Add" xml:space="preserve"><value>Добавить экран</value></data>
+  <data name="Screens_Delete" xml:space="preserve"><value>Удалить экран</value></data>
+  <data name="Screens_Max" xml:space="preserve"><value>Экранов не может быть больше 10.</value></data>
+  <data name="Screens_NewName" xml:space="preserve"><value>Экран {0}</value></data>
+  <data name="Screens_Templates" xml:space="preserve"><value>Шаблон (заменит все экраны):</value></data>
+  <data name="Screens_Palette" xml:space="preserve"><value>Блоки</value></data>
+  <data name="Screens_PaletteHint" xml:space="preserve"><value>Перетащите блок на сетку или нажмите на него дважды.</value></data>
+  <data name="Screens_PaletteItemHint" xml:space="preserve"><value>Перетащите на сетку</value></data>
+  <data name="Screens_Preview" xml:space="preserve"><value>Предпросмотр</value></data>
+  <data name="Screens_PreviewHint" xml:space="preserve"><value>Сетка 8×4 в разрешении телефона. Блоки двигаются мышью, размер — уголком справа внизу.</value></data>
+  <data name="Screens_NoRoom" xml:space="preserve"><value>На этом экране нет свободного места — уменьшите или удалите блок.</value></data>
+  <data name="Screens_NoWebView" xml:space="preserve"><value>Не найден WebView2 Runtime — предпросмотр недоступен, сетка работает.</value></data>
+  <data name="Screens_CannotSave" xml:space="preserve"><value>Сохранить нельзя:</value></data>
+  <data name="Screens_SkeletonNote" xml:space="preserve"><value>Схема блоков · настоящая панель появится, когда агент запущен или собрана panel/dist</value></data>
+  <data name="Issue_Overlap" xml:space="preserve"><value>«{0}»: пересекаются {1}</value></data>
+  <data name="Issue_Bounds" xml:space="preserve"><value>«{0}»: {1} выходит за сетку</value></data>
+  <data name="Issue_Screens" xml:space="preserve"><value>Экранов должно быть от 1 до 10</value></data>
+  <data name="Issue_Other" xml:space="preserve"><value>Ошибка раскладки: {0}</value></data>
+  <data name="Props_Title" xml:space="preserve"><value>Настройки блока</value></data>
+  <data name="Props_Empty" xml:space="preserve"><value>Выберите блок на сетке или перетащите новый из списка слева.</value></data>
+  <data name="Props_Position" xml:space="preserve"><value>Положение и размер (в клетках)</value></data>
+  <data name="Props_W" xml:space="preserve"><value>Ш</value></data>
+  <data name="Props_H" xml:space="preserve"><value>В</value></data>
+  <data name="Props_Delete" xml:space="preserve"><value>Удалить блок</value></data>
+  <data name="Opts_ClockWeather" xml:space="preserve"><value>Показывать погоду</value></data>
+  <data name="Opts_Clock24" xml:space="preserve"><value>24-часовой формат</value></data>
+  <data name="Opts_Apps" xml:space="preserve"><value>Какие приложения (порядок — как в разделе «Приложения»)</value></data>
+  <data name="Opts_Servers" xml:space="preserve"><value>Какие серверы</value></data>
+  <data name="Opts_Sources" xml:space="preserve"><value>Какие источники</value></data>
+  <data name="Opts_Buttons" xml:space="preserve"><value>Какие кнопки</value></data>
+  <data name="Opts_EmptyList" xml:space="preserve"><value>Список пуст — добавьте элементы в своём разделе.</value></data>
+  <data name="Opts_Json" xml:space="preserve"><value>Все настройки блока (JSON)</value></data>
+  <data name="Opts_Apply" xml:space="preserve"><value>Применить</value></data>
+  <data name="Opts_NotObject" xml:space="preserve"><value>Нужен объект JSON: { … }</value></data>
+  <data name="Media_prev" xml:space="preserve"><value>Предыдущий</value></data>
+  <data name="Media_playpause" xml:space="preserve"><value>Пуск / пауза</value></data>
+  <data name="Media_next" xml:space="preserve"><value>Следующий</value></data>
+  <data name="Media_stop" xml:space="preserve"><value>Стоп</value></data>
+  <data name="Media_volup" xml:space="preserve"><value>Громче</value></data>
+  <data name="Media_voldown" xml:space="preserve"><value>Тише</value></data>
+  <data name="Media_mute" xml:space="preserve"><value>Без звука</value></data>
+
+  <!-- phones -->
+  <data name="Phones_Subtitle" xml:space="preserve"><value>Подключённые панели, запросы привязки и мастер подключения.</value></data>
+  <data name="Phones_Connect" xml:space="preserve"><value>Подключить телефон</value></data>
+  <data name="Phones_AgentOffline" xml:space="preserve"><value>Агент не запущен: список телефонов взят из config.json, запросы привязки и отзыв недоступны.</value></data>
+  <data name="Phones_Empty" xml:space="preserve"><value>Телефонов пока нет</value></data>
+  <data name="Phones_EmptyHint" xml:space="preserve"><value>Нажмите «Подключить телефон» — мастер поставит лаунчер и всё настроит. Или откройте Ven4Docking на телефоне и подтвердите код здесь.</value></data>
+  <data name="Pair_Question" xml:space="preserve"><value>Подключить {0}? Код {1}</value></data>
+  <data name="Pair_Accept" xml:space="preserve"><value>Подключить</value></data>
+  <data name="Pair_Deny" xml:space="preserve"><value>Отклонить</value></data>
+  <data name="Pair_Accepted" xml:space="preserve"><value>{0} подключён.</value></data>
+  <data name="Phone_Revoke" xml:space="preserve"><value>Отозвать</value></data>
+  <data name="Phone_RevokeConfirm" xml:space="preserve"><value>Отозвать доступ телефона «{0}»? Панель перестанет получать данные, пока телефон не привяжут снова.</value></data>
+  <data name="Phone_Revoked" xml:space="preserve"><value>Доступ «{0}» отозван.</value></data>
+  <data name="Phone_Model" xml:space="preserve"><value>Модель</value></data>
+  <data name="Phone_Battery" xml:space="preserve"><value>Заряд</value></data>
+  <data name="Phone_Temp" xml:space="preserve"><value>Батарея</value></data>
+  <data name="Phone_Online" xml:space="preserve"><value>На связи</value></data>
+  <data name="Phone_Offline" xml:space="preserve"><value>Не на связи</value></data>
+  <data name="Phone_LastSeen" xml:space="preserve"><value>Был на связи {0}</value></data>
+  <data name="Phone_NotInAgent" xml:space="preserve"><value>Данные появятся, когда агент запущен</value></data>
+  <data name="Phone_NightTitle" xml:space="preserve"><value>Ночь и яркость</value></data>
+  <data name="Phone_NightFrom" xml:space="preserve"><value>Ночь с</value></data>
+  <data name="Phone_NightTo" xml:space="preserve"><value>до</value></data>
+  <data name="Phone_NightBrightness" xml:space="preserve"><value>яркость</value></data>
+  <data name="Phone_DimOffline" xml:space="preserve"><value>Приглушать, когда ПК не отвечает</value></data>
+  <data name="Phone_BurnIn" xml:space="preserve"><value>Сдвигать изображение против выгорания</value></data>
+  <data name="Cable_Title" xml:space="preserve"><value>По кабелю надёжнее</value></data>
+  <data name="Cable_Text" xml:space="preserve"><value>Когда телефон подключён к ПК кабелем, Ven4Docking всегда может обновить лаунчер и вернуть настройки. Wi-Fi-отладка выключается после перезагрузки телефона или смены сети. Без отладки настройки придётся делать вручную.</value></data>
+
+  <!-- wizard -->
+  <data name="Wizard_StepCounter" xml:space="preserve"><value>Шаг {0} из {1}</value></data>
+  <data name="Wizard_Step1_Title" xml:space="preserve"><value>Как подключить телефон</value></data>
+  <data name="Wizard_Step2_Title" xml:space="preserve"><value>Отладка и марка телефона</value></data>
+  <data name="Wizard_Step3_Title" xml:space="preserve"><value>Установка и настройка</value></data>
+  <data name="Wizard_Step4_Title" xml:space="preserve"><value>Привязка к этому ПК</value></data>
+  <data name="Wizard_Step5_Title" xml:space="preserve"><value>Проверка WebView</value></data>
+  <data name="Wizard_Step6_Title" xml:space="preserve"><value>Аккумулятор</value></data>
+  <data name="Wizard_Step7_Title" xml:space="preserve"><value>Готово</value></data>
+  <data name="Wizard_Method" xml:space="preserve"><value>Способ подключения</value></data>
+  <data name="Wizard_Usb" xml:space="preserve"><value>Кабель USB</value></data>
+  <data name="Wizard_UsbHint" xml:space="preserve"><value>Android 7 и новее. Рекомендуем.</value></data>
+  <data name="Wizard_Wifi" xml:space="preserve"><value>Wi-Fi-отладка</value></data>
+  <data name="Wizard_WifiHint" xml:space="preserve"><value>Только Android 11 и новее, сопряжение по коду.</value></data>
+  <data name="Adb_NeedTitle" xml:space="preserve"><value>Нужны Android platform-tools</value></data>
+  <data name="Adb_NeedText" xml:space="preserve"><value>Чтобы настроить телефон, нужен adb от Google. Его нельзя положить в наш установщик по лицензии Google, поэтому Ven4Docking скачает его с dl.google.com — только с вашего согласия.</value></data>
+  <data name="Adb_Download" xml:space="preserve"><value>Скачать platform-tools…</value></data>
+  <data name="Adb_Found" xml:space="preserve"><value>adb готов:</value></data>
+  <data name="Adb_Consent_Title" xml:space="preserve"><value>Скачать Android platform-tools?</value></data>
+  <data name="Adb_Consent_Text" xml:space="preserve"><value>Ven4Docking скачает Android SDK Platform-Tools (около 7 МБ) с сайта Google:
+https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+
+Программы будут сохранены в:
+{0}
+
+Это программы Google, на них действует лицензия Google (Android SDK). Скачивая, вы принимаете её условия. Ничего другого не отправляется.
+
+Скачать?</value></data>
+  <data name="Adb_Declined" xml:space="preserve"><value>Без platform-tools мастер не может настроить телефон. Можно настроить его вручную или вернуться к этому позже.</value></data>
+  <data name="Adb_Downloading" xml:space="preserve"><value>Скачиваю platform-tools…</value></data>
+  <data name="Adb_Ready" xml:space="preserve"><value>platform-tools установлены.</value></data>
+  <data name="Adb_DownloadFailed" xml:space="preserve"><value>Не удалось скачать platform-tools: {0}</value></data>
+  <data name="Wifi_Title" xml:space="preserve"><value>Сопряжение по Wi-Fi</value></data>
+  <data name="Wifi_Steps" xml:space="preserve"><value>На телефоне: «Для разработчиков» → «Беспроводная отладка» → «Подключить устройство с помощью кода». Введите адрес и код, которые покажет телефон, затем адрес из самого экрана «Беспроводная отладка».</value></data>
+  <data name="Wifi_PairAddress" xml:space="preserve"><value>Адрес и порт для сопряжения (например, 192.168.1.50:37123)</value></data>
+  <data name="Wifi_Code" xml:space="preserve"><value>Код</value></data>
+  <data name="Wifi_Pair" xml:space="preserve"><value>Сопрячь</value></data>
+  <data name="Wifi_ConnectAddress" xml:space="preserve"><value>Адрес и порт для подключения (с экрана «Беспроводная отладка»)</value></data>
+  <data name="Wifi_Connect" xml:space="preserve"><value>Подключить</value></data>
+  <data name="Wifi_FillPair" xml:space="preserve"><value>Введите адрес с портом и код сопряжения.</value></data>
+  <data name="Wifi_FillConnect" xml:space="preserve"><value>Введите адрес с портом для подключения.</value></data>
+  <data name="Wifi_Paired" xml:space="preserve"><value>Сопряжено. Теперь подключитесь по адресу с экрана «Беспроводная отладка».</value></data>
+  <data name="Wifi_PairFailed" xml:space="preserve"><value>Сопряжение не удалось: {0}</value></data>
+  <data name="Wifi_Connected" xml:space="preserve"><value>Подключено. Нажмите «Далее».</value></data>
+  <data name="Wifi_ConnectFailed" xml:space="preserve"><value>Подключиться не удалось: {0}</value></data>
+  <data name="Wizard_Brand" xml:space="preserve"><value>Марка телефона</value></data>
+  <data name="Wizard_BrandGeneric" xml:space="preserve"><value>обычный Android</value></data>
+  <data name="Wizard_BrandDetected" xml:space="preserve"><value>Инструкции для:</value></data>
+  <data name="Brand_Developer" xml:space="preserve"><value>Включите отладку по USB</value></data>
+  <data name="Brand_Toggles" xml:space="preserve"><value>Для этой марки нужно ещё</value></data>
+  <data name="Brand_Wifi" xml:space="preserve"><value>Беспроводная отладка</value></data>
+  <data name="Brand_KeepAlive" xml:space="preserve"><value>Чтобы телефон не закрывал панель (вручную)</value></data>
+  <data name="Brand_MayDiffer" xml:space="preserve"><value>Пункт может называться иначе — найдите его поиском по настройкам.</value></data>
+  <data name="Wizard_Devices" xml:space="preserve"><value>Телефоны по adb</value></data>
+  <data name="Wizard_NoDevices" xml:space="preserve"><value>Телефон не виден. Включите отладку по инструкции слева и подключите кабель.</value></data>
+  <data name="Wizard_Unauthorized" xml:space="preserve"><value>Подтвердите на телефоне «Разрешить отладку по USB?» и нажмите обновить.</value></data>
+  <data name="Wizard_DetectFailed" xml:space="preserve"><value>Не удалось прочитать версию Android.</value></data>
+  <data name="Wizard_TooOld" xml:space="preserve"><value>Android {0} не поддерживается: нужен Android 7 или новее.</value></data>
+  <data name="Wizard_Apk" xml:space="preserve"><value>Файл лаунчера Ven4Docking (APK)</value></data>
+  <data name="Wizard_ApkBrowse" xml:space="preserve"><value>Выберите APK лаунчера</value></data>
+  <data name="Wizard_ApkMissing" xml:space="preserve"><value>Файл APK не найден.</value></data>
+  <data name="Wizard_RunSetup" xml:space="preserve"><value>Установить и настроить</value></data>
+  <data name="Wizard_SetupHint" xml:space="preserve"><value>Команды подбираются под версию Android, результат каждой проверяется.</value></data>
+  <data name="Wizard_Item_install" xml:space="preserve"><value>Установка лаунчера</value></data>
+  <data name="Wizard_Item_home" xml:space="preserve"><value>Рабочий стол — Ven4Docking</value></data>
+  <data name="Wizard_Item_stayOn" xml:space="preserve"><value>Экран не гаснет на зарядке</value></data>
+  <data name="Wizard_Item_timeout" xml:space="preserve"><value>Тайм-аут экрана 30 минут</value></data>
+  <data name="Wizard_Item_noLock" xml:space="preserve"><value>Без блокировки экрана</value></data>
+  <data name="Wizard_Item_background" xml:space="preserve"><value>Работа в фоне без ограничений</value></data>
+  <data name="Wizard_Item_timeZone" xml:space="preserve"><value>Часовой пояс как у ПК</value></data>
+  <data name="Wizard_Item_animations" xml:space="preserve"><value>Анимации 0,5</value></data>
+  <data name="Wizard_Manual_NoLock" xml:space="preserve"><value>На Android 7 это делается вручную: «Настройки» → «Безопасность» → «Блокировка экрана» → «Нет».</value></data>
+  <data name="Wizard_Manual_TimeZone" xml:space="preserve"><value>Телефон не дал сменить пояс из ПК. Выставьте его вручную: «Настройки» → «Дата и время».</value></data>
+  <data name="Wizard_Manual_Generic" xml:space="preserve"><value>Сделайте это вручную в настройках телефона.</value></data>
+  <data name="Wizard_PermissionDenied" xml:space="preserve"><value>Телефон запретил менять настройки из ПК.</value></data>
+  <data name="Wizard_CheckFailed" xml:space="preserve"><value>Проверка не прошла: ожидалось «{0}», получено «{1}».</value></data>
+  <data name="Wizard_DeniedTitle" xml:space="preserve"><value>Оболочка телефона запрещает настройки по adb</value></data>
+  <data name="Wizard_SetupOk" xml:space="preserve"><value>Всё установлено и проверено.</value></data>
+  <data name="Wizard_SetupDenied" xml:space="preserve"><value>Часть настроек запрещена телефоном — смотрите подсказку и нажмите «Повторить».</value></data>
+  <data name="Wizard_SetupFailed" xml:space="preserve"><value>Часть шагов не прошла — смотрите подробности в списке.</value></data>
+  <data name="Wizard_TokenText" xml:space="preserve"><value>Редактор сам создаст ключ доступа для телефона и передаст его лаунчеру вместе с адресом ПК — код вводить не нужно. Телефон и ПК должны быть в одной сети.</value></data>
+  <data name="Wizard_PhoneName" xml:space="preserve"><value>Название телефона</value></data>
+  <data name="Wizard_AgentUrl" xml:space="preserve"><value>Адрес ПК для телефона</value></data>
+  <data name="Wizard_SendToken" xml:space="preserve"><value>Привязать и открыть панель</value></data>
+  <data name="Wizard_BadUrl" xml:space="preserve"><value>Адрес ПК указан неверно.</value></data>
+  <data name="Wizard_TokenSent" xml:space="preserve"><value>Телефон привязан, панель открывается.</value></data>
+  <data name="Wizard_TokenFailed" xml:space="preserve"><value>Не удалось привязать: {0}</value></data>
+  <data name="Wizard_ShowLog" xml:space="preserve"><value>Показать журнал команд</value></data>
+  <data name="WebView_Text" xml:space="preserve"><value>Панель работает внутри WebView телефона. На старых версиях она показывается упрощённо.</value></data>
+  <data name="WebView_Check" xml:space="preserve"><value>Проверить снова</value></data>
+  <data name="WebView_Version" xml:space="preserve"><value>{0}, версия {1}</value></data>
+  <data name="WebView_Unknown" xml:space="preserve"><value>Версию WebView узнать не удалось.</value></data>
+  <data name="WebView_Old" xml:space="preserve"><value>WebView старше 57: панель будет упрощённой (без CSS Grid). Если можно, обновите «Android System WebView» или Chrome.</value></data>
+  <data name="Charge_Text" xml:space="preserve"><value>Панель круглосуточно на зарядке. Чтобы аккумулятор не вздувался, держите заряд около 80 %:</value></data>
+  <data name="Done_Text" xml:space="preserve"><value>Телефон готов. Экраны и блоки настраиваются в разделе «Экраны» — изменения приходят на панель сами после «Сохранить».</value></data>
+  <data name="Ven4verse_Line" xml:space="preserve"><value>Ven4Docking — часть семейства Ven4verse.</value></data>
+  <data name="Ven4verse_Link" xml:space="preserve"><value>Семейство Ven4verse — ven4tools.ru</value></data>
+
+  <!-- apps -->
+  <data name="Apps_Subtitle" xml:space="preserve"><value>Что можно запускать с панели. Порядок — перетаскиванием.</value></data>
+  <data name="Apps_FromStart" xml:space="preserve"><value>Из меню «Пуск»</value></data>
+  <data name="Apps_AddExe" xml:space="preserve"><value>Программа (exe)</value></data>
+  <data name="Apps_AddUrl" xml:space="preserve"><value>Ссылка</value></data>
+  <data name="Apps_AddCommand" xml:space="preserve"><value>Команда</value></data>
+  <data name="Apps_ExeFilter" xml:space="preserve"><value>Программы и ярлыки</value></data>
+  <data name="Apps_NewUrl" xml:space="preserve"><value>Новая ссылка</value></data>
+  <data name="Apps_NewCommand" xml:space="preserve"><value>Новая команда</value></data>
+  <data name="Apps_Added" xml:space="preserve"><value>Добавлено: {0}</value></data>
+  <data name="Apps_ReorderHint" xml:space="preserve"><value>Перетащите строку, чтобы изменить порядок значков на панели.</value></data>
+  <data name="Apps_Empty" xml:space="preserve"><value>Список пуст. Добавьте программы из меню «Пуск».</value></data>
+  <data name="Apps_StartMenu" xml:space="preserve"><value>Меню «Пуск»</value></data>
+  <data name="Apps_Search" xml:space="preserve"><value>Поиск</value></data>
+  <data name="Apps_Scanning" xml:space="preserve"><value>Читаю меню «Пуск»…</value></data>
+  <data name="Apps_Add" xml:space="preserve"><value>Добавить</value></data>
+  <data name="Apps_SelectHint" xml:space="preserve"><value>Выберите приложение, чтобы изменить его.</value></data>
+  <data name="Apps_Title" xml:space="preserve"><value>Название на панели</value></data>
+  <data name="Apps_Target" xml:space="preserve"><value>Что запускать (путь, ссылка или команда)</value></data>
+  <data name="Apps_Args" xml:space="preserve"><value>Параметры</value></data>
+  <data name="Apps_RefreshIcon" xml:space="preserve"><value>Обновить значок</value></data>
+  <data name="Apps_SecurityNote" xml:space="preserve"><value>Панель может запускать только то, что есть в этом списке.</value></data>
+  <data name="AppKind_shortcut" xml:space="preserve"><value>ярлык</value></data>
+  <data name="AppKind_exe" xml:space="preserve"><value>программа</value></data>
+  <data name="AppKind_url" xml:space="preserve"><value>ссылка</value></data>
+  <data name="AppKind_command" xml:space="preserve"><value>команда</value></data>
+
+  <!-- servers -->
+  <data name="Servers_Subtitle" xml:space="preserve"><value>Серверы для блока «Серверы»: агент подключается по SSH вашим ключом из %USERPROFILE%\.ssh.</value></data>
+  <data name="Servers_Add" xml:space="preserve"><value>Добавить сервер</value></data>
+  <data name="Servers_Empty" xml:space="preserve"><value>Серверов нет.</value></data>
+  <data name="Servers_NewName" xml:space="preserve"><value>Сервер {0}</value></data>
+  <data name="Servers_Name" xml:space="preserve"><value>Название</value></data>
+  <data name="Servers_Host" xml:space="preserve"><value>Адрес</value></data>
+  <data name="Servers_Port" xml:space="preserve"><value>Порт SSH</value></data>
+  <data name="Servers_User" xml:space="preserve"><value>Пользователь</value></data>
+  <data name="Servers_Key" xml:space="preserve"><value>Ключ</value></data>
+  <data name="Servers_KeyHint" xml:space="preserve"><value>«auto» — id_ed25519 или id_rsa из %USERPROFILE%\.ssh. Ключ хоста проверяется по known_hosts.</value></data>
+  <data name="Servers_Test" xml:space="preserve"><value>Проверить подключение</value></data>
+  <data name="Servers_Testing" xml:space="preserve"><value>Проверяю…</value></data>
+  <data name="Servers_Ok" xml:space="preserve"><value>Подключение работает, пинг {0}.</value></data>
+  <data name="ServerErr_timeout" xml:space="preserve"><value>Сервер не ответил вовремя (таймаут).</value></data>
+  <data name="ServerErr_portClosed" xml:space="preserve"><value>Порт закрыт или сервер недоступен.</value></data>
+  <data name="ServerErr_keyRejected" xml:space="preserve"><value>Сервер не принял ключ.</value></data>
+  <data name="ServerErr_hostKeyMismatch" xml:space="preserve"><value>Ключ хоста не совпал с known_hosts — возможно, сервер переустановлен или это не тот сервер.</value></data>
+  <data name="ServerErr_hostKeyUnknown" xml:space="preserve"><value>Сервера нет в known_hosts. Подключитесь к нему один раз через ssh и проверьте отпечаток.</value></data>
+  <data name="ServerErr_noKey" xml:space="preserve"><value>Не найден SSH-ключ в %USERPROFILE%\.ssh.</value></data>
+  <data name="ServerErr_dns" xml:space="preserve"><value>Не удалось найти сервер по имени.</value></data>
+  <data name="ServerErr_other" xml:space="preserve"><value>Подключиться не удалось.</value></data>
+
+  <!-- ai -->
+  <data name="Ai_Subtitle" xml:space="preserve"><value>Источники лимитов для блока «Нейросети».</value></data>
+  <data name="Ai_SafetyNote" xml:space="preserve"><value>Ven4Docking читает только файлы, которые сами программы пишут на диск, и локальные API без аккаунта. Токены, пароли и закрытые адреса сервисов не используются — аккаунт не попадёт под блокировку.</value></data>
+  <data name="Ai_Show" xml:space="preserve"><value>Показывать</value></data>
+  <data name="Ai_Installed" xml:space="preserve"><value>найдено</value></data>
+  <data name="Ai_NotInstalled" xml:space="preserve"><value>не установлено</value></data>
+  <data name="Ai_Unknown" xml:space="preserve"><value>агент не запущен</value></data>
+  <data name="Ai_LastData" xml:space="preserve"><value>данные от {0}</value></data>
+  <data name="Ai_NoData" xml:space="preserve"><value>данных нет</value></data>
+  <data name="Ai_OfflineNote" xml:space="preserve"><value>Агент не запущен — показан список известных источников, вкл/выкл сохраняется в config.json.</value></data>
+  <data name="Ai_claude-code" xml:space="preserve"><value>Claude Code</value></data>
+  <data name="Ai_claude-desktop" xml:space="preserve"><value>Claude Desktop</value></data>
+  <data name="Ai_codex" xml:space="preserve"><value>Codex</value></data>
+  <data name="Ai_ollama" xml:space="preserve"><value>Ollama</value></data>
+  <data name="Ai_lmstudio" xml:space="preserve"><value>LM Studio</value></data>
+
+  <!-- settings -->
+  <data name="Settings_Look" xml:space="preserve"><value>Вид</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Тема</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Theme_teal" xml:space="preserve"><value>Бирюзовая</value></data>
+  <data name="Theme_green" xml:space="preserve"><value>Зелёная</value></data>
+  <data name="Theme_light" xml:space="preserve"><value>Светлая</value></data>
+  <data name="Settings_Weather" xml:space="preserve"><value>Погода</value></data>
+  <data name="Settings_CurrentCity" xml:space="preserve"><value>Город:</value></data>
+  <data name="Settings_NoCity" xml:space="preserve"><value>не выбран</value></data>
+  <data name="Settings_CityHint" xml:space="preserve"><value>Название города</value></data>
+  <data name="Settings_Find" xml:space="preserve"><value>Найти</value></data>
+  <data name="Settings_CityNotFound" xml:space="preserve"><value>Город не найден.</value></data>
+  <data name="Settings_CityError" xml:space="preserve"><value>Поиск не удался: {0}</value></data>
+  <data name="Settings_WeatherNote" xml:space="preserve"><value>Поиск — через open-meteo.com. Погоду телефон берёт оттуда же сам.</value></data>
+  <data name="Settings_Agent" xml:space="preserve"><value>Агент</value></data>
+  <data name="Settings_Autostart" xml:space="preserve"><value>Запускать агент при входе в Windows</value></data>
+  <data name="Settings_AutostartOn" xml:space="preserve"><value>Автозапуск агента включён.</value></data>
+  <data name="Settings_AutostartOff" xml:space="preserve"><value>Автозапуск агента выключен.</value></data>
+  <data name="Settings_Port" xml:space="preserve"><value>Порт</value></data>
+  <data name="Settings_BadPort" xml:space="preserve"><value>Порт — число от 1024 до 65535.</value></data>
+  <data name="Settings_PortRestart" xml:space="preserve"><value>Новый порт заработает после перезапуска агента. Правило брандмауэра тоже придётся обновить.</value></data>
+  <data name="Settings_DataFolder" xml:space="preserve"><value>Папка данных:</value></data>
+  <data name="Settings_OpenFolder" xml:space="preserve"><value>Открыть папку</value></data>
+  <data name="Settings_SaveHint" xml:space="preserve"><value>Тема и язык применяются сразу; в config.json они попадут после «Сохранить».</value></data>
+
+  <!-- about -->
+  <data name="About_Version" xml:space="preserve"><value>Версия {0}</value></data>
+  <data name="About_Text" xml:space="preserve"><value>Старый Android-телефон — настенная тач-панель для ПК. MIT.</value></data>
+  <data name="About_CheckUpdates" xml:space="preserve"><value>Проверить обновления</value></data>
+  <data name="About_Install" xml:space="preserve"><value>Открыть выпуск</value></data>
+  <data name="About_Privacy" xml:space="preserve"><value>Без телеметрии. В сеть уходят только: open-meteo (погода), GitHub (проверка обновлений), dl.google.com (platform-tools, по согласию) и SSH к вашим серверам.</value></data>
+  <data name="Update_Available" xml:space="preserve"><value>Есть обновление {0}</value></data>
+  <data name="Update_UpToDate" xml:space="preserve"><value>У вас последняя версия.</value></data>
+  <data name="Update_NoReleases" xml:space="preserve"><value>Выпусков пока нет — проверить обновления нельзя.</value></data>
+  <data name="Update_Failed" xml:space="preserve"><value>Не удалось проверить обновления: {0}</value></data>
+</root>

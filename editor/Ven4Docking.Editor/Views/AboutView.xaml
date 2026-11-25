@@ -1,0 +1,41 @@
+<UserControl x:Class="Ven4Docking.Editor.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Ven4Docking.Editor.Services">
+    <StackPanel Margin="24,18,24,18" MaxWidth="680" HorizontalAlignment="Left">
+        <TextBlock Text="{l:L Section_About}" Style="{StaticResource H1}"/>
+        <Border Style="{StaticResource Card}">
+            <DockPanel>
+                <!-- Venchik with a phone: the final picture comes with the icon work package (spec §14). -->
+                <Border DockPanel.Dock="Left" Width="96" Height="96" CornerRadius="20" Margin="0,0,18,0"
+                        Background="{DynamicResource AccentSoftBackground}" BorderBrush="{DynamicResource AccentSoftBorder}" BorderThickness="1">
+                    <Grid>
+                        <TextBlock Text="&#xE8EA;" Style="{StaticResource Icon}" FontSize="44" HorizontalAlignment="Center" Foreground="{DynamicResource AccentColor}"/>
+                    </Grid>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="22" FontWeight="Bold"><Run Text="Ven4"/><Run Text="Docking" Foreground="{DynamicResource AccentColor}"/></TextBlock>
+                    <TextBlock Text="{Binding VersionText}" Style="{StaticResource Hint}" FontSize="13"/>
+                    <TextBlock Text="{l:L About_Text}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="{l:L About_CheckUpdates}" Command="{Binding CheckUpdatesCommand}" Padding="14,0"/>
+                    <Button Content="{l:L About_Install}" Command="{Binding OpenReleaseCommand}" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0"
+                            Visibility="{Binding ReleaseUrl, Converter={StaticResource Vis}}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding UpdateText}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="{l:L Ven4verse_Line}"/>
+                <Button Style="{StaticResource LinkButton}" Content="{l:L Ven4verse_Link}" Command="{Binding OpenVen4verseCommand}" HorizontalAlignment="Left" Margin="0,6,0,0"/>
+                <TextBlock Text="{l:L About_Privacy}" Style="{StaticResource Hint}" Margin="0,12,0,0"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

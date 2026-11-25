@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "source": "docs/research/phone-brands.md (25.11.2026)",
+  "generic": {
+    "id": "generic",
+    "name": "Android",
+    "match": [],
+    "developer": [
+      { "ru": "«Настройки» → «О телефоне» → 7 раз нажмите «Номер сборки», пока не появится «Вы стали разработчиком».", "en": "Settings > About phone > tap Build number 7 times until «You are now a developer!»." },
+      { "ru": "Android 9+: «Настройки» → «Система» → «Для разработчиков» → «Отладка по USB». Android 8: «Система» → «Для разработчиков». Android 7: «Настройки» → «Для разработчиков».", "en": "Android 9+: Settings > System > Developer options > USB debugging. Android 8: System > Developer options. Android 7: Settings > Developer options." },
+      { "ru": "Подключите кабель и на телефоне подтвердите «Разрешить отладку по USB?», отметив «Всегда разрешать с этого компьютера».", "en": "Connect the cable and confirm «Allow USB debugging?» on the phone, ticking «Always allow from this computer»." },
+      { "ru": "Полезно: «Отключить тайм-аут авторизации adb» в «Для разработчиков» (Android 10+), иначе через 7 дней без подключения разрешение отзывается.", "en": "Useful: «Disable adb authorization timeout» in Developer options (Android 10+), otherwise the permission is revoked after 7 days.", "unconfirmed": true }
+    ],
+    "extraToggles": [],
+    "wifi": [
+      { "ru": "Только Android 11+: «Для разработчиков» → «Беспроводная отладка» → «Подключить устройство с помощью кода». Телефон и ПК — в одной сети Wi-Fi.", "en": "Android 11+ only: Developer options > Wireless debugging > Pair device with pairing code. Phone and PC on the same Wi-Fi.", "unconfirmed": true },
+      { "ru": "Беспроводная отладка выключается после перезагрузки телефона или смены сети — тогда настройки придётся делать заново.", "en": "Wireless debugging turns off after a reboot or a network change." }
+    ],
+    "keepAlive": [
+      { "ru": "Не включайте для Ven4Docking «Ограничение работы в фоне»; батарея приложения — «Без ограничений».", "en": "Do not enable Background restriction for Ven4Docking; set its battery usage to Unrestricted." }
+    ],
+    "launcher": [
+      { "ru": "«Настройки» → «Приложения» → «Приложения по умолчанию» → «Главный экран» → Ven4Docking.", "en": "Settings > Apps > Default apps > Home app > Ven4Docking.", "unconfirmed": true },
+      { "ru": "Для панели лучше навигация тремя кнопками: со сторонним рабочим столом жесты часто отключаются.", "en": "Prefer 3-button navigation: gestures are often disabled with a third-party launcher." }
+    ],
+    "chargeLimit": [
+      { "ru": "Телефон круглосуточно на зарядке: если есть встроенный лимит заряда (80 %), включите его. Если нет — розетка или реле, держащие заряд 20–80 %, и осматривайте аккумулятор на вздутие.", "en": "The phone is on charge 24/7: enable a built-in 80 % charge limit if there is one. If not, use a smart plug or relay keeping 20–80 %, and check the battery for swelling." }
+    ],
+    "permissionDenied": [
+      { "ru": "Если пункт «Отключить контроль разрешений» есть в «Для разработчиков» — включите его, перезагрузите телефон и нажмите «Повторить».", "en": "If Developer options has «Disable permission monitoring», turn it on, reboot and press Retry.", "unconfirmed": true }
+    ]
+  },
+  "brands": [
+    {
+      "id": "xiaomi",
+      "name": "Xiaomi / Redmi / POCO",
+      "match": ["xiaomi", "redmi", "poco"],
+      "developer": [
+        { "ru": "«Настройки» → «О телефоне» → 7–10 раз нажмите «Версия MIUI» (на HyperOS — «Версия ОС»).", "en": "Settings > About phone > tap MIUI version (HyperOS: OS version) 7–10 times." },
+        { "ru": "«Настройки» → «Расширенные настройки» (на старых MIUI — «Дополнительно») → «Для разработчиков» → «Отладка по USB».", "en": "Settings > Additional settings > Developer options > USB debugging.", "unconfirmed": true }
+      ],
+      "extraToggles": [
+        { "ru": "Включите «Установка через USB» — без него установка падает с INSTALL_FAILED_USER_RESTRICTED. Понадобится вход в Mi-аккаунт.", "en": "Turn on «Install via USB» (needs a Mi account), otherwise install fails with INSTALL_FAILED_USER_RESTRICTED." },
+        { "ru": "Включите «Отладка по USB (настройки безопасности)» — без него настройки из ПК не записываются. Телефон трижды покажет предупреждение с отсчётом.", "en": "Turn on «USB debugging (Security settings)», otherwise settings cannot be written from the PC." },
+        { "ru": "Возможно, «Установка через USB» включится только со вставленной SIM-картой (потом её можно вынуть).", "en": "«Install via USB» may require an inserted SIM card (it can be removed afterwards).", "unconfirmed": true },
+        { "ru": "Если есть «Проверять приложение при установке» — отключите.", "en": "Turn off «Verify apps over USB» if present." }
+      ],
+      "wifi": [
+        { "ru": "Android 11+: «Для разработчиков» → «Беспроводная отладка». Переключатели из списка выше нужны и здесь.", "en": "Android 11+: Developer options > Wireless debugging. The toggles above are needed as well.", "unconfirmed": true }
+      ],
+      "keepAlive": [
+        { "ru": "«Настройки» → «Приложения» → «Разрешения» → «Автозапуск в фоновом режиме» → включить для Ven4Docking.", "en": "Settings > Apps > Permissions > Background autostart > on for Ven4Docking." },
+        { "ru": "Карточка приложения → «Экономия заряда батареи» (HyperOS — «Контроль активности») → «Нет ограничений».", "en": "App info > Battery saver (HyperOS: Activity control) > No restrictions." },
+        { "ru": "Закрепите приложение в «Недавних» (потяните карточку вниз или нажмите замок).", "en": "Lock the app in Recents (pull the card down or tap the lock)." },
+        { "ru": "После крупных обновлений оболочка может сбросить разрешения — проверьте снова.", "en": "Major updates may reset these permissions — check again." }
+      ],
+      "launcher": [
+        { "ru": "Перед сменой рабочего стола переключите навигацию на кнопки: со сторонним рабочим столом жесты MIUI/HyperOS не работают.", "en": "Switch navigation to buttons first: MIUI/HyperOS gestures do not work with third-party launchers." }
+      ],
+      "chargeLimit": [
+        { "ru": "«Настройки» → «Батарея» → «Защита аккумулятора» → «Умная зарядка» (останавливает на 80 %). На старых и бюджетных моделях пункта может не быть.", "en": "Settings > Battery > Battery protection > Smart charging (stops at 80 %). Older and budget models may not have it.", "unconfirmed": true }
+      ],
+      "permissionDenied": [
+        { "ru": "Включите «Отладка по USB (настройки безопасности)» в «Для разработчиков» и нажмите «Повторить».", "en": "Turn on «USB debugging (Security settings)» in Developer options and press Retry." }
+      ]
+    },
+    {
+      "id": "samsung",
+      "name": "Samsung",
+      "match": ["samsung"],
+      "developer": [
+        { "ru": "«Настройки» → «Сведения о телефоне» → «Сведения о ПО» → 7 раз «Номер сборки».", "en": "Settings > About phone > Software information > tap Build number 7 times." },
+        { "ru": "«Настройки» → «Параметры разработчика» → «Отладка USB».", "en": "Settings > Developer options > USB debugging." }
+      ],
+      "extraToggles": [
+        { "ru": "One UI 6+: сначала выключите «Настройки» → «Безопасность и конфиденциальность» → «Автоблокировка» — иначе «Отладка USB» серая и команды по кабелю блокируются. После настройки её можно включить обратно.", "en": "One UI 6+: first turn off Settings > Security and privacy > Auto Blocker, otherwise USB debugging is greyed out. You can turn it back on afterwards." },
+        { "ru": "Android 10–13: если есть «Проверять приложения при установке» — отключите.", "en": "Android 10–13: turn off «Verify apps over USB» if present." }
+      ],
+      "wifi": [
+        { "ru": "One UI 3+ (Android 11+): «Параметры разработчика» → «Беспроводная отладка». «Автоблокировка» может блокировать и её.", "en": "One UI 3+ (Android 11+): Developer options > Wireless debugging. Auto Blocker may block it too.", "unconfirmed": true }
+      ],
+      "keepAlive": [
+        { "ru": "«Настройки» → «Приложения» → Ven4Docking → «Батарея» → «Не ограничено».", "en": "Settings > Apps > Ven4Docking > Battery > Unrestricted." },
+        { "ru": "«Батарея» → «Ограничения в фоновом режиме»: выключите «Переводить неиспользуемые приложения в спящий режим» и добавьте Ven4Docking в «Неспящие».", "en": "Battery > Background usage limits: turn off «Put unused apps to sleep» and add Ven4Docking to Never sleeping apps." },
+        { "ru": "Android 7–8: «Обслуживание устройства» → «Батарея» → «Неконтролируемые приложения».", "en": "Android 7–8: Device maintenance > Battery > Unmonitored apps." }
+      ],
+      "launcher": [
+        { "ru": "«Настройки» → «Приложения» → «Выбор приложений по умолчанию» → «Главный экран».", "en": "Settings > Apps > Choose default apps > Home app.", "unconfirmed": true }
+      ],
+      "chargeLimit": [
+        { "ru": "One UI 6.1+: «Настройки» → «Батарея» → «Защита аккумулятора» → «Максимальная» (80 %). Это главная рекомендация для панели.", "en": "One UI 6.1+: Settings > Battery > Battery protection > Maximum (80 %). The main recommendation for a panel." },
+        { "ru": "До One UI 6.1 — «Защита аккумулятора» (85 %) в настройках батареи.", "en": "Before One UI 6.1 — «Protect battery» (85 %) in battery settings.", "unconfirmed": true }
+      ],
+      "permissionDenied": [
+        { "ru": "Проверьте, что «Автоблокировка» выключена, переподключите кабель и нажмите «Повторить».", "en": "Make sure Auto Blocker is off, reconnect the cable and press Retry." }
+      ]
+    },
+    {
+      "id": "oppo",
+      "name": "OPPO / realme / OnePlus",
+      "match": ["oppo", "realme", "oneplus"],
+      "developer": [
+        { "ru": "«Настройки» → «О телефоне» (на новых — «Об устройстве» → «Версия») → 7 раз «Номер сборки». Может попросить PIN.", "en": "Settings > About phone (newer: About device > Version) > tap Build number 7 times. It may ask for the PIN." },
+        { "ru": "«Дополнительные настройки» → «Возможности разработчика» (иногда «Для разработчиков» в «Системные настройки») → «Отладка по USB».", "en": "Additional settings > Developer options (sometimes under System settings) > USB debugging." }
+      ],
+      "extraToggles": [
+        { "ru": "Включите «Отключить контроль разрешений» внизу «Возможностей разработчика» и перезагрузите телефон — без него настройки и разрешения из ПК не записываются (проверено на realme C11).", "en": "Turn on «Disable permission monitoring» at the bottom of Developer options and reboot — otherwise settings cannot be written from the PC (verified on realme C11)." }
+      ],
+      "wifi": [
+        { "ru": "ColorOS 11+ / realme UI 2+ (Android 11+): «Возможности разработчика» → «Беспроводная отладка». «Отключить контроль разрешений» нужен и здесь.", "en": "ColorOS 11+ / realme UI 2+ (Android 11+): Developer options > Wireless debugging. «Disable permission monitoring» is needed too.", "unconfirmed": true }
+      ],
+      "keepAlive": [
+        { "ru": "Ven4Docking → «Использование батареи»: включите автозапуск, активность в фоне и на переднем плане; выключите «Приостанавливать работу, если не используется».", "en": "Ven4Docking > Battery usage: allow auto launch, background and foreground activity; turn off «Pause app activity if unused».", "unconfirmed": true },
+        { "ru": "Не добавляйте приложение в «Быструю заморозку»; выключите «Оптимизацию режима сна».", "en": "Do not add the app to App quick freeze; turn off Sleep standby optimization.", "unconfirmed": true },
+        { "ru": "OnePlus: «Батарея» → «Оптимизация батареи» → «Не оптимизировать».", "en": "OnePlus: Battery > Battery optimization > Don't optimize." }
+      ],
+      "launcher": [
+        { "ru": "«Настройки» → «Управление приложениями» → «Приложения по умолчанию» → «Главный экран». Советуем кнопочную навигацию.", "en": "Settings > App management > Default apps > Home app. Button navigation is recommended.", "unconfirmed": true }
+      ],
+      "chargeLimit": [
+        { "ru": "realme: «Настройки» → «Батарея» → «Состояние батареи» → «Лимит заряда» (80 %). На бюджетных моделях (например, realme C11) его, скорее всего, нет — тогда розетка или реле.", "en": "realme: Settings > Battery > Battery health > Charging limit (80 %). Budget models (e.g. realme C11) likely lack it — use a smart plug or relay.", "unconfirmed": true },
+        { "ru": "OnePlus: «Оптимизированная зарядка»; на новых моделях — настраиваемый лимит.", "en": "OnePlus: Optimized charging; newer models have an adjustable limit." }
+      ],
+      "permissionDenied": [
+        { "ru": "Включите «Отключить контроль разрешений» в «Возможностях разработчика», перезагрузите телефон, переподключите кабель и нажмите «Повторить».", "en": "Turn on «Disable permission monitoring» in Developer options, reboot, reconnect and press Retry." }
+      ]
+    },
+    {
+      "id": "huawei",
+      "name": "Huawei / Honor",
+      "match": ["huawei", "honor"],
+      "developer": [
+        { "ru": "«Настройки» → «О телефоне» → 7 раз «Номер сборки» (или «Версия HarmonyOS» / «Версия ПО»).", "en": "Settings > About phone > tap Build number (or HarmonyOS version / Software version) 7 times." },
+        { "ru": "«Настройки» → «Система и обновления» → «Для разработчиков» → «Отладка по USB». Нужен владелец телефона, не второй пользователь.", "en": "Settings > System & updates > Developer options > USB debugging. Must be the owner user." }
+      ],
+      "extraToggles": [
+        { "ru": "Включите «Разрешить отладку по ADB только при зарядке» — тогда отладка работает и после перезагрузки.", "en": "Turn on «Allow ADB debugging in charge only mode» so debugging survives reboots." },
+        { "ru": "Режим USB — «Передача файлов». Если после включения отладки он вернулся в «Только зарядка», переключите ещё раз.", "en": "USB mode — File transfer. If it falls back to Charge only, switch again." },
+        { "ru": "Отключите «Проверка приложений по USB».", "en": "Turn off «Verify apps via USB»." }
+      ],
+      "wifi": [
+        { "ru": "Беспроводная отладка на Huawei недоступна — используйте кабель.", "en": "Wireless debugging is not available on Huawei — use the cable." }
+      ],
+      "keepAlive": [
+        { "ru": "«Батарея» → «Запуск приложений» → выключите «Управлять автоматически» для Ven4Docking и включите все три переключателя.", "en": "Battery > App launch > turn off «Manage automatically» for Ven4Docking and enable all three switches." },
+        { "ru": "Выключите «Умную оптимизацию» в «Диспетчере телефона».", "en": "Turn off Smart tune-up in Phone Manager." },
+        { "ru": "EMUI может вернуть свой рабочий стол после сбоя или обновления — Ven4Docking проверит это при следующем подключении.", "en": "EMUI may restore its own launcher after a crash or update — Ven4Docking checks it on the next connection." }
+      ],
+      "launcher": [
+        { "ru": "«Настройки» → «Приложения» → «Приложения по умолчанию» → «Рабочий экран».", "en": "Settings > Apps > Default apps > Launcher.", "unconfirmed": true }
+      ],
+      "chargeLimit": [
+        { "ru": "HarmonyOS 4.3.1+: «Настройки» → «Батарея» → «Состояние батареи» → «Пользовательский предел зарядки» (80 %). Иначе — «Умная зарядка».", "en": "HarmonyOS 4.3.1+: Settings > Battery > Battery health > Custom charging limit (80 %). Otherwise Smart charge.", "unconfirmed": true }
+      ],
+      "permissionDenied": [
+        { "ru": "Проверьте режим USB «Передача файлов» и «Разрешить отладку по ADB только при зарядке», затем «Повторить».", "en": "Check USB mode File transfer and «Allow ADB debugging in charge only mode», then Retry." }
+      ]
+    },
+    {
+      "id": "vivo",
+      "name": "vivo / iQOO",
+      "match": ["vivo", "iqoo"],
+      "developer": [
+        { "ru": "«Настройки» → «Управление системой» → «О телефоне» → «Информация о версии» → 7 раз «Версия ПО».", "en": "Settings > System management > About phone > Version info > tap Software version 7 times.", "unconfirmed": true },
+        { "ru": "«Управление системой» → «Для разработчиков» → «Отладка по USB». Funtouch 4–9: «Дополнительные настройки» → «Для разработчиков».", "en": "System management > Developer options > USB debugging. Funtouch 4–9: More settings > Developer options.", "unconfirmed": true }
+      ],
+      "extraToggles": [
+        { "ru": "Включите «Установка через USB»; может попросить пароль vivo-аккаунта.", "en": "Turn on «Install via USB»; it may ask for the vivo account password.", "unconfirmed": true },
+        { "ru": "Во время установки смотрите на экран телефона и подтвердите запрос.", "en": "Watch the phone screen during install and confirm the prompt." }
+      ],
+      "wifi": [
+        { "ru": "Android 11+: «Для разработчиков» → «Беспроводная отладка».", "en": "Android 11+: Developer options > Wireless debugging.", "unconfirmed": true }
+      ],
+      "keepAlive": [
+        { "ru": "«Настройки» → «Приложения» → «Автозапуск» → Ven4Docking.", "en": "Settings > Apps > Autostart > Ven4Docking." },
+        { "ru": "«Батарея» → «Высокое энергопотребление в фоне» → разрешить; карточка приложения → «Батарея» → «Не оптимизировано».", "en": "Battery > High background power consumption > allow; App info > Battery > Not optimized.", "unconfirmed": true }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "Встроенный лимит заряда у vivo не подтверждён — используйте розетку или реле 20–80 %.", "en": "A built-in charge limit on vivo is not confirmed — use a smart plug or relay (20–80 %).", "unconfirmed": true }
+      ],
+      "permissionDenied": []
+    },
+    {
+      "id": "motorola",
+      "name": "Motorola",
+      "match": ["motorola", "moto"],
+      "developer": [
+        { "ru": "«Настройки» → «О телефоне» → 7 раз «Номер сборки»; затем «Система» → «Для разработчиков» → «Отладка по USB».", "en": "Settings > About phone > tap Build number 7 times; then System > Developer options > USB debugging." }
+      ],
+      "extraToggles": [],
+      "wifi": [],
+      "keepAlive": [
+        { "ru": "Ven4Docking → «Использование батареи приложением» → «Без ограничений»; выключите «Адаптивную батарею».", "en": "Ven4Docking > App battery usage > Unrestricted; turn off Adaptive Battery.", "unconfirmed": true },
+        { "ru": "Поиском по настройкам найдите «Управление фоновыми приложениями» → «Всегда разрешать».", "en": "Search settings for «Manage background apps» > Always allow.", "unconfirmed": true }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "«Настройки» → «Батарея» → «Защита батареи» → держать 80 %. Внимание: если 7 дней не было полного заряда, защита сама отключается — переподключите зарядку.", "en": "Settings > Battery > Battery protection > keep 80 %. Note: after 7 days without a full charge it turns itself off — replug the charger.", "unconfirmed": true }
+      ],
+      "permissionDenied": []
+    },
+    {
+      "id": "google",
+      "name": "Google Pixel",
+      "match": ["google"],
+      "developer": [
+        { "ru": "«Настройки» → «О телефоне» → 7 раз «Номер сборки»; затем «Система» → «Для разработчиков» → «Отладка по USB».", "en": "Settings > About phone > tap Build number 7 times; then System > Developer options > USB debugging." }
+      ],
+      "extraToggles": [],
+      "wifi": [],
+      "keepAlive": [
+        { "ru": "Всё нужное Ven4Docking включит сам по кабелю.", "en": "Ven4Docking sets everything itself over the cable." }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "Pixel 6a и новее: «Настройки» → «Батарея» → «Состояние батареи» → «Оптимизация зарядки» → «Ограничить до 80 %». На постоянном питании телефон питается напрямую от зарядки — лучший вариант для панели.", "en": "Pixel 6a and newer: Settings > Battery > Battery health > Charging optimization > Limit to 80 %. With constant power the phone bypasses the battery — the best option for a panel.", "unconfirmed": true }
+      ],
+      "permissionDenied": []
+    },
+    {
+      "id": "nokia",
+      "name": "Nokia (HMD)",
+      "match": ["nokia", "hmd"],
+      "developer": [
+        { "ru": "Как в «чистом» Android: «О телефоне» → 7 раз «Номер сборки»; «Система» → «Для разработчиков» → «Отладка по USB».", "en": "As stock Android: About phone > tap Build number 7 times; System > Developer options > USB debugging." }
+      ],
+      "extraToggles": [],
+      "wifi": [],
+      "keepAlive": [
+        { "ru": "Если есть системное приложение «Энергосбережение» (Evenwell) или DuraSpeed — оно может закрывать Ven4Docking. Отключать его — только по вашему решению, вручную.", "en": "A system «Power saving» app (Evenwell) or DuraSpeed may kill Ven4Docking. Disable it only by your own decision, manually." }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "Встроенный лимит заряда не подтверждён — розетка или реле 20–80 %.", "en": "A built-in charge limit is not confirmed — smart plug or relay (20–80 %).", "unconfirmed": true }
+      ],
+      "permissionDenied": []
+    },
+    {
+      "id": "transsion",
+      "name": "Tecno / Infinix / itel",
+      "match": ["tecno", "infinix", "itel"],
+      "developer": [
+        { "ru": "«Настройки» → «Мой телефон» (или «О телефоне») → 7 раз «Номер сборки»; «Система» → «Для разработчиков» → «Отладка по USB».", "en": "Settings > My phone (or About phone) > tap Build number 7 times; System > Developer options > USB debugging.", "unconfirmed": true }
+      ],
+      "extraToggles": [
+        { "ru": "Android 13+: если есть «Отключить контроль разрешений» — включите.", "en": "Android 13+: turn on «Disable permission monitoring» if present.", "unconfirmed": true }
+      ],
+      "wifi": [],
+      "keepAlive": [
+        { "ru": "Tecno: «Phone Master» → «Toolbox» → «Auto-start management» → разрешить; выключите «Power Boost» и «Power Saving Management For Apps».", "en": "Tecno: Phone Master > Toolbox > Auto-start management > allow; turn off Power Boost and Power Saving Management For Apps.", "unconfirmed": true },
+        { "ru": "Infinix: приложение → «Батарея» → «Без ограничений»; «Battery Optimisation» → «Not Optimised».", "en": "Infinix: App > Battery > Unrestricted; Battery Optimisation > Not Optimised.", "unconfirmed": true }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "У части Infinix есть лимит заряда в настройках батареи; путь не подтверждён.", "en": "Some Infinix models have a charge limit in battery settings; the path is not confirmed.", "unconfirmed": true }
+      ],
+      "permissionDenied": [
+        { "ru": "Найдите в «Для разработчиков» «Отключить контроль разрешений», включите и нажмите «Повторить».", "en": "Find «Disable permission monitoring» in Developer options, turn it on and press Retry.", "unconfirmed": true }
+      ]
+    },
+    {
+      "id": "meizu",
+      "name": "Meizu",
+      "match": ["meizu"],
+      "developer": [
+        { "ru": "«Спец. возможности» → «Для разработчиков» → «Отладка по USB».", "en": "Accessibility > Developer options > USB debugging." }
+      ],
+      "extraToggles": [
+        { "ru": "«Безопасность» → «Разрешения для ПО» → «Установка ПО через USB».", "en": "Security > App permissions > Install apps via USB." }
+      ],
+      "wifi": [],
+      "keepAlive": [
+        { "ru": "«Менеджер батареи» → «Управление питанием» → «Производительность»; добавьте Ven4Docking в «Защищённые приложения».", "en": "Battery manager > Power management > Performance; add Ven4Docking to Protected apps." }
+      ],
+      "launcher": [],
+      "chargeLimit": [
+        { "ru": "Встроенный лимит заряда не подтверждён — розетка или реле 20–80 %.", "en": "A built-in charge limit is not confirmed — smart plug or relay (20–80 %).", "unconfirmed": true }
+      ],
+      "permissionDenied": []
+    }
+  ]
+}

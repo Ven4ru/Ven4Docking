@@ -1,0 +1,61 @@
+<UserControl x:Class="Ven4Docking.Editor.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Ven4Docking.Editor.Services">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,18,24,18" MaxWidth="720" HorizontalAlignment="Left" Width="680">
+            <TextBlock Text="{l:L Section_Settings}" Style="{StaticResource H1}"/>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{l:L Settings_Look}" Style="{StaticResource H2}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="8"/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Text="{l:L Settings_Theme}" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" DisplayMemberPath="Title"/>
+                        <TextBlock Grid.Row="2" Text="{l:L Settings_Language}" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Title"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{l:L Settings_Weather}" Style="{StaticResource H2}"/>
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,8"><Run Text="{l:L Settings_CurrentCity}"/><Run Text=" "/><Run Text="{Binding WeatherText, Mode=OneWay}"/></TextBlock>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="{l:L Settings_Find}" Command="{Binding SearchCityCommand}" Margin="8,0,0,0" IsDefault="True"/>
+                        <TextBox Text="{Binding CityQuery, UpdateSourceTrigger=PropertyChanged}" ToolTip="{l:L Settings_CityHint}"/>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding CityResults}" Margin="0,8,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Display}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,0,0,4" FontWeight="Normal"
+                                        Command="{Binding DataContext.PickCityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{l:L Settings_WeatherNote}" Style="{StaticResource Hint}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{l:L Settings_Agent}" Style="{StaticResource H2}"/>
+                    <CheckBox Content="{l:L Settings_Autostart}" IsChecked="{Binding Autostart}" IsEnabled="{Binding CanAutostart}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Text="{l:L Settings_Port}" VerticalAlignment="Center" Width="140"/>
+                        <TextBox Width="100" Text="{Binding Port, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,10,0,0" TextWrapping="Wrap">
+                        <Run Text="{l:L Settings_DataFolder}"/><Run Text=" "/><Run Text="{Binding DataFolder, Mode=OneWay}"/>
+                    </TextBlock>
+                    <Button Content="{l:L Settings_OpenFolder}" Command="{Binding OpenDataFolderCommand}" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding Message}" Foreground="{DynamicResource StatusInfo}" TextWrapping="Wrap"/>
+            <TextBlock Text="{l:L Settings_SaveHint}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

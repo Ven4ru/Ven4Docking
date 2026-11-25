@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App_Subtitle" xml:space="preserve"><value>Panel editor</value></data>
+  <data name="Section_Phones" xml:space="preserve"><value>Phones</value></data>
+  <data name="Section_Screens" xml:space="preserve"><value>Screens</value></data>
+  <data name="Section_Apps" xml:space="preserve"><value>Apps</value></data>
+  <data name="Section_Servers" xml:space="preserve"><value>Servers</value></data>
+  <data name="Section_Ai" xml:space="preserve"><value>AI tools</value></data>
+  <data name="Section_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Section_About" xml:space="preserve"><value>About</value></data>
+  <data name="Top_Phone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Top_Undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="Top_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Agent_Online" xml:space="preserve"><value>Agent running · {0} · port {1}</value></data>
+  <data name="Agent_Offline" xml:space="preserve"><value>Agent is not running</value></data>
+  <data name="Agent_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Agent_Starting" xml:space="preserve"><value>Starting the agent…</value></data>
+  <data name="Agent_StartFailed" xml:space="preserve"><value>The agent did not respond. Check agent.log in the data folder.</value></data>
+  <data name="Agent_NotFound" xml:space="preserve"><value>ven4docking-agent.exe not found. Reinstall Ven4Docking.</value></data>
+  <data name="Agent_NeededForThis" xml:space="preserve"><value>This needs the agent to be running.</value></data>
+  <data name="Storage_Agent" xml:space="preserve"><value>Saving to: agent, port {0}</value></data>
+  <data name="Storage_Files" xml:space="preserve"><value>Saving to files: {0}</value></data>
+  <data name="Saved_Agent" xml:space="preserve"><value>Saved to the agent, layout version {0}. The panel rebuilds itself.</value></data>
+  <data name="Saved_File" xml:space="preserve"><value>Saved to {0}</value></data>
+  <data name="SaveError_Overlap" xml:space="preserve"><value>Not saved: blocks overlap ({0}).</value></data>
+  <data name="SaveError_Bounds" xml:space="preserve"><value>Not saved: a block is outside the grid ({0}).</value></data>
+  <data name="SaveError_Screens" xml:space="preserve"><value>Not saved: there must be 1 to 10 screens.</value></data>
+  <data name="SaveError_Other" xml:space="preserve"><value>Not saved: {0}</value></data>
+  <data name="Ask_SaveBeforeSwitch" xml:space="preserve"><value>There are unsaved changes. Save before switching the phone?</value></data>
+  <data name="Ask_SaveOnExit" xml:space="preserve"><value>There are unsaved changes. Save before exit?</value></data>
+  <data name="Phone_Draft" xml:space="preserve"><value>Draft (no phone yet)</value></data>
+
+  <data name="Common_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Common_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Common_Up" xml:space="preserve"><value>Up</value></data>
+  <data name="Common_Down" xml:space="preserve"><value>Down</value></data>
+  <data name="Common_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Common_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Common_Finish" xml:space="preserve"><value>Finish</value></data>
+  <data name="Common_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Browse…</value></data>
+
+  <data name="Block_clock" xml:space="preserve"><value>Clock</value></data>
+  <data name="Block_weather" xml:space="preserve"><value>Weather</value></data>
+  <data name="Block_cpu" xml:space="preserve"><value>CPU</value></data>
+  <data name="Block_gpu" xml:space="preserve"><value>GPU</value></data>
+  <data name="Block_ram" xml:space="preserve"><value>Memory</value></data>
+  <data name="Block_disks" xml:space="preserve"><value>Disks</value></data>
+  <data name="Block_net" xml:space="preserve"><value>Network</value></data>
+  <data name="Block_ai" xml:space="preserve"><value>AI limits</value></data>
+  <data name="Block_apps" xml:space="preserve"><value>Apps</value></data>
+  <data name="Block_media" xml:space="preserve"><value>Media</value></data>
+  <data name="Block_servers" xml:space="preserve"><value>Servers</value></data>
+  <data name="Block_phone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Template_classic" xml:space="preserve"><value>Classic</value></data>
+  <data name="Template_pc-monitor" xml:space="preserve"><value>PC monitor</value></data>
+  <data name="Template_apps-only" xml:space="preserve"><value>Apps only</value></data>
+
+  <data name="Screens_Title" xml:space="preserve"><value>Screens</value></data>
+  <data name="Screens_BlockCount" xml:space="preserve"><value>blocks: {0}</value></data>
+  <data name="Screens_RenameHint" xml:space="preserve"><value>Screen name</value></data>
+  <data name="Screens_Add" xml:space="preserve"><value>Add screen</value></data>
+  <data name="Screens_Delete" xml:space="preserve"><value>Delete screen</value></data>
+  <data name="Screens_Max" xml:space="preserve"><value>There can be at most 10 screens.</value></data>
+  <data name="Screens_NewName" xml:space="preserve"><value>Screen {0}</value></data>
+  <data name="Screens_Templates" xml:space="preserve"><value>Template (replaces all screens):</value></data>
+  <data name="Screens_Palette" xml:space="preserve"><value>Blocks</value></data>
+  <data name="Screens_PaletteHint" xml:space="preserve"><value>Drag a block onto the grid or double-click it.</value></data>
+  <data name="Screens_PaletteItemHint" xml:space="preserve"><value>Drag onto the grid</value></data>
+  <data name="Screens_Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="Screens_PreviewHint" xml:space="preserve"><value>8×4 grid at the phone's resolution. Move blocks with the mouse; resize with the bottom-right corner.</value></data>
+  <data name="Screens_NoRoom" xml:space="preserve"><value>No free space on this screen — shrink or delete a block.</value></data>
+  <data name="Screens_NoWebView" xml:space="preserve"><value>WebView2 Runtime not found — no preview, the grid still works.</value></data>
+  <data name="Screens_CannotSave" xml:space="preserve"><value>Cannot save:</value></data>
+  <data name="Screens_SkeletonNote" xml:space="preserve"><value>Block outline · the real panel appears when the agent runs or panel/dist is built</value></data>
+  <data name="Issue_Overlap" xml:space="preserve"><value>“{0}”: {1} overlap</value></data>
+  <data name="Issue_Bounds" xml:space="preserve"><value>“{0}”: {1} is outside the grid</value></data>
+  <data name="Issue_Screens" xml:space="preserve"><value>There must be 1 to 10 screens</value></data>
+  <data name="Issue_Other" xml:space="preserve"><value>Layout error: {0}</value></data>
+  <data name="Props_Title" xml:space="preserve"><value>Block settings</value></data>
+  <data name="Props_Empty" xml:space="preserve"><value>Select a block on the grid or drag a new one from the list on the left.</value></data>
+  <data name="Props_Position" xml:space="preserve"><value>Position and size (cells)</value></data>
+  <data name="Props_W" xml:space="preserve"><value>W</value></data>
+  <data name="Props_H" xml:space="preserve"><value>H</value></data>
+  <data name="Props_Delete" xml:space="preserve"><value>Delete block</value></data>
+  <data name="Opts_ClockWeather" xml:space="preserve"><value>Show weather</value></data>
+  <data name="Opts_Clock24" xml:space="preserve"><value>24-hour format</value></data>
+  <data name="Opts_Apps" xml:space="preserve"><value>Which apps (order as in «Apps»)</value></data>
+  <data name="Opts_Servers" xml:space="preserve"><value>Which servers</value></data>
+  <data name="Opts_Sources" xml:space="preserve"><value>Which sources</value></data>
+  <data name="Opts_Buttons" xml:space="preserve"><value>Which buttons</value></data>
+  <data name="Opts_EmptyList" xml:space="preserve"><value>The list is empty — add items in their section.</value></data>
+  <data name="Opts_Json" xml:space="preserve"><value>All block options (JSON)</value></data>
+  <data name="Opts_Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Opts_NotObject" xml:space="preserve"><value>A JSON object is required: { … }</value></data>
+  <data name="Media_prev" xml:space="preserve"><value>Previous</value></data>
+  <data name="Media_playpause" xml:space="preserve"><value>Play / pause</value></data>
+  <data name="Media_next" xml:space="preserve"><value>Next</value></data>
+  <data name="Media_stop" xml:space="preserve"><value>Stop</value></data>
+  <data name="Media_volup" xml:space="preserve"><value>Volume up</value></data>
+  <data name="Media_voldown" xml:space="preserve"><value>Volume down</value></data>
+  <data name="Media_mute" xml:space="preserve"><value>Mute</value></data>
+
+  <data name="Phones_Subtitle" xml:space="preserve"><value>Connected panels, pairing requests and the connection wizard.</value></data>
+  <data name="Phones_Connect" xml:space="preserve"><value>Connect a phone</value></data>
+  <data name="Phones_AgentOffline" xml:space="preserve"><value>The agent is not running: phones come from config.json; pairing requests and revoking are unavailable.</value></data>
+  <data name="Phones_Empty" xml:space="preserve"><value>No phones yet</value></data>
+  <data name="Phones_EmptyHint" xml:space="preserve"><value>Press «Connect a phone» — the wizard installs the launcher and sets everything up. Or open Ven4Docking on the phone and confirm the code here.</value></data>
+  <data name="Pair_Question" xml:space="preserve"><value>Connect {0}? Code {1}</value></data>
+  <data name="Pair_Accept" xml:space="preserve"><value>Connect</value></data>
+  <data name="Pair_Deny" xml:space="preserve"><value>Deny</value></data>
+  <data name="Pair_Accepted" xml:space="preserve"><value>{0} connected.</value></data>
+  <data name="Phone_Revoke" xml:space="preserve"><value>Revoke</value></data>
+  <data name="Phone_RevokeConfirm" xml:space="preserve"><value>Revoke access of “{0}”? The panel stops getting data until the phone is paired again.</value></data>
+  <data name="Phone_Revoked" xml:space="preserve"><value>Access of “{0}” revoked.</value></data>
+  <data name="Phone_Model" xml:space="preserve"><value>Model</value></data>
+  <data name="Phone_Battery" xml:space="preserve"><value>Charge</value></data>
+  <data name="Phone_Temp" xml:space="preserve"><value>Battery</value></data>
+  <data name="Phone_Online" xml:space="preserve"><value>Online</value></data>
+  <data name="Phone_Offline" xml:space="preserve"><value>Offline</value></data>
+  <data name="Phone_LastSeen" xml:space="preserve"><value>Last seen {0}</value></data>
+  <data name="Phone_NotInAgent" xml:space="preserve"><value>Data appears when the agent is running</value></data>
+  <data name="Phone_NightTitle" xml:space="preserve"><value>Night and brightness</value></data>
+  <data name="Phone_NightFrom" xml:space="preserve"><value>Night from</value></data>
+  <data name="Phone_NightTo" xml:space="preserve"><value>to</value></data>
+  <data name="Phone_NightBrightness" xml:space="preserve"><value>brightness</value></data>
+  <data name="Phone_DimOffline" xml:space="preserve"><value>Dim when the PC does not respond</value></data>
+  <data name="Phone_BurnIn" xml:space="preserve"><value>Shift the picture against burn-in</value></data>
+  <data name="Cable_Title" xml:space="preserve"><value>A cable is more reliable</value></data>
+  <data name="Cable_Text" xml:space="preserve"><value>With the phone connected by cable, Ven4Docking can always update the launcher and restore settings. Wi-Fi debugging turns off after a reboot or a network change. Without debugging, settings must be changed by hand.</value></data>
+
+  <data name="Wizard_StepCounter" xml:space="preserve"><value>Step {0} of {1}</value></data>
+  <data name="Wizard_Step1_Title" xml:space="preserve"><value>How to connect the phone</value></data>
+  <data name="Wizard_Step2_Title" xml:space="preserve"><value>Debugging and phone brand</value></data>
+  <data name="Wizard_Step3_Title" xml:space="preserve"><value>Install and set up</value></data>
+  <data name="Wizard_Step4_Title" xml:space="preserve"><value>Link to this PC</value></data>
+  <data name="Wizard_Step5_Title" xml:space="preserve"><value>WebView check</value></data>
+  <data name="Wizard_Step6_Title" xml:space="preserve"><value>Battery</value></data>
+  <data name="Wizard_Step7_Title" xml:space="preserve"><value>Done</value></data>
+  <data name="Wizard_Method" xml:space="preserve"><value>Connection method</value></data>
+  <data name="Wizard_Usb" xml:space="preserve"><value>USB cable</value></data>
+  <data name="Wizard_UsbHint" xml:space="preserve"><value>Android 7 and newer. Recommended.</value></data>
+  <data name="Wizard_Wifi" xml:space="preserve"><value>Wi-Fi debugging</value></data>
+  <data name="Wizard_WifiHint" xml:space="preserve"><value>Android 11 and newer only, pairing by code.</value></data>
+  <data name="Adb_NeedTitle" xml:space="preserve"><value>Android platform-tools are needed</value></data>
+  <data name="Adb_NeedText" xml:space="preserve"><value>Setting up the phone needs Google's adb. Google's license does not let us ship it in our installer, so Ven4Docking downloads it from dl.google.com — only with your consent.</value></data>
+  <data name="Adb_Download" xml:space="preserve"><value>Download platform-tools…</value></data>
+  <data name="Adb_Found" xml:space="preserve"><value>adb ready:</value></data>
+  <data name="Adb_Consent_Title" xml:space="preserve"><value>Download Android platform-tools?</value></data>
+  <data name="Adb_Consent_Text" xml:space="preserve"><value>Ven4Docking will download Android SDK Platform-Tools (about 7 MB) from Google:
+https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+
+They will be saved to:
+{0}
+
+These are Google's programs under Google's Android SDK license. By downloading you accept its terms. Nothing else is sent.
+
+Download?</value></data>
+  <data name="Adb_Declined" xml:space="preserve"><value>Without platform-tools the wizard cannot set up the phone. You can set it up by hand or come back later.</value></data>
+  <data name="Adb_Downloading" xml:space="preserve"><value>Downloading platform-tools…</value></data>
+  <data name="Adb_Ready" xml:space="preserve"><value>platform-tools installed.</value></data>
+  <data name="Adb_DownloadFailed" xml:space="preserve"><value>Could not download platform-tools: {0}</value></data>
+  <data name="Wifi_Title" xml:space="preserve"><value>Wi-Fi pairing</value></data>
+  <data name="Wifi_Steps" xml:space="preserve"><value>On the phone: Developer options → Wireless debugging → Pair device with pairing code. Enter the address and code it shows, then the address from the Wireless debugging screen itself.</value></data>
+  <data name="Wifi_PairAddress" xml:space="preserve"><value>Pairing address and port (e.g. 192.168.1.50:37123)</value></data>
+  <data name="Wifi_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="Wifi_Pair" xml:space="preserve"><value>Pair</value></data>
+  <data name="Wifi_ConnectAddress" xml:space="preserve"><value>Connection address and port (from the Wireless debugging screen)</value></data>
+  <data name="Wifi_Connect" xml:space="preserve"><value>Connect</value></data>
+  <data name="Wifi_FillPair" xml:space="preserve"><value>Enter the address with port and the pairing code.</value></data>
+  <data name="Wifi_FillConnect" xml:space="preserve"><value>Enter the address with port to connect.</value></data>
+  <data name="Wifi_Paired" xml:space="preserve"><value>Paired. Now connect using the address from the Wireless debugging screen.</value></data>
+  <data name="Wifi_PairFailed" xml:space="preserve"><value>Pairing failed: {0}</value></data>
+  <data name="Wifi_Connected" xml:space="preserve"><value>Connected. Press Next.</value></data>
+  <data name="Wifi_ConnectFailed" xml:space="preserve"><value>Could not connect: {0}</value></data>
+  <data name="Wizard_Brand" xml:space="preserve"><value>Phone brand</value></data>
+  <data name="Wizard_BrandGeneric" xml:space="preserve"><value>stock Android</value></data>
+  <data name="Wizard_BrandDetected" xml:space="preserve"><value>Instructions for:</value></data>
+  <data name="Brand_Developer" xml:space="preserve"><value>Turn on USB debugging</value></data>
+  <data name="Brand_Toggles" xml:space="preserve"><value>This brand also needs</value></data>
+  <data name="Brand_Wifi" xml:space="preserve"><value>Wireless debugging</value></data>
+  <data name="Brand_KeepAlive" xml:space="preserve"><value>So the phone does not close the panel (by hand)</value></data>
+  <data name="Brand_MayDiffer" xml:space="preserve"><value>The item may be named differently — search for it in the settings.</value></data>
+  <data name="Wizard_Devices" xml:space="preserve"><value>Phones via adb</value></data>
+  <data name="Wizard_NoDevices" xml:space="preserve"><value>No phone visible. Turn on debugging as described on the left and connect the cable.</value></data>
+  <data name="Wizard_Unauthorized" xml:space="preserve"><value>Confirm «Allow USB debugging?» on the phone and press refresh.</value></data>
+  <data name="Wizard_DetectFailed" xml:space="preserve"><value>Could not read the Android version.</value></data>
+  <data name="Wizard_TooOld" xml:space="preserve"><value>Android {0} is not supported: Android 7 or newer is required.</value></data>
+  <data name="Wizard_Apk" xml:space="preserve"><value>Ven4Docking launcher file (APK)</value></data>
+  <data name="Wizard_ApkBrowse" xml:space="preserve"><value>Choose the launcher APK</value></data>
+  <data name="Wizard_ApkMissing" xml:space="preserve"><value>APK file not found.</value></data>
+  <data name="Wizard_RunSetup" xml:space="preserve"><value>Install and set up</value></data>
+  <data name="Wizard_SetupHint" xml:space="preserve"><value>Commands are chosen for the Android version; each result is checked.</value></data>
+  <data name="Wizard_Item_install" xml:space="preserve"><value>Install the launcher</value></data>
+  <data name="Wizard_Item_home" xml:space="preserve"><value>Home screen — Ven4Docking</value></data>
+  <data name="Wizard_Item_stayOn" xml:space="preserve"><value>Screen stays on while charging</value></data>
+  <data name="Wizard_Item_timeout" xml:space="preserve"><value>Screen timeout 30 minutes</value></data>
+  <data name="Wizard_Item_noLock" xml:space="preserve"><value>No lock screen</value></data>
+  <data name="Wizard_Item_background" xml:space="preserve"><value>Unrestricted background work</value></data>
+  <data name="Wizard_Item_timeZone" xml:space="preserve"><value>Time zone as on the PC</value></data>
+  <data name="Wizard_Item_animations" xml:space="preserve"><value>Animations 0.5</value></data>
+  <data name="Wizard_Manual_NoLock" xml:space="preserve"><value>On Android 7 do it by hand: Settings → Security → Screen lock → None.</value></data>
+  <data name="Wizard_Manual_TimeZone" xml:space="preserve"><value>The phone did not allow changing the zone from the PC. Set it by hand: Settings → Date and time.</value></data>
+  <data name="Wizard_Manual_Generic" xml:space="preserve"><value>Do this by hand in the phone's settings.</value></data>
+  <data name="Wizard_PermissionDenied" xml:space="preserve"><value>The phone refused settings changes from the PC.</value></data>
+  <data name="Wizard_CheckFailed" xml:space="preserve"><value>Check failed: expected “{0}”, got “{1}”.</value></data>
+  <data name="Wizard_DeniedTitle" xml:space="preserve"><value>The phone's skin blocks settings over adb</value></data>
+  <data name="Wizard_SetupOk" xml:space="preserve"><value>Everything is installed and checked.</value></data>
+  <data name="Wizard_SetupDenied" xml:space="preserve"><value>Some settings were refused by the phone — see the hint and press Retry.</value></data>
+  <data name="Wizard_SetupFailed" xml:space="preserve"><value>Some steps failed — see the details in the list.</value></data>
+  <data name="Wizard_TokenText" xml:space="preserve"><value>The editor creates an access key for the phone and passes it to the launcher together with the PC address — no code needed. The phone and the PC must be on the same network.</value></data>
+  <data name="Wizard_PhoneName" xml:space="preserve"><value>Phone name</value></data>
+  <data name="Wizard_AgentUrl" xml:space="preserve"><value>PC address for the phone</value></data>
+  <data name="Wizard_SendToken" xml:space="preserve"><value>Link and open the panel</value></data>
+  <data name="Wizard_BadUrl" xml:space="preserve"><value>The PC address is invalid.</value></data>
+  <data name="Wizard_TokenSent" xml:space="preserve"><value>The phone is linked, the panel is opening.</value></data>
+  <data name="Wizard_TokenFailed" xml:space="preserve"><value>Could not link: {0}</value></data>
+  <data name="Wizard_ShowLog" xml:space="preserve"><value>Show the command log</value></data>
+  <data name="WebView_Text" xml:space="preserve"><value>The panel runs inside the phone's WebView. Old versions get a simplified panel.</value></data>
+  <data name="WebView_Check" xml:space="preserve"><value>Check again</value></data>
+  <data name="WebView_Version" xml:space="preserve"><value>{0}, version {1}</value></data>
+  <data name="WebView_Unknown" xml:space="preserve"><value>Could not read the WebView version.</value></data>
+  <data name="WebView_Old" xml:space="preserve"><value>WebView older than 57: the panel will be simplified (no CSS Grid). If possible, update Android System WebView or Chrome.</value></data>
+  <data name="Charge_Text" xml:space="preserve"><value>The panel is on charge around the clock. To keep the battery from swelling, hold the charge near 80 %:</value></data>
+  <data name="Done_Text" xml:space="preserve"><value>The phone is ready. Screens and blocks are set up in «Screens» — changes reach the panel by themselves after Save.</value></data>
+  <data name="Ven4verse_Line" xml:space="preserve"><value>Ven4Docking is part of the Ven4verse family.</value></data>
+  <data name="Ven4verse_Link" xml:space="preserve"><value>Ven4verse family — ven4tools.ru</value></data>
+
+  <data name="Apps_Subtitle" xml:space="preserve"><value>What the panel may launch. Drag to reorder.</value></data>
+  <data name="Apps_FromStart" xml:space="preserve"><value>From the Start menu</value></data>
+  <data name="Apps_AddExe" xml:space="preserve"><value>Program (exe)</value></data>
+  <data name="Apps_AddUrl" xml:space="preserve"><value>Link</value></data>
+  <data name="Apps_AddCommand" xml:space="preserve"><value>Command</value></data>
+  <data name="Apps_ExeFilter" xml:space="preserve"><value>Programs and shortcuts</value></data>
+  <data name="Apps_NewUrl" xml:space="preserve"><value>New link</value></data>
+  <data name="Apps_NewCommand" xml:space="preserve"><value>New command</value></data>
+  <data name="Apps_Added" xml:space="preserve"><value>Added: {0}</value></data>
+  <data name="Apps_ReorderHint" xml:space="preserve"><value>Drag a row to change the order of icons on the panel.</value></data>
+  <data name="Apps_Empty" xml:space="preserve"><value>The list is empty. Add programs from the Start menu.</value></data>
+  <data name="Apps_StartMenu" xml:space="preserve"><value>Start menu</value></data>
+  <data name="Apps_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Apps_Scanning" xml:space="preserve"><value>Reading the Start menu…</value></data>
+  <data name="Apps_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Apps_SelectHint" xml:space="preserve"><value>Select an app to edit it.</value></data>
+  <data name="Apps_Title" xml:space="preserve"><value>Name on the panel</value></data>
+  <data name="Apps_Target" xml:space="preserve"><value>What to launch (path, link or command)</value></data>
+  <data name="Apps_Args" xml:space="preserve"><value>Arguments</value></data>
+  <data name="Apps_RefreshIcon" xml:space="preserve"><value>Refresh icon</value></data>
+  <data name="Apps_SecurityNote" xml:space="preserve"><value>The panel can launch only what is in this list.</value></data>
+  <data name="AppKind_shortcut" xml:space="preserve"><value>shortcut</value></data>
+  <data name="AppKind_exe" xml:space="preserve"><value>program</value></data>
+  <data name="AppKind_url" xml:space="preserve"><value>link</value></data>
+  <data name="AppKind_command" xml:space="preserve"><value>command</value></data>
+
+  <data name="Servers_Subtitle" xml:space="preserve"><value>Servers for the «Servers» block: the agent connects over SSH with your key from %USERPROFILE%\.ssh.</value></data>
+  <data name="Servers_Add" xml:space="preserve"><value>Add server</value></data>
+  <data name="Servers_Empty" xml:space="preserve"><value>No servers.</value></data>
+  <data name="Servers_NewName" xml:space="preserve"><value>Server {0}</value></data>
+  <data name="Servers_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Servers_Host" xml:space="preserve"><value>Address</value></data>
+  <data name="Servers_Port" xml:space="preserve"><value>SSH port</value></data>
+  <data name="Servers_User" xml:space="preserve"><value>User</value></data>
+  <data name="Servers_Key" xml:space="preserve"><value>Key</value></data>
+  <data name="Servers_KeyHint" xml:space="preserve"><value>“auto” — id_ed25519 or id_rsa from %USERPROFILE%\.ssh. The host key is checked against known_hosts.</value></data>
+  <data name="Servers_Test" xml:space="preserve"><value>Test connection</value></data>
+  <data name="Servers_Testing" xml:space="preserve"><value>Testing…</value></data>
+  <data name="Servers_Ok" xml:space="preserve"><value>Connection works, ping {0}.</value></data>
+  <data name="ServerErr_timeout" xml:space="preserve"><value>The server did not answer in time (timeout).</value></data>
+  <data name="ServerErr_portClosed" xml:space="preserve"><value>The port is closed or the server is unreachable.</value></data>
+  <data name="ServerErr_keyRejected" xml:space="preserve"><value>The server did not accept the key.</value></data>
+  <data name="ServerErr_hostKeyMismatch" xml:space="preserve"><value>The host key does not match known_hosts — the server may have been reinstalled, or it is not the right server.</value></data>
+  <data name="ServerErr_hostKeyUnknown" xml:space="preserve"><value>The server is not in known_hosts. Connect once with ssh and verify the fingerprint.</value></data>
+  <data name="ServerErr_noKey" xml:space="preserve"><value>No SSH key found in %USERPROFILE%\.ssh.</value></data>
+  <data name="ServerErr_dns" xml:space="preserve"><value>Could not resolve the server name.</value></data>
+  <data name="ServerErr_other" xml:space="preserve"><value>Could not connect.</value></data>
+
+  <data name="Ai_Subtitle" xml:space="preserve"><value>Limit sources for the «AI limits» block.</value></data>
+  <data name="Ai_SafetyNote" xml:space="preserve"><value>Ven4Docking reads only files the programs themselves write to disk, and local APIs without an account. No tokens, passwords or private service endpoints are used — your account cannot get banned for it.</value></data>
+  <data name="Ai_Show" xml:space="preserve"><value>Show</value></data>
+  <data name="Ai_Installed" xml:space="preserve"><value>found</value></data>
+  <data name="Ai_NotInstalled" xml:space="preserve"><value>not installed</value></data>
+  <data name="Ai_Unknown" xml:space="preserve"><value>agent not running</value></data>
+  <data name="Ai_LastData" xml:space="preserve"><value>data from {0}</value></data>
+  <data name="Ai_NoData" xml:space="preserve"><value>no data</value></data>
+  <data name="Ai_OfflineNote" xml:space="preserve"><value>The agent is not running — known sources are listed; on/off is saved to config.json.</value></data>
+  <data name="Ai_claude-code" xml:space="preserve"><value>Claude Code</value></data>
+  <data name="Ai_claude-desktop" xml:space="preserve"><value>Claude Desktop</value></data>
+  <data name="Ai_codex" xml:space="preserve"><value>Codex</value></data>
+  <data name="Ai_ollama" xml:space="preserve"><value>Ollama</value></data>
+  <data name="Ai_lmstudio" xml:space="preserve"><value>LM Studio</value></data>
+
+  <data name="Settings_Look" xml:space="preserve"><value>Look</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Theme_teal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Theme_green" xml:space="preserve"><value>Green</value></data>
+  <data name="Theme_light" xml:space="preserve"><value>Light</value></data>
+  <data name="Settings_Weather" xml:space="preserve"><value>Weather</value></data>
+  <data name="Settings_CurrentCity" xml:space="preserve"><value>City:</value></data>
+  <data name="Settings_NoCity" xml:space="preserve"><value>not set</value></data>
+  <data name="Settings_CityHint" xml:space="preserve"><value>City name</value></data>
+  <data name="Settings_Find" xml:space="preserve"><value>Find</value></data>
+  <data name="Settings_CityNotFound" xml:space="preserve"><value>City not found.</value></data>
+  <data name="Settings_CityError" xml:space="preserve"><value>Search failed: {0}</value></data>
+  <data name="Settings_WeatherNote" xml:space="preserve"><value>Search uses open-meteo.com. The phone gets the weather from there too.</value></data>
+  <data name="Settings_Agent" xml:space="preserve"><value>Agent</value></data>
+  <data name="Settings_Autostart" xml:space="preserve"><value>Start the agent when signing in to Windows</value></data>
+  <data name="Settings_AutostartOn" xml:space="preserve"><value>Agent autostart is on.</value></data>
+  <data name="Settings_AutostartOff" xml:space="preserve"><value>Agent autostart is off.</value></data>
+  <data name="Settings_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Settings_BadPort" xml:space="preserve"><value>Port must be a number from 1024 to 65535.</value></data>
+  <data name="Settings_PortRestart" xml:space="preserve"><value>The new port works after the agent restarts. The firewall rule has to be updated too.</value></data>
+  <data name="Settings_DataFolder" xml:space="preserve"><value>Data folder:</value></data>
+  <data name="Settings_OpenFolder" xml:space="preserve"><value>Open folder</value></data>
+  <data name="Settings_SaveHint" xml:space="preserve"><value>Theme and language apply at once; they reach config.json after Save.</value></data>
+
+  <data name="About_Version" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="About_Text" xml:space="preserve"><value>An old Android phone as a wall touch panel for the PC. MIT.</value></data>
+  <data name="About_CheckUpdates" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="About_Install" xml:space="preserve"><value>Open the release</value></data>
+  <data name="About_Privacy" xml:space="preserve"><value>No telemetry. Network use is limited to open-meteo (weather), GitHub (update check), dl.google.com (platform-tools, with consent) and SSH to your servers.</value></data>
+  <data name="Update_Available" xml:space="preserve"><value>Update {0} available</value></data>
+  <data name="Update_UpToDate" xml:space="preserve"><value>You have the latest version.</value></data>
+  <data name="Update_NoReleases" xml:space="preserve"><value>No releases yet — nothing to check.</value></data>
+  <data name="Update_Failed" xml:space="preserve"><value>Could not check for updates: {0}</value></data>
+</root>
