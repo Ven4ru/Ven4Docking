@@ -1,0 +1,22 @@
+# secrets and local data
+*.keystore
+*.jks
+keystore.pass
+config.json
+*.log
+panel_url.txt
+servers.json
+# build
+/agent/target/
+/editor/**/bin/
+/editor/**/obj/
+/android/build/
+/dist/
+.env*
+*.pem
+*.key
+admin.key
+*.apk
+*.idsig
+# research notes with workstation details (public summary later)
+docs/research/ai-limits.md
