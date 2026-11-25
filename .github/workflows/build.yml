@@ -76,9 +76,13 @@ jobs:
           cache: gradle
       - name: NSIS
         run: |
-          if (-not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path "${env:ProgramFiles(x86)}\NSIS\makensis.exe")) {
+          $nsis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+          # the Chocolatey feed sometimes answers 503: retry, and fail here instead of at the build step
+          for ($i = 1; $i -le 3 -and -not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path $nsis); $i++) {
             choco install nsis -y --no-progress
+            if (-not (Test-Path $nsis)) { Start-Sleep -Seconds (20 * $i) }
           }
+          if (-not (Get-Command makensis -ErrorAction SilentlyContinue) -and -not (Test-Path $nsis)) { throw 'NSIS was not installed' }
 
       # ---------------------------------------------------------------- checks
       - name: Agent tests
