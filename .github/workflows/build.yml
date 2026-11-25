@@ -91,6 +91,9 @@ jobs:
           npm run lint
       - name: Editor tests
         run: dotnet test editor/Ven4Docking.Editor.sln -c Release
+      - name: Launcher tests
+        working-directory: android
+        run: ./gradlew.bat testReleaseUnitTest --no-daemon --console=plain
 
       # ---------------------------------------------------------------- launcher signing
       - name: Release keystore

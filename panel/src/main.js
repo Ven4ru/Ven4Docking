@@ -153,6 +153,12 @@ function overlay(on, title, why) {
 }
 
 function setOffline(v) {
+  // the launcher starts looking for the PC on the LAN when its address stops answering
+  if (v !== offline) {
+    try {
+      if (window.DockAndroid && typeof window.DockAndroid.offline === 'function') window.DockAndroid.offline(v);
+    } catch (e) { /* older launcher without offline() */ }
+  }
   offline = v;
   night.setOffline(v);
   if (!authFailed) overlay(v, 'ПК не отвечает', 'Жду, когда компьютер появится в сети… Повтор каждые 5 секунд.');

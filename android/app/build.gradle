@@ -55,3 +55,8 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
+
+dependencies {
+    // JVM unit tests (src/test) only; nothing is added to the APK
+    testImplementation 'junit:junit:4.13.2'
+}

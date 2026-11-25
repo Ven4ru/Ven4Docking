@@ -16,7 +16,7 @@
   ANDROID_KEYSTORE_FILE / ANDROID_KEYSTORE_PASS / ANDROID_KEY_ALIAS it is signed with the debug key.
 
 .PARAMETER Test
-  Also run checks: cargo test, npm run lint, dotnet test.
+  Also run checks: cargo test, npm run lint, dotnet test, launcher JVM tests (gradlew testReleaseUnitTest).
 
 .PARAMETER Clean
   Reinstall panel node_modules (npm ci) even if they exist.
@@ -119,6 +119,7 @@ Copy-Item (Join-Path $editorOut '*') $stage -Recurse
 Step 'Launcher APK (gradlew assembleRelease)'
 $androidDir = Join-Path $root 'android'
 Run (Join-Path $androidDir 'gradlew.bat') @('assembleRelease', '--no-daemon', '--console=plain') $androidDir
+if ($Test) { Step 'Launcher tests (gradlew testReleaseUnitTest)'; Run (Join-Path $androidDir 'gradlew.bat') @('testReleaseUnitTest', '--no-daemon', '--console=plain') $androidDir }
 $apk = Join-Path $androidDir 'app\build\outputs\apk\release\app-release.apk'
 if (-not (Test-Path $apk)) { throw "APK not found: $apk" }
 $apkTarget = Join-Path $stage 'apk\ven4docking.apk'

@@ -46,6 +46,10 @@ public class MainActivity extends Activity {
     private static final long RETRY_MS = 5000;
     private static final long REPORT_MS = 60000;
     private static final long UPDATE_CHECK_MS = 6 * 3600 * 1000L;
+    /** The saved address has failed this long without a break → look for the PC on the LAN. */
+    private static final long REDISCOVER_AFTER_MS = 30000;
+    /** Repeat the LAN search at most this often while the PC stays away. */
+    private static final long REDISCOVER_EVERY_MS = 60000;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final ExecutorService io = Executors.newCachedThreadPool();
@@ -62,8 +66,13 @@ public class MainActivity extends Activity {
     /** Origin of the page currently shown; the bridge hands out the token only to the paired agent. */
     private volatile String pageOrigin = "";
     private volatile Updater.Latest latest;
+    /** UI thread only: since when the saved address fails (0 = answering), a search is running, its generation. */
+    private long offlineSince;
+    private boolean searching;
+    private int searchGen;
 
     private final Runnable retry = () -> { if (failed) load(); };
+    private final Runnable rediscover = this::rediscover;
     private final Runnable rehide = () -> { if (hasWindowFocus()) Screen.immersive(this); };
     private final Runnable report = new Runnable() {
         @Override public void run() { sendReport(); ui.postDelayed(this, REPORT_MS); }
@@ -151,6 +160,7 @@ public class MainActivity extends Activity {
         ui.removeCallbacks(report);
         ui.removeCallbacks(updateCheck);
         ui.removeCallbacks(retry);
+        markOnline();
         if (web != null) {
             root.removeView(web);
             web.destroy();
@@ -190,7 +200,10 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView v, String url) {
                 pageOrigin = Prefs.origin(url);
-                if (!failed) status.setVisibility(View.GONE);
+                if (!failed) {
+                    status.setVisibility(View.GONE);
+                    markOnline();
+                }
             }
 
             @Override
@@ -218,6 +231,9 @@ public class MainActivity extends Activity {
         ui.removeCallbacks(retry);
         if (web == null) return;
         failed = false;
+        // until the page finishes the saved address counts as silent: a switched-off PC may leave the
+        // connection hanging for minutes instead of failing, and the 30 s countdown must run meanwhile
+        markOffline();
         web.loadUrl(prefs.baseUrl());
     }
 
@@ -227,6 +243,52 @@ public class MainActivity extends Activity {
         status.setVisibility(View.VISIBLE);
         ui.removeCallbacks(retry);
         ui.postDelayed(retry, RETRY_MS);
+        markOffline();
+    }
+
+    // ---------- re-finding the PC after its address changed ----------
+
+    /** The saved address is not answering (page still loading or failed, or the panel lost the agent). */
+    private void markOffline() {
+        if (offlineSince != 0) return;
+        offlineSince = System.currentTimeMillis();
+        ui.removeCallbacks(rediscover);
+        ui.postDelayed(rediscover, REDISCOVER_AFTER_MS);
+    }
+
+    private void markOnline() {
+        offlineSince = 0;
+        searchGen++;
+        ui.removeCallbacks(rediscover);
+    }
+
+    /**
+     * UDP scan + proof (see {@link Rediscovery}) off the UI thread. The normal 5 s retries go on meanwhile;
+     * if nothing proves itself (or broadcasts don't pass on this network), nothing changes.
+     */
+    private void rediscover() {
+        if (offlineSince == 0 || searching || web == null || !prefs.paired()) return;
+        searching = true;
+        final int gen = searchGen;
+        final String base = prefs.baseUrl(), token = prefs.token();
+        io.execute(() -> {
+            String found = null;
+            try { found = Rediscovery.find(base, token); } catch (RuntimeException ignored) { }
+            final String moved = found;
+            ui.post(() -> {
+                searching = false;
+                if (gen != searchGen || offlineSince == 0 || web == null) return; // back online or screen changed
+                if (moved != null && base.equals(prefs.baseUrl()) && token.equals(prefs.token())) {
+                    prefs.saveBaseUrl(moved);
+                    markOnline(); // a fresh 30 s window if the new address fails too
+                    Toast.makeText(this, "Компьютер найден по новому адресу", Toast.LENGTH_SHORT).show();
+                    showPanel();
+                    return;
+                }
+                ui.removeCallbacks(rediscover);
+                ui.postDelayed(rediscover, REDISCOVER_EVERY_MS);
+            });
+        });
     }
 
     // ---------- provisioning, report, update ----------
@@ -412,6 +474,17 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public String version() { return BuildConfig.VERSION_NAME; }
+
+        /**
+         * The panel lost / found the agent ("ПК не отвечает" on / off; extension of the bridge contract).
+         * Starts the 30 s countdown to the LAN search. Only the paired agent's page is listened to.
+         */
+        @JavascriptInterface
+        public void offline(final boolean off) {
+            String base = prefs.baseUrl();
+            if (base.isEmpty() || !pageOrigin.equals(Prefs.origin(base))) return;
+            ui.post(() -> { if (web == null) return; if (off) markOffline(); else markOnline(); });
+        }
 
         /** {"level","temp","charging"} */
         @JavascriptInterface

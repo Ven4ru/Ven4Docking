@@ -307,3 +307,98 @@ fn media_helpers() {
     assert_eq!(media_vk("mute"), Some(0xAD));
     assert_eq!(media_vk("x"), None);
 }
+
+// ---------- POST /api/v1/hello: proof of the paired PC without sending a token ----------
+
+const NONCE: &str = "00112233445566778899aabbccddeeff";
+
+#[test]
+fn hello_hmac_vectors() {
+    use ven4docking_agent::config::{hash_token, hex};
+    use ven4docking_agent::http::hello::{hmac_sha256, proof, valid_nonce};
+    // RFC 4231 test cases 2 and 6 (key longer than a block)
+    assert_eq!(hex(&hmac_sha256(b"Jefe", b"what do ya want for nothing?")), "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843");
+    assert_eq!(
+        hex(&hmac_sha256(&[0xaa; 131], b"Test Using Larger Than Block-Size Key - Hash Key First")),
+        "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54"
+    );
+    // the same vector is checked by the launcher (android/app/src/test/.../ProofTest.java)
+    assert_eq!(hash_token("test-token"), "4c5dc9b7708905f77f5e5d16316b5dfb425e68cb326dcd55a860e90a7707031e");
+    assert_eq!(proof(&hash_token("test-token"), NONCE), "a19a3f990815c79089877d5bf141489408eb7a458267709a936bcc9301a0e46c");
+    assert!(valid_nonce(NONCE) && valid_nonce(&"A".repeat(128)));
+    assert!(!valid_nonce(&NONCE[1..]) && !valid_nonce(&"a".repeat(129)) && !valid_nonce(&format!("{}g", &NONCE[1..])));
+}
+
+#[tokio::test]
+async fn hello_proves_paired_phones_without_token() {
+    use ven4docking_agent::config::hash_token;
+    use ven4docking_agent::http::hello::proof;
+    let e = env("hello");
+    let h = [("x-admin-key", KEY)];
+    let (s, v) = call(&e.st, "192.168.1.50", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await;
+    assert_eq!(s, StatusCode::OK, "no Authorization needed");
+    assert_eq!(v, json!({"proofs": [proof(&hash_token(&e.token), NONCE)]}), "only the proofs, nothing else");
+
+    // a second phone appears in the list; after revoke it is gone, the first stays
+    let (_, a) = call(&e.st, "127.0.0.1", "POST", "/admin/phones/token", &h, Some(json!({"name": "Кухня", "model": "SM-A105"}))).await;
+    let (id2, tok2) = (a["id"].as_str().unwrap().to_string(), a["token"].as_str().unwrap().to_string());
+    let p1 = json!(proof(&hash_token(&e.token), NONCE));
+    let p2 = json!(proof(&hash_token(&tok2), NONCE));
+    let (_, v) = call(&e.st, "192.168.1.50", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await;
+    let list = v["proofs"].as_array().unwrap();
+    assert!(list.len() == 2 && list.contains(&p1) && list.contains(&p2), "{v}");
+    let (s, _) = call(&e.st, "127.0.0.1", "POST", &format!("/admin/phones/{id2}/revoke"), &h, None).await;
+    assert_eq!(s, StatusCode::OK);
+    let (_, v) = call(&e.st, "192.168.1.50", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await;
+    assert_eq!(v["proofs"], json!([p1]), "revoked phone excluded");
+
+    // another nonce gives another proof (no replay of an old answer)
+    let other = "ffeeddccbbaa99887766554433221100";
+    let (_, v) = call(&e.st, "192.168.1.50", "POST", "/api/v1/hello", &[], Some(json!({"nonce": other}))).await;
+    assert_eq!(v["proofs"], json!([proof(&hash_token(&e.token), other)]));
+    assert_ne!(v["proofs"][0], p1);
+}
+
+#[tokio::test]
+async fn hello_rejects_bad_nonce_public_ip_and_floods() {
+    let e = env("hello-bad");
+    let bad = [
+        json!({}),
+        json!({"nonce": ""}),
+        json!({"nonce": &NONCE[1..]}),
+        json!({"nonce": "zz112233445566778899aabbccddeeff"}),
+        json!({"nonce": "a".repeat(129)}),
+        json!({"nonce": 12345}),
+    ];
+    for b in bad {
+        let (s, v) = call(&e.st, "10.0.0.8", "POST", "/api/v1/hello", &[], Some(b.clone())).await;
+        assert_eq!(s, StatusCode::BAD_REQUEST, "{b}");
+        assert!(v["error"].is_string(), "{b}");
+    }
+    let (s, v) = call(&e.st, "8.8.8.8", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await;
+    assert_eq!((s, v["error"].as_str()), (StatusCode::FORBIDDEN, Some("lan only")));
+    let (s, _) = call(&e.st, "192.168.1.50", "GET", "/api/v1/hello", &[], None).await;
+    assert_ne!(s, StatusCode::OK, "POST only");
+
+    // more than 10 per second from one address -> 429; another address is not affected
+    let mut codes = Vec::new();
+    for _ in 0..12 {
+        codes.push(call(&e.st, "10.0.0.9", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await.0);
+    }
+    assert!(codes[..10].iter().all(|c| *c == StatusCode::OK), "{codes:?}");
+    assert_eq!(codes[11], StatusCode::TOO_MANY_REQUESTS, "{codes:?}");
+    let (s, _) = call(&e.st, "10.0.0.10", "POST", "/api/v1/hello", &[], Some(json!({"nonce": NONCE}))).await;
+    assert_eq!(s, StatusCode::OK);
+}
+
+#[test]
+fn hello_limit_window() {
+    use std::time::{Duration, Instant};
+    use ven4docking_agent::http::hello::HelloLimit;
+    let mut l = HelloLimit::default();
+    let ip: std::net::IpAddr = "10.0.0.1".parse().unwrap();
+    let t0 = Instant::now();
+    assert!((0..10).all(|_| l.allow(ip, t0)));
+    assert!(!l.allow(ip, t0 + Duration::from_millis(500)));
+    assert!(l.allow(ip, t0 + Duration::from_millis(1001)), "new window");
+}

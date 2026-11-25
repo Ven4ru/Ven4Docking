@@ -1,7 +1,8 @@
-//! HTTP: panel API v1 (LAN, phone token), pairing, static panel/icons/APK, editor API (127.0.0.1 + X-Admin-Key).
+//! HTTP: panel API v1 (LAN, phone token), hello (re-finding the PC, no token), pairing, static panel/icons/APK, editor API (127.0.0.1 + X-Admin-Key).
 
 pub mod admin;
 pub mod files;
+pub mod hello;
 pub mod pair;
 pub mod panel;
 
@@ -84,6 +85,7 @@ pub fn router(st: Arc<AppState>) -> Router {
         .route("/api/v1/launch", post(panel::launch))
         .route("/api/v1/media", post(panel::media))
         .route("/api/v1/phone", post(panel::phone))
+        .route("/api/v1/hello", post(hello::hello))
         .route("/api/{*rest}", get(api_404).post(api_404))
         .route("/pair/start", post(pair::start))
         .route("/pair/{id}", get(pair::status))

@@ -67,7 +67,7 @@ Ven4Docking превращает старый телефон на Android в п�
 
 ```powershell
 ./build.ps1          # агент, панель, редактор, APK, установщик и zip -> dist\
-./build.ps1 -Test    # то же + cargo test, npm run lint, dotnet test
+./build.ps1 -Test    # то же + cargo test, npm run lint, dotnet test, тесты лаунчера (JVM)
 ```
 
 Результат: `dist\Ven4Docking-Setup-X.Y.Z.exe`, `dist\Ven4Docking-X.Y.Z.zip` (копия установленной папки), `dist\ven4docking-launcher-X.Y.Z.apk`, `dist\SHA256SUMS`.
@@ -147,7 +147,7 @@ Needs Rust (stable), Node.js 20+, .NET 10 SDK, JDK 17+ with the Android SDK (`AN
 
 ```powershell
 ./build.ps1          # agent, panel, editor, APK, installer and zip -> dist\
-./build.ps1 -Test    # the same + cargo test, npm run lint, dotnet test
+./build.ps1 -Test    # the same + cargo test, npm run lint, dotnet test, launcher JVM tests
 ```
 
 Output: `dist\Ven4Docking-Setup-X.Y.Z.exe`, `dist\Ven4Docking-X.Y.Z.zip` (a copy of the installed folder), `dist\ven4docking-launcher-X.Y.Z.apk`, `dist\SHA256SUMS`.

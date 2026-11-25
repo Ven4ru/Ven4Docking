@@ -3,6 +3,7 @@
 use crate::config::{Config, Paths};
 use crate::layout::Layout;
 use crate::metrics::Actions;
+use crate::http::hello::HelloLimit;
 use crate::http::pair::Pairs;
 use crate::poll::Demand;
 use crate::servers::Watch;
@@ -35,6 +36,8 @@ pub struct AppState {
     pub layouts: RwLock<HashMap<String, Layout>>,
     pub admin_key: String,
     pub pairs: Mutex<Pairs>,
+    /// Rate limit of POST /api/v1/hello per address.
+    pub hello: Mutex<HelloLimit>,
     pub phones: Mutex<HashMap<String, PhoneStatus>>,
     pub demand: Demand,
     pub data: Mutex<HashMap<&'static str, BlockData>>,
@@ -60,6 +63,7 @@ impl AppState {
             layouts: RwLock::new(HashMap::new()),
             admin_key,
             pairs: Mutex::new(Pairs::default()),
+            hello: Mutex::new(HelloLimit::default()),
             phones: Mutex::new(HashMap::new()),
             demand: Demand::default(),
             data: Mutex::new(HashMap::new()),
