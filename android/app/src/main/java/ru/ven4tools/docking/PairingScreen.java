@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,10 +88,16 @@ final class PairingScreen {
 
     // ---------- step 1: choose the PC ----------
 
-    void showChoose(String notice) {
+    void showChoose(String notice) { showChoose(notice, null); }
+
+    /** retryBase: the PC of the attempt that just failed — offers a new code for it in one tap. */
+    private void showChoose(String notice, final String retryBase) {
         final int gen = ++generation;
         header("Привязка к компьютеру. На ПК должна работать программа Ven4Docking.");
         if (notice != null) box.addView(text(notice, 15, WARN));
+        if (retryBase != null) {
+            box.addView(button("Запросить новый код для " + shortAddr(retryBase), v -> startPair(retryBase)));
+        }
 
         box.addView(text("Компьютеры в этой сети:", 16, TEXT));
         final LinearLayout list = new LinearLayout(a);
@@ -111,8 +119,17 @@ final class PairingScreen {
         addr.setHint("192.168.1.10 или 192.168.1.10:" + BuildConfig.AGENT_PORT);
         addr.setHintTextColor(MUTE);
         addr.setTextColor(TEXT);
+        // what the user typed survives a new code, "Искать снова", "Отмена" and app restarts
+        String typed = prefs.typedAddress();
         String old = prefs.baseUrl();
-        if (!old.isEmpty()) addr.setText(old.replace("http://", "").replaceAll("/$", ""));
+        if (!typed.isEmpty()) addr.setText(typed);
+        else if (!old.isEmpty()) addr.setText(shortAddr(old));
+        addr.setSelection(addr.getText().length());
+        addr.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override public void afterTextChanged(Editable s) { prefs.saveTypedAddress(s.toString()); }
+        });
         row.addView(addr, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         final Runnable connect = () -> {
             String base = Prefs.normalizeBase(addr.getText().toString(), BuildConfig.AGENT_PORT);
@@ -140,9 +157,14 @@ final class PairingScreen {
 
     // ---------- step 2: code and waiting ----------
 
+    /** "http://192.168.1.10:8765/" → "192.168.1.10:8765" */
+    private static String shortAddr(String base) {
+        return base.replace("http://", "").replaceAll("/$", "");
+    }
+
     private void startPair(final String base) {
         final int gen = ++generation;
-        header("Подключаюсь к " + base.replace("http://", "").replaceAll("/$", "") + "…");
+        header("Подключаюсь к " + shortAddr(base) + "…");
         final TextView status = text("", 15, MUTE);
         box.addView(status);
         box.addView(button("Отмена", v -> showChoose(null)));
@@ -166,7 +188,7 @@ final class PairingScreen {
                 err = "Нет связи с ПК по этому адресу. Проверьте адрес и что Ven4Docking запущен.";
             }
             final String msg = err;
-            ui.post(() -> { if (gen == generation) showChoose(msg); });
+            ui.post(() -> { if (gen == generation) showChoose(msg, base); });
         });
     }
 
@@ -190,7 +212,7 @@ final class PairingScreen {
             String done = null, fail = null, wait = null;
             try {
                 Http.Response r = Http.get(base + "pair/" + pairId, null);
-                if (r.code == 404) fail = "Код устарел (2 минуты). Начните заново.";
+                if (r.code == 404) fail = "Код устарел (2 минуты). Запросите новый.";
                 else if (r.ok()) {
                     JSONObject j = new JSONObject(r.body);
                     String st = j.optString("status");
@@ -212,9 +234,9 @@ final class PairingScreen {
                     prefs.savePairing(base, token);
                     listener.onPaired();
                 } else if (failMsg != null) {
-                    showChoose(failMsg);
+                    showChoose(failMsg, base);
                 } else if (System.currentTimeMillis() > deadline) {
-                    showChoose("ПК не подтвердил подключение. Попробуйте ещё раз.");
+                    showChoose("ПК не подтвердил подключение. Попробуйте ещё раз.", base);
                 } else {
                     status.setText(waitMsg);
                     ui.postDelayed(poll[0], POLL_MS);

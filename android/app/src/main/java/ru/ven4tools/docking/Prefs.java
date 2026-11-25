@@ -27,6 +27,11 @@ final class Prefs {
 
     void forgetToken() { p.edit().remove("token").apply(); }
 
+    /** The PC address as the user typed it on the pairing screen; kept so an expired code is one tap to renew. */
+    String typedAddress() { return p.getString("typedAddress", ""); }
+
+    void saveTypedAddress(String s) { p.edit().putString("typedAddress", s == null ? "" : s.trim()).apply(); }
+
     /** Random id of this phone for /pair/start (not ANDROID_ID: nothing to track across apps). */
     String deviceId() {
         String id = p.getString("deviceId", "");
