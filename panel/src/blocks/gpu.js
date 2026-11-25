@@ -1,6 +1,7 @@
 // gpu: load, temperature, VRAM, fan, load graph.
 // opts: {gpu: "<id>" (default: the busiest card with a sensor), show: ["temp","vram","fan","graph"], warn, hot}
-import { h, loadColor, tempColor, fmtB, spark, sparkSvg, pushHist } from '../util.js';
+import { h, loadColor, tempColor, fmtB, spark, sparkSvg } from '../util.js';
+import { track } from '../history.js';
 import { frame, reason, bigSize } from './common.js';
 
 function pick(gpus, id) {
@@ -20,7 +21,6 @@ export function render(el, opts) {
   f.body.appendChild(row);
   const sp = sparkSvg();
   if (has('graph')) f.card.appendChild(sp);
-  const hist = [];
   const warm = opts.warn || 75, hot = opts.hot || 88;
 
   return {
@@ -36,7 +36,8 @@ export function render(el, opts) {
       f.aux.style.color = tempColor(g.temp, warm, hot);
       sub.textContent = [has('vram') && g.vramUsed != null ? 'VRAM ' + fmtB(g.vramUsed) : '', has('fan') && g.fanRpm ? g.fanRpm + ' об/м' : '']
         .filter(Boolean).join(' · ');
-      pushHist(hist, g.load, 60);
+      // per card, kept across relayouts (history.js)
+      const hist = track('gpu:' + (g.id || g.name) + '.load', g.load, s, 60);
       if (has('graph')) spark(sp, hist, 100);
     },
     resize(w, hh) { big.style.fontSize = Math.round(bigSize(w, hh, 0.22)) + 'px'; },
