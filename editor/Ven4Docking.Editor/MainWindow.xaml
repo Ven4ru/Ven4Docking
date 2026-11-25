@@ -91,6 +91,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -118,6 +119,9 @@
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{Binding AgentOnline, Converter={StaticResource StateBrushConv}}"/>
                             <TextBlock Text="{Binding AgentText}" Margin="8,0,0,0" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xE7BA;" Style="{StaticResource Icon}" FontSize="12" Margin="8,0,0,0"
+                                       Foreground="{DynamicResource StatusWarning}" ToolTip="{l:L Firewall_Title}"
+                                       Visibility="{Binding FirewallWarning, Converter={StaticResource Vis}}"/>
                             <Button Content="{l:L Agent_Start}" Command="{Binding StartAgentCommand}" Height="22" Padding="8,0" Margin="10,0,0,0"
                                     FontSize="11" Visibility="{Binding AgentOnline, Converter={StaticResource Vis}, ConverterParameter=invert}"/>
                         </StackPanel>
@@ -143,7 +147,37 @@
                 </DockPanel>
             </Border>
 
-            <ContentControl Grid.Row="1" Content="{Binding SelectedSection.ViewModel}" Focusable="False"/>
+            <!-- Firewall rule missing or blocked: the agent runs, but the phone cannot reach the PC (spec §13). -->
+            <Border Grid.Row="1" Style="{StaticResource WarnNote}" Margin="20,12,20,0" AutomationProperties.Name="{l:L Firewall_Title}"
+                    Visibility="{Binding FirewallWarning, Converter={StaticResource Vis}}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="{l:L Firewall_Fix}" Command="{Binding FixFirewallCommand}"
+                            Style="{StaticResource PrimaryButton}" Padding="16,0" Margin="12,0,0,0" VerticalAlignment="Center"
+                            ToolTip="{l:L Firewall_FixHint}"/>
+                    <TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource Icon}" Foreground="{DynamicResource StatusWarning}"
+                               VerticalAlignment="Top" Margin="0,1,10,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:L Firewall_Title}" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock Text="{Binding FirewallText}" TextWrapping="Wrap" FontSize="12" Margin="0,2,0,0"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <TextBlock Text="{Binding FirewallNote}" TextWrapping="Wrap" FontSize="12" Margin="0,4,0,0"
+                                   Visibility="{Binding FirewallNote, Converter={StaticResource Vis}}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="Foreground" Value="{DynamicResource StatusWarning}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FirewallNoteIsError}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource StatusDanger}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <ContentControl Grid.Row="2" Content="{Binding SelectedSection.ViewModel}" Focusable="False"/>
         </Grid>
     </Grid>
 </Window>

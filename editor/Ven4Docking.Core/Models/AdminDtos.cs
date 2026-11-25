@@ -63,6 +63,40 @@ public sealed class AgentStatus
     public long? RamBytes { get; set; }
     public int ActivePanels { get; set; }
     public Dictionary<string, JsonElement>? BlockErrors { get; set; }
+
+    /// <summary>
+    /// "ok" | "missing" | "blocked" | "unknown" — the inbound firewall rule of the agent. Absent in older agents.
+    /// </summary>
+    public string? Firewall { get; set; }
+
+    [JsonIgnore]
+    public FirewallState FirewallState => FirewallStates.Parse(Firewall);
+}
+
+/// <summary>Firewall rule state reported by the agent in <c>GET /admin/status</c>.</summary>
+public enum FirewallState
+{
+    /// <summary>The agent did not say (older agent, unknown value, agent offline): show nothing.</summary>
+    Unknown,
+    Ok,
+    /// <summary>No inbound rule: the phone cannot reach the PC over Wi-Fi.</summary>
+    Missing,
+    /// <summary>Windows created a Block rule for the agent program (the user pressed «Cancel» in its prompt).</summary>
+    Blocked,
+}
+
+public static class FirewallStates
+{
+    public static FirewallState Parse(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "ok" => FirewallState.Ok,
+        "missing" => FirewallState.Missing,
+        "blocked" => FirewallState.Blocked,
+        _ => FirewallState.Unknown,
+    };
+
+    /// <summary>The editor warns and offers «Исправить» only for these states.</summary>
+    public static bool NeedsFix(FirewallState state) => state is FirewallState.Missing or FirewallState.Blocked;
 }
 
 /// <summary>Result of PUT /admin/layouts or a local file save.</summary>

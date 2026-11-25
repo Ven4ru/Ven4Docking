@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Ven4Docking.Core.Admin;
+using Ven4Docking.Core.Models;
 using Ven4Docking.Core.Validation;
 using Ven4Docking.Editor.Services;
 using Ven4Docking.Editor.Themes;
@@ -72,6 +74,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             if (e.PropertyName is nameof(EditorSession.AgentOnline) or nameof(EditorSession.AgentStatus))
             {
+                Firewall.Update(Session.AgentOnline ? Session.AgentStatus : null);
                 OnPropertyChanged(nameof(AgentText));
                 OnPropertyChanged(nameof(AgentOnline));
                 OnPropertyChanged(nameof(StorageText));
@@ -86,8 +89,10 @@ public sealed partial class MainViewModel : ObservableObject
         {
             OnPropertyChanged(nameof(AgentText));
             OnPropertyChanged(nameof(StorageText));
+            NotifyFirewall();
             foreach (var s in Sections) s.ViewModel.Rebuild();
         };
+        Firewall.Changed += NotifyFirewall;
 
         _statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
         _statusTimer.Tick += async (_, _) => await Session.RefreshStatusAsync();
@@ -211,6 +216,57 @@ public sealed partial class MainViewModel : ObservableObject
             StatusMessage = Loc.F("SaveError_Other", e.Message);
             return false;
         }
+    }
+
+    // ---------- firewall (spec §13: «если отказали — агент работает, но телефон не достучится; редактор показывает это») ----------
+
+    public FirewallNotice Firewall { get; } = new();
+
+    public bool FirewallWarning => Firewall.ShowWarning;
+
+    public string FirewallText => Loc.T(Firewall.State == FirewallState.Blocked ? "Firewall_Blocked" : "Firewall_Missing");
+
+    /// <summary>Progress or the outcome of the last «Исправить»; empty when there is nothing to say.</summary>
+    public string FirewallNote
+    {
+        get
+        {
+            if (Firewall.IsFixing) return Loc.T("Firewall_Fixing");
+            var r = Firewall.LastResult;
+            return r?.Outcome switch
+            {
+                FirewallFixOutcome.Declined => Loc.T("Firewall_Declined"),
+                FirewallFixOutcome.AgentNotFound => Loc.T("Agent_NotFound"),
+                FirewallFixOutcome.Fixed => Loc.T("Firewall_StillReported"),
+                FirewallFixOutcome.Failed when r.ExitCode is int code => Loc.F("Firewall_FailedCode", code),
+                FirewallFixOutcome.Failed => Loc.F("Firewall_FailedError", r.Error),
+                _ => "",
+            };
+        }
+    }
+
+    public bool FirewallNoteIsError => Firewall.LastResult?.Outcome is FirewallFixOutcome.Failed or FirewallFixOutcome.AgentNotFound;
+
+    private void NotifyFirewall()
+    {
+        OnPropertyChanged(nameof(FirewallWarning));
+        OnPropertyChanged(nameof(FirewallText));
+        OnPropertyChanged(nameof(FirewallNote));
+        OnPropertyChanged(nameof(FirewallNoteIsError));
+        FixFirewallCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanFixFirewall() => Firewall.CanFix;
+
+    /// <summary>«Исправить»: ven4docking-agent.exe --firewall add, elevated (UAC). Declining keeps the warning.</summary>
+    [RelayCommand(CanExecute = nameof(CanFixFirewall))]
+    private async Task FixFirewall()
+    {
+        await Firewall.FixAsync(FindAgentExe(), async () =>
+        {
+            await Session.RefreshStatusAsync();
+            return Session.AgentOnline ? Session.AgentStatus : null;
+        });
     }
 
     public static string? FindAgentExe()

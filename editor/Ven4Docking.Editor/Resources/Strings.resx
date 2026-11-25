@@ -24,6 +24,16 @@
   <data name="Agent_StartFailed" xml:space="preserve"><value>Агент не ответил. Проверьте журнал agent.log в папке данных.</value></data>
   <data name="Agent_NotFound" xml:space="preserve"><value>Не найден ven4docking-agent.exe. Переустановите Ven4Docking.</value></data>
   <data name="Agent_NeededForThis" xml:space="preserve"><value>Для этого нужен запущенный агент.</value></data>
+  <data name="Firewall_Title" xml:space="preserve"><value>Телефон не достучится до ПК по Wi-Fi</value></data>
+  <data name="Firewall_Missing" xml:space="preserve"><value>Нет правила брандмауэра Windows «Ven4Docking». Агент работает, но входящие подключения из домашней сети не пропускаются, и панель на телефоне не загрузится.</value></data>
+  <data name="Firewall_Blocked" xml:space="preserve"><value>Брандмауэр Windows запретил агенту входящие подключения (так бывает, если в его окне нажать «Отмена»). Агент работает, но панель на телефоне не загрузится.</value></data>
+  <data name="Firewall_Fix" xml:space="preserve"><value>Исправить</value></data>
+  <data name="Firewall_FixHint" xml:space="preserve"><value>Windows спросит права администратора: агент добавит правило «Ven4Docking» (только локальная сеть) и снимет запрет.</value></data>
+  <data name="Firewall_Fixing" xml:space="preserve"><value>Ждём ответа Windows…</value></data>
+  <data name="Firewall_Declined" xml:space="preserve"><value>Права администратора не выданы — правило не добавлено. Нажмите «Исправить» ещё раз и ответьте «Да».</value></data>
+  <data name="Firewall_StillReported" xml:space="preserve"><value>Правило добавлено, но агент всё ещё видит проблему. Перезапустите агент или нажмите «Исправить» ещё раз.</value></data>
+  <data name="Firewall_FailedCode" xml:space="preserve"><value>Не удалось добавить правило (код {0}). Подробности — в agent.log в папке данных.</value></data>
+  <data name="Firewall_FailedError" xml:space="preserve"><value>Не удалось запустить агент: {0}</value></data>
   <data name="Storage_Agent" xml:space="preserve"><value>Сохранение: агент, порт {0}</value></data>
   <data name="Storage_Files" xml:space="preserve"><value>Сохранение в файлы: {0}</value></data>
   <data name="Saved_Agent" xml:space="preserve"><value>Сохранено в агент, версия раскладки {0}. Панель перестроится сама.</value></data>
