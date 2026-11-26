@@ -17,6 +17,32 @@ internal static class Samples
         }
         """;
 
+    /// <summary>docs/specs 1.1 §3 (new config fields).</summary>
+    public const string SpecConfig11 = """
+        {
+          "actions": [
+            {"id": "mute-discord", "title": "Discord: микрофон", "icon": null, "kind": "keys", "keys": "Ctrl+Shift+M"},
+            {"id": "sign", "title": "Подпись", "kind": "text", "text": "С уважением, …"},
+            {"id": "stream-start", "title": "Начать день", "kind": "macro", "steps": [
+              {"launch": "obs"}, {"wait": 3000}, {"keys": "Ctrl+Alt+F9"}]},
+            {"id": "mic", "title": "Микрофон", "kind": "mic"},
+            {"id": "out", "title": "Наушники / колонки", "kind": "audioOut", "devices": ["{0.0.0.00000000}.{…}", "{…}"]}
+          ],
+          "obs": {"host": "127.0.0.1", "port": 4455, "passwordDpapi": "AQAAANCMnd8B…"},
+          "notify": {"enabled": false, "wallCountsOnly": false, "nightFlash": true,
+                     "apps": {"TelegramDesktop": "title", "Discord": "full", "Microsoft.Office.OUTLOOK.EXE.15": "count"}},
+          "wol": {"mac": "AA:BB:CC:DD:EE:FF", "broadcast": "192.168.1.255"}
+        }
+        """;
+
+    /// <summary>docs/specs 1.1 §4: a program screen.</summary>
+    public const string SpecProgramScreenLayout = """
+        {"version": 3, "orientation": "landscape", "grid": {"cols": 8, "rows": 4},
+         "screens": [{"id": "s1", "name": "Главный", "blocks": []},
+                     {"id": "s3", "name": "OBS", "forApp": "obs64.exe", "blocks": [
+                       {"id": "b1", "type": "obs", "x": 0, "y": 0, "w": 4, "h": 2, "opts": {"stream": true, "record": true, "scenes": true, "audio": true, "stats": true}}]}]}
+        """;
+
     public const string SpecLayout = """
         {"version": 7, "orientation": "landscape", "grid": {"cols": 8, "rows": 4},
          "screens": [{"id": "s1", "name": "Главный", "blocks": [

@@ -13,7 +13,11 @@ public enum UpdateState
     Failed,
 }
 
-public sealed record UpdateResult(UpdateState State, string? LatestVersion = null, string? Url = null, string? Error = null);
+/// <summary>A file of a release (<c>assets[]</c> of the GitHub API).</summary>
+public sealed record ReleaseAsset(string Name, Uri Url, long? Size);
+
+public sealed record UpdateResult(UpdateState State, string? LatestVersion = null, string? Url = null, string? Error = null,
+    IReadOnlyList<ReleaseAsset>? Assets = null);
 
 /// <summary>Checks GitHub Releases of Ven4ru/Ven4Docking (spec §9). Installing is only ever done by a button.</summary>
 public sealed class UpdateChecker
@@ -42,13 +46,29 @@ public sealed class UpdateChecker
             string? url = doc.RootElement.TryGetProperty("html_url", out var u) ? u.GetString() : ReleasesPage;
             var latest = ParseTag(tag);
             if (latest is null) return new UpdateResult(UpdateState.Failed, tag, url, "bad tag");
+            var assets = ParseAssets(doc.RootElement);
             return latest > Normalize(current)
-                ? new UpdateResult(UpdateState.Available, latest.ToString(3), url)
-                : new UpdateResult(UpdateState.UpToDate, latest.ToString(3), url);
+                ? new UpdateResult(UpdateState.Available, latest.ToString(3), url, Assets: assets)
+                : new UpdateResult(UpdateState.UpToDate, latest.ToString(3), url, Assets: assets);
         }
         catch (HttpRequestException e) { return new UpdateResult(UpdateState.Failed, Error: e.Message); }
         catch (TaskCanceledException) when (!ct.IsCancellationRequested) { return new UpdateResult(UpdateState.Failed, Error: "timeout"); }
         catch (JsonException e) { return new UpdateResult(UpdateState.Failed, Error: e.Message); }
+    }
+
+    private static IReadOnlyList<ReleaseAsset> ParseAssets(JsonElement release)
+    {
+        var list = new List<ReleaseAsset>();
+        if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array) return list;
+        foreach (var a in assets.EnumerateArray())
+        {
+            string? name = a.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String ? n.GetString() : null;
+            string? href = a.TryGetProperty("browser_download_url", out var b) && b.ValueKind == JsonValueKind.String ? b.GetString() : null;
+            long? size = a.TryGetProperty("size", out var s) && s.TryGetInt64(out long sz) ? sz : null;
+            if (!string.IsNullOrEmpty(name) && Uri.TryCreate(href, UriKind.Absolute, out var uri))
+                list.Add(new ReleaseAsset(name, uri, size));
+        }
+        return list;
     }
 
     public static Version? ParseTag(string tag)

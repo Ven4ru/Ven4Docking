@@ -350,4 +350,198 @@ https://dl.google.com/android/repository/platform-tools-latest-windows.zip
   <data name="Update_UpToDate" xml:space="preserve"><value>У вас последняя версия.</value></data>
   <data name="Update_NoReleases" xml:space="preserve"><value>Выпусков пока нет — проверить обновления нельзя.</value></data>
   <data name="Update_Failed" xml:space="preserve"><value>Не удалось проверить обновления: {0}</value></data>
+  <data name="Update_Install" xml:space="preserve"><value>Обновить до {0}</value></data>
+  <data name="Update_Banner" xml:space="preserve"><value>Доступна версия {0}</value></data>
+  <data name="Update_BannerInstall" xml:space="preserve"><value>Обновить</value></data>
+  <data name="Update_Hide" xml:space="preserve"><value>Скрыть до следующего запуска</value></data>
+  <data name="Update_Hint" xml:space="preserve"><value>Установщик скачивается с GitHub, проверяется по SHA256SUMS и ставится без вопросов; агент и редактор перезапустятся сами.</value></data>
+  <data name="Update_Connecting" xml:space="preserve"><value>Подключаюсь к GitHub…</value></data>
+  <data name="Update_Downloading" xml:space="preserve"><value>Скачано {0} из {1} МБ</value></data>
+  <data name="Update_DownloadingNoTotal" xml:space="preserve"><value>Скачано {0} МБ</value></data>
+  <data name="Update_Cancel" xml:space="preserve"><value>Отменить</value></data>
+  <data name="Update_Starting" xml:space="preserve"><value>Установщик запущен — редактор закроется и откроется снова.</value></data>
+  <data name="Update_AskSave" xml:space="preserve"><value>Есть несохранённые изменения. Сохранить перед обновлением?</value></data>
+  <data name="Update_SaveFailed" xml:space="preserve"><value>Обновление не начато: не удалось сохранить ({0}).</value></data>
+  <data name="Update_Err_Cancelled" xml:space="preserve"><value>Скачивание отменено.</value></data>
+  <data name="Update_Err_NoAsset" xml:space="preserve"><value>В выпуске нет нужного файла ({0}). Скачайте установщик со страницы выпуска.</value></data>
+  <data name="Update_Err_NoChecksum" xml:space="preserve"><value>В SHA256SUMS нет контрольной суммы для {0} — ставить непроверенный файл нельзя. Скачайте установщик со страницы выпуска.</value></data>
+  <data name="Update_Err_BadHost" xml:space="preserve"><value>Файл выпуска ведёт не на GitHub ({0}) — скачивание остановлено.</value></data>
+  <data name="Update_Err_Network" xml:space="preserve"><value>Не удалось скачать обновление: {0}. Проверьте интернет и повторите или откройте страницу выпуска.</value></data>
+  <data name="Update_Err_HashMismatch" xml:space="preserve"><value>Скачанный установщик не совпал с SHA256SUMS и удалён. Повторите позже или скачайте его со страницы выпуска.</value></data>
+  <data name="Update_Err_Disk" xml:space="preserve"><value>Не удалось сохранить установщик во временную папку: {0}</value></data>
+  <data name="Update_Err_Start" xml:space="preserve"><value>Не удалось запустить установщик: {0}</value></data>
+
+  <!-- 1.1: shell -->
+  <data name="Section_Buttons" xml:space="preserve"><value>Кнопки</value></data>
+  <data name="Section_Notify" xml:space="preserve"><value>Уведомления</value></data>
+  <data name="Agent_TooOld" xml:space="preserve"><value>Агент этого не умеет — обновите Ven4Docking до 1.1.</value></data>
+  <data name="SaveError_ProgramScreens" xml:space="preserve"><value>Не сохранено: экранов программ может быть не больше {0}.</value></data>
+  <data name="SaveError_NoMainScreen" xml:space="preserve"><value>Не сохранено: нужен хотя бы один обычный экран (не экран программы).</value></data>
+  <data name="SaveError_Actions" xml:space="preserve"><value>Не сохранено: проверьте кнопки ({0}).</value></data>
+  <data name="Issue_ProgramScreens" xml:space="preserve"><value>Экранов программ больше {0}: лишние сделайте обычными.</value></data>
+  <data name="Issue_NoMainScreen" xml:space="preserve"><value>Все экраны — экраны программ: панели нечего показывать в обычном режиме.</value></data>
+
+  <!-- 1.1: blocks -->
+  <data name="Block_power" xml:space="preserve"><value>Питание</value></data>
+  <data name="Block_keys" xml:space="preserve"><value>Кнопки</value></data>
+  <data name="Block_mixer" xml:space="preserve"><value>Микшер</value></data>
+  <data name="Block_obs" xml:space="preserve"><value>OBS</value></data>
+  <data name="Block_notify" xml:space="preserve"><value>Уведомления</value></data>
+  <data name="Power_lock" xml:space="preserve"><value>Блокировка</value></data>
+  <data name="Power_sleep" xml:space="preserve"><value>Сон</value></data>
+  <data name="Power_restart" xml:space="preserve"><value>Перезагрузка</value></data>
+  <data name="Power_shutdown" xml:space="preserve"><value>Выключение</value></data>
+  <data name="Opts_PowerButtons" xml:space="preserve"><value>Какие кнопки (срабатывают после удержания 2 с)</value></data>
+  <data name="Opts_Actions" xml:space="preserve"><value>Какие действия (из раздела «Кнопки»)</value></data>
+  <data name="Opts_Show" xml:space="preserve"><value>Что показывать</value></data>
+  <data name="Opts_mixer_output" xml:space="preserve"><value>Устройство вывода</value></data>
+  <data name="Opts_mixer_mic" xml:space="preserve"><value>Микрофон</value></data>
+  <data name="Opts_mixer_apps" xml:space="preserve"><value>Громкость программ</value></data>
+  <data name="Opts_obs_stream" xml:space="preserve"><value>Стрим</value></data>
+  <data name="Opts_obs_record" xml:space="preserve"><value>Запись</value></data>
+  <data name="Opts_obs_scenes" xml:space="preserve"><value>Сцены</value></data>
+  <data name="Opts_obs_audio" xml:space="preserve"><value>Источники звука</value></data>
+  <data name="Opts_obs_stats" xml:space="preserve"><value>Потерянные кадры и битрейт</value></data>
+  <data name="Opts_NotifyMax" xml:space="preserve"><value>Сколько уведомлений</value></data>
+  <data name="Opts_PowerHint" xml:space="preserve"><value>Перезагрузка и выключение начинаются через 10 с — на панели будет «Отмена».</value></data>
+  <data name="Opts_KeysHint" xml:space="preserve"><value>Действия настраиваются в разделе «Кнопки».</value></data>
+  <data name="Opts_ObsHint" xml:space="preserve"><value>Адрес и пароль OBS — в «Настройки» → «OBS».</value></data>
+  <data name="Opts_NotifyHint" xml:space="preserve"><value>Какие приложения показывать и как — в разделе «Уведомления».</value></data>
+  <data name="Screens_ForApp" xml:space="preserve"><value>Экран программы (имя exe, пусто — обычный)</value></data>
+  <data name="Screens_ForAppHint" xml:space="preserve"><value>Например, obs64.exe. Такой экран не листается: панель предложит его, пока программа запущена. Пусто — обычный экран.</value></data>
+  <data name="Screens_ProgramsRefresh" xml:space="preserve"><value>Обновить список запущенных программ</value></data>
+  <data name="Screens_ProgramsPick" xml:space="preserve"><value>Выбрать из запущенных программ</value></data>
+  <data name="Screens_ProgramsOffline" xml:space="preserve"><value>Агент не запущен — введите имя exe вручную.</value></data>
+
+  <!-- 1.1: buttons -->
+  <data name="ActionKind_keys" xml:space="preserve"><value>Сочетание клавиш</value></data>
+  <data name="ActionKind_text" xml:space="preserve"><value>Текст</value></data>
+  <data name="ActionKind_macro" xml:space="preserve"><value>Цепочка</value></data>
+  <data name="ActionKind_mic" xml:space="preserve"><value>Микрофон</value></data>
+  <data name="ActionKind_audioOut" xml:space="preserve"><value>Вывод звука</value></data>
+  <data name="StepKind_keys" xml:space="preserve"><value>Сочетание клавиш</value></data>
+  <data name="StepKind_text" xml:space="preserve"><value>Текст</value></data>
+  <data name="StepKind_wait" xml:space="preserve"><value>Пауза</value></data>
+  <data name="StepKind_launch" xml:space="preserve"><value>Запустить приложение</value></data>
+  <data name="StepKind_bad" xml:space="preserve"><value>Непонятный шаг</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Нажмите сочетание…</value></data>
+  <data name="Hotkey_Empty" xml:space="preserve"><value>не задано</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Эту клавишу панель нажать не сможет</value></data>
+  <data name="Hotkey_ToolTip" xml:space="preserve"><value>Щёлкните и нажмите сочетание на клавиатуре.</value></data>
+  <data name="Buttons_Subtitle" xml:space="preserve"><value>Действия для блока «Кнопки»: сочетания клавиш, заготовленный текст, цепочки шагов, микрофон и вывод звука.</value></data>
+  <data name="Buttons_Warning" xml:space="preserve"><value>Нажатия не доходят до программ, запущенных от имени администратора, а часть игр с античитом их не принимает. Агент работает без прав администратора и обходить это не будет.</value></data>
+  <data name="Buttons_AddKeys" xml:space="preserve"><value>Сочетание клавиш</value></data>
+  <data name="Buttons_AddText" xml:space="preserve"><value>Текст</value></data>
+  <data name="Buttons_AddMacro" xml:space="preserve"><value>Цепочка</value></data>
+  <data name="Buttons_AddMic" xml:space="preserve"><value>Микрофон</value></data>
+  <data name="Buttons_AddAudioOut" xml:space="preserve"><value>Вывод звука</value></data>
+  <data name="Buttons_AddDiscord" xml:space="preserve"><value>Шаблон Discord</value></data>
+  <data name="Buttons_DiscordHint" xml:space="preserve"><value>Ctrl+Shift+M — микрофон, Ctrl+Shift+D — звук. Сочетания должны совпадать с Discord → Настройки → Горячие клавиши.</value></data>
+  <data name="Buttons_DiscordAdded" xml:space="preserve"><value>Добавлены «Discord: микрофон» (Ctrl+Shift+M) и «Discord: звук» (Ctrl+Shift+D). Проверьте, что в Discord → Настройки → Горячие клавиши стоят те же сочетания.</value></data>
+  <data name="Buttons_DiscordMic" xml:space="preserve"><value>Discord: микрофон</value></data>
+  <data name="Buttons_DiscordSound" xml:space="preserve"><value>Discord: звук</value></data>
+  <data name="Buttons_RecordHint" xml:space="preserve"><value>Щёлкните поле «Сочетание» и нажмите нужные клавиши.</value></data>
+  <data name="Buttons_ListHint" xml:space="preserve"><value>Перетащите строку, чтобы изменить порядок. Какие действия показать на панели — в настройках блока «Кнопки» на экране.</value></data>
+  <data name="Buttons_Empty" xml:space="preserve"><value>Действий нет. Добавьте сочетание клавиш или шаблон Discord.</value></data>
+  <data name="Buttons_SelectHint" xml:space="preserve"><value>Выберите действие, чтобы изменить его.</value></data>
+  <data name="Buttons_Title" xml:space="preserve"><value>Название на панели</value></data>
+  <data name="Buttons_Keys" xml:space="preserve"><value>Сочетание</value></data>
+  <data name="Buttons_ClearKeys" xml:space="preserve"><value>Очистить</value></data>
+  <data name="Buttons_KeysHint" xml:space="preserve"><value>Модификаторы Ctrl, Alt, Shift, Win и одна клавиша: буква, цифра, F1–F24, стрелки, Enter, Esc и т. п.</value></data>
+  <data name="Buttons_Text" xml:space="preserve"><value>Текст, который напечатает панель</value></data>
+  <data name="Buttons_TextCounter" xml:space="preserve"><value>{0} из {1} символов</value></data>
+  <data name="Buttons_TextHint" xml:space="preserve"><value>Печатается в окно, где сейчас курсор; перевод строки — Enter.</value></data>
+  <data name="Buttons_Steps" xml:space="preserve"><value>Шаги (выполняются по порядку)</value></data>
+  <data name="Buttons_WaitUnit" xml:space="preserve"><value>мс (1–10000)</value></data>
+  <data name="Buttons_AddStep" xml:space="preserve"><value>Добавить шаг:</value></data>
+  <data name="Buttons_StepsHint" xml:space="preserve"><value>От 1 до 20 шагов. «Запустить приложение» берёт программу из раздела «Приложения».</value></data>
+  <data name="Buttons_MaxSteps" xml:space="preserve"><value>В цепочке не больше {0} шагов.</value></data>
+  <data name="Buttons_MicHint" xml:space="preserve"><value>Включает и выключает микрофон по умолчанию в Windows. Кнопка на панели красная, пока микрофон выключен.</value></data>
+  <data name="Buttons_Devices" xml:space="preserve"><value>Устройства, между которыми переключать (по кругу)</value></data>
+  <data name="Buttons_DevicesHint" xml:space="preserve"><value>Каждое нажатие делает следующее отмеченное устройство выводом по умолчанию.</value></data>
+  <data name="Buttons_FewDevices" xml:space="preserve"><value>Отметьте хотя бы два устройства, иначе переключать не между чем.</value></data>
+  <data name="Buttons_DevicesOffline" xml:space="preserve"><value>Список устройств появится, когда агент заработает.</value></data>
+  <data name="Buttons_DevicesNone" xml:space="preserve"><value>Агент не нашёл устройств вывода звука.</value></data>
+  <data name="Buttons_DeviceDefault" xml:space="preserve"><value>{0} (сейчас по умолчанию)</value></data>
+  <data name="Buttons_DeviceMissing" xml:space="preserve"><value>Не подключено: {0}</value></data>
+  <data name="Buttons_BlockHint" xml:space="preserve"><value>Чтобы кнопка появилась на телефоне, отметьте её в блоке «Кнопки» в разделе «Экраны».</value></data>
+  <data name="Buttons_NoKeys" xml:space="preserve"><value>сочетание не задано</value></data>
+  <data name="Buttons_NoText" xml:space="preserve"><value>текст пуст</value></data>
+  <data name="Buttons_StepsCount" xml:space="preserve"><value>шагов: {0}</value></data>
+  <data name="Buttons_MicSummary" xml:space="preserve"><value>вкл/выкл микрофона</value></data>
+  <data name="Buttons_DevicesCount" xml:space="preserve"><value>устройств: {0}</value></data>
+  <data name="ActionIssue_badId" xml:space="preserve"><value>Неверный id: только латиница, цифры, «-» и «_», до 64 символов.</value></data>
+  <data name="ActionIssue_duplicateId" xml:space="preserve"><value>Такой id уже есть у другого действия.</value></data>
+  <data name="ActionIssue_badKind" xml:space="preserve"><value>Неизвестный тип действия.</value></data>
+  <data name="ActionIssue_badKeys" xml:space="preserve"><value>Сочетание не задано или его нельзя нажать.</value></data>
+  <data name="ActionIssue_emptyText" xml:space="preserve"><value>Текст пуст.</value></data>
+  <data name="ActionIssue_textTooLong" xml:space="preserve"><value>Текст длиннее 2000 символов.</value></data>
+  <data name="ActionIssue_stepCount" xml:space="preserve"><value>В цепочке должно быть от 1 до 20 шагов.</value></data>
+  <data name="ActionIssue_badStep" xml:space="preserve"><value>Непонятный шаг.</value></data>
+  <data name="ActionIssue_badWait" xml:space="preserve"><value>Пауза — от 1 до 10000 мс.</value></data>
+  <data name="ActionIssue_unknownApp" xml:space="preserve"><value>Выберите приложение из раздела «Приложения».</value></data>
+  <data name="ActionIssue_noDevices" xml:space="preserve"><value>Отметьте устройства вывода.</value></data>
+  <data name="ActionIssue_steps" xml:space="preserve"><value>Есть ошибки в шагах.</value></data>
+
+  <!-- 1.1: notifications -->
+  <data name="Notify_Subtitle" xml:space="preserve"><value>Уведомления Windows на телефоне: от каких приложений и сколько показывать.</value></data>
+  <data name="Notify_Enabled" xml:space="preserve"><value>Показывать уведомления на телефоне</value></data>
+  <data name="Notify_EnabledHint" xml:space="preserve"><value>Выключено — агент не читает уведомления совсем.</value></data>
+  <data name="Notify_WallCountsOnly" xml:space="preserve"><value>На стене только счётчики</value></data>
+  <data name="Notify_WallCountsOnlyHint" xml:space="preserve"><value>Без заголовков и текста, что бы ни стояло у приложения: удобно, если телефон видят другие.</value></data>
+  <data name="Notify_NightFlash" xml:space="preserve"><value>Ночью подсвечивать новое уведомление</value></data>
+  <data name="Notify_NightFlashHint" xml:space="preserve"><value>Панель поднимет яркость на 5 секунд.</value></data>
+  <data name="Notify_Access" xml:space="preserve"><value>Доступ к уведомлениям в Windows</value></data>
+  <data name="Notify_AccessWhere" xml:space="preserve"><value>Включается в «Параметры» → «Конфиденциальность и защита» → «Уведомления» → «Доступ к уведомлениям».</value></data>
+  <data name="Notify_OpenSettings" xml:space="preserve"><value>Открыть параметры</value></data>
+  <data name="Notify_AccessUnknown" xml:space="preserve"><value>Неизвестно — агент не запущен или не ответил.</value></data>
+  <data name="Notify_AccessAllowed" xml:space="preserve"><value>Разрешён.</value></data>
+  <data name="Notify_AccessDenied" xml:space="preserve"><value>Запрещён в параметрах Windows: панель уведомлений не покажет.</value></data>
+  <data name="Notify_AccessUnspecified" xml:space="preserve"><value>Windows ещё не спрашивала. Откройте параметры и разрешите доступ.</value></data>
+  <data name="Notify_AccessOff" xml:space="preserve"><value>Агент сейчас не читает уведомления.</value></data>
+  <data name="Notify_Apps" xml:space="preserve"><value>Приложения</value></data>
+  <data name="Notify_AppsHint" xml:space="preserve"><value>Приложения, от которых агент видел уведомления с момента запуска. Приложения в режиме «Скрыть» на панели не показываются.</value></data>
+  <data name="Notify_NoApps" xml:space="preserve"><value>Пока ни одного. Список пополняется, когда приходят уведомления.</value></data>
+  <data name="Notify_LastSeen" xml:space="preserve"><value>последнее: {0}</value></data>
+  <data name="Notify_NotSeen" xml:space="preserve"><value>с запуска агента не было</value></data>
+  <data name="Notify_Offline" xml:space="preserve"><value>Агент не запущен: показаны только приложения, уже настроенные в config.json.</value></data>
+  <data name="NotifyMode_hidden" xml:space="preserve"><value>Скрыть</value></data>
+  <data name="NotifyMode_count" xml:space="preserve"><value>Счётчик</value></data>
+  <data name="NotifyMode_title" xml:space="preserve"><value>Заголовок</value></data>
+  <data name="NotifyMode_full" xml:space="preserve"><value>Текст целиком</value></data>
+
+  <!-- 1.1: settings -->
+  <data name="Settings_Obs" xml:space="preserve"><value>OBS</value></data>
+  <data name="Settings_ObsHost" xml:space="preserve"><value>Адрес</value></data>
+  <data name="Settings_ObsPort" xml:space="preserve"><value>Порт</value></data>
+  <data name="Settings_ObsPassword" xml:space="preserve"><value>Пароль</value></data>
+  <data name="Settings_ObsPasswordHint" xml:space="preserve"><value>Хранится только зашифрованным (DPAPI, ваша учётная запись Windows). Пустое поле — пароль не меняется.</value></data>
+  <data name="Settings_ObsPasswordSet" xml:space="preserve"><value>пароль задан</value></data>
+  <data name="Settings_ObsTest" xml:space="preserve"><value>Проверить подключение</value></data>
+  <data name="Settings_ObsTesting" xml:space="preserve"><value>Проверяю…</value></data>
+  <data name="Settings_ObsOk" xml:space="preserve"><value>OBS отвечает, obs-websocket {0}.</value></data>
+  <data name="Settings_ObsFailed" xml:space="preserve"><value>Не подключилось: {0}</value></data>
+  <data name="Settings_ObsBadHost" xml:space="preserve"><value>Адрес OBS — этот ПК (127.0.0.1, localhost) или адрес домашней сети (192.168.x.x, 10.x.x.x и т. п.): агент не подключается к OBS через интернет.</value></data>
+  <data name="Settings_ObsHint" xml:space="preserve"><value>Адрес, порт и пароль — в OBS → «Сервис» → «Настройки сервера WebSocket». Там же включите сервер.</value></data>
+  <data name="Settings_ObsBadPort" xml:space="preserve"><value>Порт OBS — число от 1 до 65535.</value></data>
+  <data name="Settings_Wol" xml:space="preserve"><value>Включение по сети</value></data>
+  <data name="Settings_WolText" xml:space="preserve"><value>Телефон может включить ПК кнопкой «Включить ПК», когда тот не отвечает. Для этого ему нужен MAC сетевой карты и широковещательный адрес сети.</value></data>
+  <data name="Settings_WolMac" xml:space="preserve"><value>MAC-адрес</value></data>
+  <data name="Settings_WolBroadcast" xml:space="preserve"><value>Широковещательный</value></data>
+  <data name="Settings_WolAdapter" xml:space="preserve"><value>Адаптер: {0}</value></data>
+  <data name="Settings_WolManual" xml:space="preserve"><value>Задано вручную.</value></data>
+  <data name="Settings_WolReset" xml:space="preserve"><value>Определять автоматически</value></data>
+  <data name="Settings_WolSaved" xml:space="preserve"><value>Адрес задан вручную, попадёт в config.json после «Сохранить».</value></data>
+  <data name="Settings_WolWakeOn" xml:space="preserve"><value>Включение по сети разрешено в Windows.</value></data>
+  <data name="Settings_WolWakeOff" xml:space="preserve"><value>В Windows включение по сети запрещено: «Диспетчер устройств» → сетевой адаптер → «Управление электропитанием» → «Разрешить этому устройству выводить компьютер из ждущего режима».</value></data>
+  <data name="Settings_WolWakeUnknown" xml:space="preserve"><value>Не удалось узнать, разрешено ли включение по сети в Windows.</value></data>
+  <data name="Settings_WolOffline" xml:space="preserve"><value>Агент не запущен: адрес адаптера появится, когда он заработает. Можно ввести вручную.</value></data>
+  <data name="Settings_WolNotFound" xml:space="preserve"><value>Агент не нашёл адаптер с выходом в сеть. Введите MAC и адрес вручную.</value></data>
+  <data name="Settings_WolBadMac" xml:space="preserve"><value>MAC-адрес — шесть пар шестнадцатеричных цифр, например AA:BB:CC:DD:EE:FF.</value></data>
+  <data name="Settings_WolBadBroadcast" xml:space="preserve"><value>Широковещательный адрес — IPv4, например 192.168.1.255.</value></data>
+  <data name="Settings_WolBios" xml:space="preserve"><value>Включение должно быть разрешено и в BIOS/UEFI — пункт обычно называется «Wake on LAN», «Power On By PCI-E» или похоже. По Wi-Fi ПК обычно не включается — нужен кабель.</value></data>
+
+  <!-- 1.1: wizard -->
+  <data name="Wizard_Item_installPackages" xml:space="preserve"><value>Установка обновлений лаунчера через ПК</value></data>
+  <data name="Wizard_Manual_InstallPackages" xml:space="preserve"><value>Телефон не дал разрешить это из ПК. Разрешите вручную: «Настройки» → «Приложения» → «Особый доступ» → «Установка неизвестных приложений» → Ven4Docking. Без этого обновление лаунчера попросит разрешение на телефоне.</value></data>
 </root>

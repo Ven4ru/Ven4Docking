@@ -2,12 +2,14 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Ven4Docking.Core.Admin;
 using Ven4Docking.Core.Models;
 using Ven4Docking.Core.Net;
+using Ven4Docking.Core.Security;
 using Ven4Docking.Editor.Services;
 using Ven4Docking.Editor.Themes;
 
@@ -214,7 +216,7 @@ public sealed partial class AiViewModel : SectionBase
 
 public sealed record Choice(string Id, string Title);
 
-/// <summary>«Настройки»: theme, language, weather city (open-meteo geocoding), agent autostart, port.</summary>
+/// <summary>«Настройки»: theme, language, weather city (open-meteo geocoding), agent autostart, port, OBS, Wake on LAN.</summary>
 public sealed partial class SettingsViewModel : SectionBase
 {
     public const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -249,8 +251,16 @@ public sealed partial class SettingsViewModel : SectionBase
         Port = Session.Config.EffectivePort.ToString();
         Autostart = ReadAutostart();
         OnPropertyChanged(nameof(WeatherText));
+        ObsHost = Session.Config.Obs?.Host ?? ObsSettings.DefaultHost;
+        ObsPort = (Session.Config.Obs?.Port ?? ObsSettings.DefaultPort).ToString();
+        OnPropertyChanged(nameof(ObsPasswordSet));
+        ObsTestResult = "";
+        ObsTestOk = null;
+        FillWol();
         _building = false;
     }
+
+    public override void Activated() => _ = LoadWolAsync();
 
     partial void OnThemeChanged(Choice? value)
     {
@@ -341,6 +351,211 @@ public sealed partial class SettingsViewModel : SectionBase
         Directory.CreateDirectory(Session.Paths.Home);
         Process.Start(new ProcessStartInfo("explorer.exe", $"\"{Session.Paths.Home}\"") { UseShellExecute = false });
     }
+
+    // ---------- OBS (spec 1.1 §9): obs-websocket address, password encrypted with DPAPI ----------
+
+    [ObservableProperty] private string _obsHost = ObsSettings.DefaultHost;
+    [ObservableProperty] private string _obsPort = ObsSettings.DefaultPort.ToString();
+    [ObservableProperty] private string _obsTestResult = "";
+    [ObservableProperty] private bool? _obsTestOk;
+    [ObservableProperty] private bool _obsTesting;
+
+    public bool ObsPasswordSet => !string.IsNullOrEmpty(Session.Config.Obs?.PasswordDpapi);
+
+    private ObsSettings EditObs()
+    {
+        Session.Checkpoint();
+        return Session.Config.Obs ??= new ObsSettings();
+    }
+
+    partial void OnObsHostChanged(string value)
+    {
+        if (_building) return;
+        string host = string.IsNullOrWhiteSpace(value) ? ObsSettings.DefaultHost : value.Trim();
+        if (!ObsSettings.IsAllowedHost(host))
+        {
+            SayObs(Loc.T("Settings_ObsBadHost"));
+            return;
+        }
+        SayObs("");
+        if (host == Session.Config.Obs?.Host) return;
+        EditObs().Host = host;
+    }
+
+    partial void OnObsPortChanged(string value)
+    {
+        if (_building) return;
+        if (!int.TryParse(value, out int p) || p is < 1 or > 65535)
+        {
+            SayObs(Loc.T("Settings_ObsBadPort"));
+            return;
+        }
+        SayObs("");
+        if (p == Session.Config.Obs?.Port) return;
+        EditObs().Port = p;
+    }
+
+    /// <summary>Input errors go next to «Проверить подключение», inside the OBS card.</summary>
+    private void SayObs(string error)
+    {
+        ObsTestOk = error.Length > 0 ? false : null;
+        ObsTestResult = error;
+    }
+
+    /// <summary>
+    /// From the password box (on leaving it): only the DPAPI ciphertext is kept, the box is cleared by the view.
+    /// Empty input keeps the stored password.
+    /// </summary>
+    public void SetObsPassword(string plain)
+    {
+        if (string.IsNullOrEmpty(plain)) return;
+        EditObs().PasswordDpapi = Dpapi.Protect(plain);
+        OnPropertyChanged(nameof(ObsPasswordSet));
+        ObsTestResult = "";
+        ObsTestOk = null;
+    }
+
+    [RelayCommand]
+    private async Task TestObs()
+    {
+        if (!Session.AgentOnline)
+        {
+            ObsTestOk = false;
+            ObsTestResult = Loc.T("Agent_NeededForThis");
+            return;
+        }
+        string host = string.IsNullOrWhiteSpace(ObsHost) ? ObsSettings.DefaultHost : ObsHost.Trim();
+        if (!ObsSettings.IsAllowedHost(host))
+        {
+            ObsTestOk = false;
+            ObsTestResult = Loc.T("Settings_ObsBadHost");
+            return;
+        }
+        if (!int.TryParse(ObsPort, out int port) || port is < 1 or > 65535) port = ObsSettings.DefaultPort;
+        ObsTesting = true;
+        ObsTestOk = null;
+        ObsTestResult = Loc.T("Settings_ObsTesting");
+        try
+        {
+            var r = await Session.Admin.TestObsAsync(host, port, Session.Config.Obs?.PasswordDpapi);
+            ObsTestOk = r.Ok;
+            ObsTestResult = r.Ok
+                ? Loc.F("Settings_ObsOk", string.IsNullOrEmpty(r.Version) ? "—" : r.Version)
+                : Loc.F("Settings_ObsFailed", string.IsNullOrEmpty(r.Error) ? "?" : r.Error);
+        }
+        catch (AdminException e)
+        {
+            ObsTestOk = false;
+            ObsTestResult = e.AgentTooOld ? Loc.T("Agent_TooOld") : e.AgentUnreachable ? Loc.T("Agent_NeededForThis") : e.Message;
+        }
+        finally { ObsTesting = false; }
+    }
+
+    // ---------- Wake on LAN (spec 1.1 §9): MAC and broadcast from /admin/wol, can be corrected ----------
+
+    private WolInfo? _wolInfo;
+
+    [ObservableProperty] private string _wolMac = "";
+    [ObservableProperty] private string _wolBroadcast = "";
+    [ObservableProperty] private string _wolMessage = "";
+    [ObservableProperty] private bool _wolMessageIsError;
+
+    /// <summary>The address is set by hand in config.json (otherwise the agent takes it from the adapter).</summary>
+    public bool WolManual => Session.Config.Wol is not null;
+
+    public string WolAdapterText => _wolInfo?.Adapter is { Length: > 0 } a ? Loc.F("Settings_WolAdapter", a) : "";
+
+    /// <summary>true → allowed in Windows, false → off, null → unknown (also when the agent is not running).</summary>
+    public bool? WolWakeEnabled => _wolInfo?.WakeEnabled;
+
+    public string WolWakeText => _wolInfo is null
+        ? ""
+        : _wolInfo.WakeEnabled switch
+        {
+            true => Loc.T("Settings_WolWakeOn"),
+            false => Loc.T("Settings_WolWakeOff"),
+            _ => Loc.T("Settings_WolWakeUnknown"),
+        };
+
+    private void FillWol()
+    {
+        bool was = _building;
+        _building = true;
+        WolMac = Session.Config.Wol?.Mac ?? _wolInfo?.Mac ?? "";
+        WolBroadcast = Session.Config.Wol?.Broadcast ?? _wolInfo?.Broadcast ?? "";
+        _building = was;
+        foreach (var p in new[] { nameof(WolManual), nameof(WolAdapterText), nameof(WolWakeEnabled), nameof(WolWakeText) })
+            OnPropertyChanged(p);
+    }
+
+    [RelayCommand]
+    private async Task LoadWolAsync()
+    {
+        if (!Session.AgentOnline)
+        {
+            _wolInfo = null;
+            SayWol(Loc.T("Settings_WolOffline"), false);
+        }
+        else
+        {
+            try
+            {
+                _wolInfo = await Session.Admin.GetWolAsync();
+                SayWol(_wolInfo.Mac is null && Session.Config.Wol is null ? Loc.T("Settings_WolNotFound") : "", false);
+            }
+            catch (AdminException e)
+            {
+                _wolInfo = null;
+                SayWol(e.AgentTooOld ? Loc.T("Agent_TooOld") : e.AgentUnreachable ? Loc.T("Settings_WolOffline") : e.Message, !e.AgentUnreachable);
+            }
+        }
+        FillWol();
+    }
+
+    private void SayWol(string text, bool error)
+    {
+        WolMessage = text;
+        WolMessageIsError = error;
+    }
+
+    partial void OnWolMacChanged(string value) => ApplyWol();
+
+    partial void OnWolBroadcastChanged(string value) => ApplyWol();
+
+    private void ApplyWol()
+    {
+        if (_building) return;
+        var wol = WolSettings.Create(WolMac, WolBroadcast);
+        if (wol is null)
+        {
+            SayWol(WolSettings.NormalizeMac(WolMac) is null ? Loc.T("Settings_WolBadMac") : Loc.T("Settings_WolBadBroadcast"), true);
+            return;
+        }
+        var cur = Session.Config.Wol;
+        bool sameAsAgent = cur is null && wol.Mac == WolSettings.NormalizeMac(_wolInfo?.Mac) && wol.Broadcast == WolSettings.NormalizeBroadcast(_wolInfo?.Broadcast);
+        if (sameAsAgent || (cur is not null && cur.Mac == wol.Mac && cur.Broadcast == wol.Broadcast))
+        {
+            SayWol("", false);
+            FillWol();
+            return;
+        }
+        Session.Checkpoint();
+        if (cur is null) Session.Config.Wol = wol;
+        else (cur.Mac, cur.Broadcast) = (wol.Mac, wol.Broadcast);
+        SayWol(Loc.T("Settings_WolSaved"), false);
+        FillWol();
+    }
+
+    /// <summary>«Определять автоматически»: drop config.wol, the agent takes the adapter's address again.</summary>
+    [RelayCommand]
+    private void ResetWol()
+    {
+        if (Session.Config.Wol is null) return;
+        Session.Checkpoint();
+        Session.Config.Wol = null;
+        SayWol("", false);
+        FillWol();
+    }
 }
 
 // ======================= О программе =======================
@@ -358,7 +573,43 @@ public sealed partial class AboutViewModel : SectionBase
     [ObservableProperty] private bool _checking;
     [ObservableProperty] private string? _releaseUrl;
 
-    public override void Rebuild() => OnPropertyChanged(nameof(VersionText));
+    /// <summary>The newer release found by the last check (null when there is none).</summary>
+    [ObservableProperty] private UpdateResult? _available;
+    [ObservableProperty] private bool _downloading;
+    [ObservableProperty] private double _downloadPercent;
+    [ObservableProperty] private bool _downloadSizeKnown;
+    [ObservableProperty] private string _downloadText = "";
+    [ObservableProperty] private string _installError = "";
+    [ObservableProperty] private bool _bannerHidden;
+
+    private CancellationTokenSource? _downloadCts;
+
+    public string InstallText => Available?.LatestVersion is { } v ? Loc.F("Update_Install", v) : "";
+    public bool CanInstall => Available is not null && !Downloading;
+
+    /// <summary>The main window shows «Доступна версия X.Y.Z · Обновить» above the sections.</summary>
+    public bool ShowBanner => Available is not null && !BannerHidden;
+    public string BannerText => Available?.LatestVersion is { } v ? Loc.F("Update_Banner", v) : "";
+
+    partial void OnAvailableChanged(UpdateResult? value) => NotifyInstall();
+    partial void OnDownloadingChanged(bool value) => NotifyInstall();
+    partial void OnBannerHiddenChanged(bool value) => NotifyInstall();
+
+    private void NotifyInstall()
+    {
+        foreach (var p in new[] { nameof(InstallText), nameof(CanInstall), nameof(ShowBanner), nameof(BannerText) }) OnPropertyChanged(p);
+        InstallUpdateCommand.NotifyCanExecuteChanged();
+        CancelDownloadCommand.NotifyCanExecuteChanged();
+    }
+
+    public override void Rebuild()
+    {
+        OnPropertyChanged(nameof(VersionText));
+        NotifyInstall();
+    }
+
+    [RelayCommand]
+    private void HideBanner() => BannerHidden = true;
 
     [RelayCommand]
     private async Task CheckUpdates()
@@ -368,6 +619,8 @@ public sealed partial class AboutViewModel : SectionBase
         {
             var r = await new UpdateChecker(Session.Http).CheckAsync(AppVersion);
             ReleaseUrl = r.State == UpdateState.Available ? r.Url : null;
+            Available = r.State == UpdateState.Available ? r : null;
+            InstallError = "";
             UpdateText = r.State switch
             {
                 UpdateState.Available => Loc.F("Update_Available", r.LatestVersion),
@@ -384,6 +637,93 @@ public sealed partial class AboutViewModel : SectionBase
     {
         if (ReleaseUrl is not null) Process.Start(new ProcessStartInfo(ReleaseUrl) { UseShellExecute = true });
     }
+
+    /// <summary>
+    /// «Обновить до X.Y.Z»: unsaved edits first, then download + SHA-256 check, then the installer runs silently
+    /// (<c>/S /RELAUNCH=1</c>: it closes the agent and the editor, installs and starts both again).
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanInstall))]
+    private async Task InstallUpdate()
+    {
+        var release = Available;
+        if (release?.LatestVersion is not { } version) return;
+        InstallError = "";
+
+        if (Session.IsDirty)
+        {
+            var answer = MessageBox.Show(Loc.T("Update_AskSave"), "Ven4Docking", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (answer == MessageBoxResult.Cancel) return;
+            if (answer == MessageBoxResult.Yes)
+            {
+                SaveResult saved;
+                try { saved = await Session.SaveAsync(); }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException or AdminException)
+                {
+                    saved = new SaveResult(false, e.Message);
+                }
+                if (!saved.Ok)
+                {
+                    InstallError = Loc.F("Update_SaveFailed", saved.Error);
+                    return;
+                }
+            }
+        }
+
+        Downloading = true;
+        DownloadPercent = 0;
+        DownloadSizeKnown = false;
+        DownloadText = Loc.T("Update_Connecting");
+        _downloadCts = new CancellationTokenSource();
+        UpdateDownload result;
+        try
+        {
+            var progress = new Progress<DownloadProgress>(p =>
+            {
+                DownloadSizeKnown = p.Total is > 0;
+                DownloadPercent = p.Total is > 0 ? 100.0 * p.Received / p.Total.Value : 0;
+                DownloadText = p.Total is > 0
+                    ? Loc.F("Update_Downloading", Mb(p.Received), Mb(p.Total.Value))
+                    : Loc.F("Update_DownloadingNoTotal", Mb(p.Received));
+            });
+            using var installer = new UpdateInstaller();
+            result = await installer.DownloadAsync(version, release.Assets ?? Array.Empty<ReleaseAsset>(), progress, _downloadCts.Token);
+        }
+        finally
+        {
+            _downloadCts.Dispose();
+            _downloadCts = null;
+            Downloading = false;
+        }
+
+        if (!result.Ok)
+        {
+            DownloadText = "";
+            InstallError = result.Error == UpdateDownloadError.Cancelled ? Loc.T("Update_Err_Cancelled") : Loc.F("Update_Err_" + result.Error, result.Detail);
+            return;
+        }
+
+        DownloadText = Loc.T("Update_Starting");
+        try
+        {
+            Process.Start(new ProcessStartInfo(result.SetupPath!, "/S /RELAUNCH=1") { UseShellExecute = true });
+        }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or IOException)
+        {
+            DownloadText = "";
+            InstallError = Loc.F("Update_Err_Start", e.Message);
+            return;
+        }
+        // the installer restarts the editor; unsaved edits were saved or explicitly dropped above
+        Session.ClosingForUpdate = true;
+        Application.Current.Shutdown();
+    }
+
+    private static string Mb(long bytes) => (bytes / 1024.0 / 1024.0).ToString("0.0");
+
+    private bool CanCancelDownload() => Downloading;
+
+    [RelayCommand(CanExecute = nameof(CanCancelDownload))]
+    private void CancelDownload() => _downloadCts?.Cancel();
 
     [RelayCommand]
     private void OpenVen4verse() => Process.Start(new ProcessStartInfo(WizardViewModel.Ven4verseUrl) { UseShellExecute = true });

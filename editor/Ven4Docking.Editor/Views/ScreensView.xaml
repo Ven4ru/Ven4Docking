@@ -14,11 +14,14 @@
         <DockPanel Grid.Column="0" Margin="0,0,16,0">
             <TextBlock DockPanel.Dock="Top" Text="{l:L Screens_Title}" Style="{StaticResource H2}"/>
             <StackPanel DockPanel.Dock="Top">
-                <ListBox ItemsSource="{Binding Screens}" SelectedItem="{Binding SelectedScreen}" MaxHeight="230">
+                <ListBox ItemsSource="{Binding Screens}" SelectedItem="{Binding SelectedScreen}" MaxHeight="200">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Right" Text="{Binding BlockCountText}" Style="{StaticResource Hint}" VerticalAlignment="Center"/>
+                                <TextBlock DockPanel.Dock="Left" Text="&#xE8A7;" Style="{StaticResource Icon}" FontSize="12" Margin="0,0,6,0"
+                                           Foreground="{DynamicResource AccentColor}" ToolTip="{Binding ForApp}"
+                                           Visibility="{Binding IsProgram, Converter={StaticResource Vis}}"/>
                                 <TextBlock Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis"/>
                             </DockPanel>
                         </DataTemplate>
@@ -26,6 +29,22 @@
                 </ListBox>
                 <TextBox Text="{Binding SelectedScreen.Name, UpdateSourceTrigger=LostFocus}" Margin="0,4,0,6"
                          ToolTip="{l:L Screens_RenameHint}"/>
+                <!-- «Экран программы» (spec 1.1 §4): exe name typed or picked from the running programs -->
+                <TextBlock Text="{l:L Screens_ForApp}" Style="{StaticResource Hint}" Margin="0,0,0,4"/>
+                <DockPanel Margin="0,0,0,4">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE72C;" Margin="4,0,0,0"
+                            Command="{Binding LoadProgramsCommand}" ToolTip="{l:L Screens_ProgramsRefresh}"/>
+                    <TextBox Text="{Binding SelectedScreen.ForApp, UpdateSourceTrigger=LostFocus}" ToolTip="{l:L Screens_ForAppHint}"/>
+                </DockPanel>
+                <ComboBox ItemsSource="{Binding RunningPrograms}" SelectedItem="{Binding PickedProgram}"
+                          ToolTip="{l:L Screens_ProgramsPick}" Margin="0,0,0,4"
+                          Visibility="{Binding RunningPrograms.Count, Converter={StaticResource Vis}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate><TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis"/></DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Text="{Binding ProgramsMessage}" Style="{StaticResource Hint}" FontSize="11" Margin="0,0,0,6"
+                           Visibility="{Binding ProgramsMessage, Converter={StaticResource Vis}}"/>
                 <StackPanel Orientation="Horizontal">
                     <Button Style="{StaticResource IconButton}" Content="&#xE710;" Command="{Binding AddScreenCommand}" ToolTip="{l:L Screens_Add}" Margin="0,0,4,0"/>
                     <Button Style="{StaticResource IconButton}" Content="&#xE70E;" Command="{Binding MoveScreenUpCommand}" ToolTip="{l:L Common_Up}" Margin="0,0,4,0"/>
@@ -215,6 +234,25 @@
                             <TextBlock Text="{l:L Opts_EmptyList}" Style="{StaticResource Hint}"
                                        Visibility="{Binding OptionChoices.Count, Converter={StaticResource Vis}, ConverterParameter=invert}"/>
                         </StackPanel>
+
+                        <StackPanel Visibility="{Binding FlagChoicesTitle, Converter={StaticResource Vis}}" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding FlagChoicesTitle}" Style="{StaticResource Hint}" Margin="0,0,0,4"/>
+                            <ItemsControl ItemsSource="{Binding FlagChoices}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Title}" IsChecked="{Binding IsChecked}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsNotify, Converter={StaticResource Vis}}" Margin="0,0,0,8" Orientation="Horizontal">
+                            <TextBlock Text="{l:L Opts_NotifyMax}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBox Width="60" Text="{Binding NotifyMax, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding OptionsHint}" Style="{StaticResource Hint}" Margin="0,0,0,8"
+                                   Visibility="{Binding OptionsHint, Converter={StaticResource Vis}}"/>
 
                         <TextBlock Text="{l:L Opts_Json}" Style="{StaticResource Hint}" Margin="0,4,0,4"/>
                         <TextBox Text="{Binding OptsText, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Mono}"

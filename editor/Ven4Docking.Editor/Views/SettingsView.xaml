@@ -54,6 +54,80 @@
                     <Button Content="{l:L Settings_OpenFolder}" Command="{Binding OpenDataFolderCommand}" HorizontalAlignment="Left" Margin="0,8,0,0"/>
                 </StackPanel>
             </Border>
+
+            <!-- OBS: obs-websocket, the password is stored DPAPI-encrypted (spec 1.1 §2) -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{l:L Settings_Obs}" Style="{StaticResource H2}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="220"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="8"/><RowDefinition/><RowDefinition Height="8"/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Text="{l:L Settings_ObsHost}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding ObsHost, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBlock Grid.Row="2" Text="{l:L Settings_ObsPort}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Width="100" HorizontalAlignment="Left" Text="{Binding ObsPort, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBlock Grid.Row="4" Text="{l:L Settings_ObsPassword}" VerticalAlignment="Center"/>
+                        <PasswordBox x:Name="ObsPassword" Grid.Row="4" Grid.Column="1" LostFocus="ObsPassword_LostFocus"/>
+                        <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center"
+                                    Visibility="{Binding ObsPasswordSet, Converter={StaticResource Vis}}">
+                            <TextBlock Text="&#xE72E;" Style="{StaticResource Icon}" FontSize="12" Foreground="{DynamicResource StatusSuccess}"/>
+                            <TextBlock Text="{l:L Settings_ObsPasswordSet}" Style="{StaticResource Hint}" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="{l:L Settings_ObsPasswordHint}" Style="{StaticResource Hint}" Margin="140,4,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="{l:L Settings_ObsTest}" Command="{Binding TestObsCommand}" Style="{StaticResource PrimaryButton}" Padding="14,0"/>
+                        <TextBlock Text="{Binding ObsTestResult}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="12,0,0,0" MaxWidth="440"
+                                   Foreground="{Binding ObsTestOk, Converter={StaticResource StateBrushConv}}"/>
+                    </StackPanel>
+                    <TextBlock Text="{l:L Settings_ObsHint}" Style="{StaticResource Hint}" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Wake on LAN: the phone sends the magic packet to this MAC (spec 1.1 §6, §8) -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE72C;" ToolTip="{l:L Common_Refresh}"
+                                Command="{Binding LoadWolCommand}" VerticalAlignment="Top"/>
+                        <TextBlock Text="{l:L Settings_Wol}" Style="{StaticResource H2}"/>
+                    </DockPanel>
+                    <TextBlock Text="{l:L Settings_WolText}" Style="{StaticResource Hint}" Margin="0,0,0,8"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="8"/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Text="{l:L Settings_WolMac}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding WolMac, UpdateSourceTrigger=LostFocus}" Style="{StaticResource Mono}" FontSize="12"/>
+                        <TextBlock Grid.Row="2" Text="{l:L Settings_WolBroadcast}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WolBroadcast, UpdateSourceTrigger=LostFocus}" Style="{StaticResource Mono}" FontSize="12"/>
+                    </Grid>
+                    <TextBlock Text="{Binding WolAdapterText}" Style="{StaticResource Hint}" Margin="140,6,0,0"
+                               Visibility="{Binding WolAdapterText, Converter={StaticResource Vis}}"/>
+                    <StackPanel Orientation="Horizontal" Margin="140,6,0,0" Visibility="{Binding WolManual, Converter={StaticResource Vis}}">
+                        <TextBlock Text="{l:L Settings_WolManual}" Style="{StaticResource Hint}" VerticalAlignment="Center"/>
+                        <Button Style="{StaticResource LinkButton}" Content="{l:L Settings_WolReset}" Command="{Binding ResetWolCommand}" Margin="8,0,0,0"
+                                VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,8,0,0" Text="{Binding WolMessage}"
+                               Visibility="{Binding WolMessage, Converter={StaticResource Vis}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Setter Property="Foreground" Value="{DynamicResource StatusInfo}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WolMessageIsError}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource StatusDanger}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding WolWakeText, Converter={StaticResource Vis}}">
+                        <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{Binding WolWakeEnabled, Converter={StaticResource StateBrushConv}}"/>
+                        <TextBlock Text="{Binding WolWakeText}" Margin="8,0,0,0" TextWrapping="Wrap" MaxWidth="600"/>
+                    </StackPanel>
+                    <TextBlock Text="{l:L Settings_WolBios}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
             <TextBlock Text="{Binding Message}" Foreground="{DynamicResource StatusInfo}" TextWrapping="Wrap"/>
             <TextBlock Text="{l:L Settings_SaveHint}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
         </StackPanel>

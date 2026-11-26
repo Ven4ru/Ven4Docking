@@ -69,6 +69,9 @@ public sealed partial class EditorSession : ObservableObject
 
     public int Port => Config.EffectivePort;
 
+    /// <summary>The installer of an update was started: the window closes without asking about unsaved edits again.</summary>
+    public bool ClosingForUpdate { get; set; }
+
     public string StorageDescription => AgentOnline
         ? Loc.F("Storage_Agent", Port)
         : Loc.F("Storage_Files", Paths.Home);
@@ -191,12 +194,18 @@ public sealed partial class EditorSession : ObservableObject
         Restored?.Invoke();
     }
 
+    /// <summary>Error of <see cref="SaveAsync"/> when an action of «Кнопки» would be refused by the agent.</summary>
+    public const string ActionsError = "actions";
+
     /// <summary>Saves config and the current layout. Refuses (and highlights) an invalid layout, spec §11.</summary>
     public async Task<SaveResult> SaveAsync()
     {
         NotifyLayoutChanged();
         if (Issues.Count > 0)
             return new SaveResult(false, Issues[0].Kind, LayoutValidator.InvalidBlockIds(Issues).ToList());
+        var actionIssues = ActionValidator.Validate(Config);
+        if (actionIssues.Count > 0)
+            return new SaveResult(false, ActionsError, actionIssues.Select(i => i.ActionId).Distinct().ToList());
 
         string phoneId = CurrentPhone?.Id ?? PhoneChoice.DraftId;
         SaveResult result;

@@ -99,6 +99,71 @@ public static class FirewallStates
     public static bool NeedsFix(FirewallState state) => state is FirewallState.Missing or FirewallState.Blocked;
 }
 
+// ---------- 1.1 (spec 1.1 §5, «Редактор») ----------
+
+/// <summary>GET /admin/notify/apps: apps the agent saw notifications from since it started (no text).</summary>
+public sealed class NotifyAppsResponse
+{
+    /// <summary>allowed | denied | unspecified | off — the Windows notification access of the agent.</summary>
+    public string? Access { get; set; }
+    public List<NotifyAppInfo> Apps { get; set; } = new();
+}
+
+public sealed class NotifyAppInfo
+{
+    public string Aumid { get; set; } = "";
+    public string? Name { get; set; }
+    public double? LastSeen { get; set; }
+}
+
+public static class NotifyAccess
+{
+    public const string Allowed = "allowed";
+    public const string Denied = "denied";
+    public const string Unspecified = "unspecified";
+    public const string Off = "off";
+}
+
+/// <summary>GET /admin/audio/devices.</summary>
+public sealed class AudioDevicesResponse
+{
+    public List<AudioDeviceInfo> Outputs { get; set; } = new();
+    public List<AudioDeviceInfo> Inputs { get; set; } = new();
+}
+
+public sealed class AudioDeviceInfo
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public bool Default { get; set; }
+}
+
+/// <summary>POST /admin/obs/test response.</summary>
+public sealed class ObsTestResult
+{
+    public bool Ok { get; set; }
+    public string? Version { get; set; }
+    public string? Error { get; set; }
+}
+
+/// <summary>GET /admin/processes item: a program with a window (for «Экран программы»).</summary>
+public sealed class ProcessInfo
+{
+    public string Name { get; set; } = "";
+    public string? Title { get; set; }
+}
+
+/// <summary>GET /admin/wol: what the agent found on the adapter with the default route.</summary>
+public sealed class WolInfo
+{
+    public string? Mac { get; set; }
+    public string? Broadcast { get; set; }
+    public string? Adapter { get; set; }
+
+    /// <summary>Wake on LAN allowed in Windows for the adapter; null = the agent could not tell.</summary>
+    public bool? WakeEnabled { get; set; }
+}
+
 /// <summary>Result of PUT /admin/layouts or a local file save.</summary>
 public sealed record SaveResult(bool Ok, string? Error = null, IReadOnlyList<string>? Blocks = null, int? NewVersion = null)
 {

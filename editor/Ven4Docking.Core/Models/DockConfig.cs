@@ -18,6 +18,12 @@ public sealed class DockConfig
     public AiSettings? Ai { get; set; }
     public List<PhoneEntry> Phones { get; set; } = new();
 
+    // 1.1 (spec 1.1 §3). Null = the field is absent and stays absent on save.
+    public List<ActionEntry>? Actions { get; set; }
+    public ObsSettings? Obs { get; set; }
+    public NotifySettings? Notify { get; set; }
+    public WolSettings? Wol { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? Extra { get; set; }
 

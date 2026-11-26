@@ -119,7 +119,9 @@ public class WizardCommandTests
     public void Every_automatic_step_has_a_check_and_common_items(int sdk)
     {
         var steps = Steps(sdk);
-        Assert.Equal(new[] { "home", "stayOn", "timeout", "noLock", "background", "timeZone", "animations" }, steps.Select(s => s.Id));
+        var ids = new List<string> { "home", "stayOn", "timeout", "noLock", "background", "timeZone", "animations" };
+        if (sdk >= AndroidSdk.Android8) ids.Insert(5, "installPackages");
+        Assert.Equal(ids, steps.Select(s => s.Id));
         foreach (var s in steps.Where(s => !s.ManualOnly))
         {
             Assert.NotEmpty(s.Commands);
@@ -129,6 +131,29 @@ public class WizardCommandTests
         Assert.Contains(AllCommandText(sdk), c => c == "shell settings put system screen_off_timeout 1800000");
         Assert.Contains(AllCommandText(sdk), c => c == "shell settings put global animator_duration_scale 0.5");
     }
+
+    [Theory]
+    [InlineData(AndroidSdk.Android8)]
+    [InlineData(AndroidSdk.Android10)]
+    [InlineData(AndroidSdk.Android14)]
+    public void Android8_plus_allows_installing_launcher_updates(int sdk)
+    {
+        var step = Step(sdk, "installPackages");
+        Assert.Equal("shell cmd appops set ru.ven4tools.docking REQUEST_INSTALL_PACKAGES allow", Assert.Single(step.Commands).ToString());
+        var check = Assert.Single(step.Checks);
+        Assert.Equal("shell cmd appops get ru.ven4tools.docking REQUEST_INSTALL_PACKAGES", check.Command.ToString());
+        Assert.True(check.IsOk("REQUEST_INSTALL_PACKAGES: allow\n"));
+        Assert.False(check.IsOk("REQUEST_INSTALL_PACKAGES: default"));
+        Assert.False(check.IsOk("No operations."));
+        // a refusal must not block the wizard: the update can still be allowed on the phone later
+        Assert.True(step.Optional);
+        Assert.False(step.ManualOnly);
+        Assert.Equal("Wizard_Manual_InstallPackages", step.ManualHintKey);
+    }
+
+    [Fact]
+    public void Android7_has_no_install_packages_app_op() =>
+        Assert.DoesNotContain(AllCommandText(AndroidSdk.Android7), c => c.Contains("REQUEST_INSTALL_PACKAGES"));
 
     [Fact]
     public void Wifi_pairing_only_on_11_plus()

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Ven4Docking.Core.Admin;
 using Ven4Docking.Core.Models;
 using Ven4Docking.Core.Validation;
 using Ven4Docking.Editor.Services;
@@ -69,6 +70,34 @@ public sealed partial class ScreenItem : ObservableObject
     public string BlockCountText => Loc.F("Screens_BlockCount", Blocks.Count);
 
     public void RefreshCount() => OnPropertyChanged(nameof(BlockCountText));
+
+    /// <summary>«Экран программы» (spec 1.1 §4): exe name; empty → a normal screen.</summary>
+    public string ForApp
+    {
+        get => Model.ForApp ?? "";
+        set
+        {
+            string? v = LayoutScreen.NormalizeForApp(value);
+            if (v == Model.ForApp)
+            {
+                OnPropertyChanged();
+                return;
+            }
+            _owner.Session.Checkpoint();
+            Model.ForApp = v;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsProgram));
+            _owner.Session.NotifyLayoutChanged();
+        }
+    }
+
+    public bool IsProgram => Model.IsProgramScreen;
+}
+
+/// <summary>A running program offered for «Экран программы» (GET /admin/processes).</summary>
+public sealed record ProcessChoice(string Name, string? Title)
+{
+    public string Display => string.IsNullOrWhiteSpace(Title) ? Name : $"{Name} — {Title}";
 }
 
 public sealed partial class BlockItem : ObservableObject
@@ -219,6 +248,8 @@ public sealed partial class ScreensViewModel : SectionBase
             IssueKinds.Overlap => Loc.F("Issue_Overlap", screen, string.Join(" + ", i.BlockIds.Select(BlockName))),
             IssueKinds.Bounds => Loc.F("Issue_Bounds", screen, BlockName(i.BlockIds[0])),
             IssueKinds.Screens => Loc.T("Issue_Screens"),
+            IssueKinds.ProgramScreens => Loc.F("Issue_ProgramScreens", LayoutScreen.MaxProgramScreens),
+            IssueKinds.NoMainScreen => Loc.T("Issue_NoMainScreen"),
             _ => Loc.F("Issue_Other", i.Kind),
         };
     }
@@ -229,8 +260,52 @@ public sealed partial class ScreensViewModel : SectionBase
         return b is null ? id : $"{Loc.T("Block_" + b.Type)} ({id})";
     }
 
+    // ---------- «Экран программы»: running programs (GET /admin/processes) ----------
+
+    public ObservableCollection<ProcessChoice> RunningPrograms { get; } = new();
+
+    [ObservableProperty] private ProcessChoice? _pickedProgram;
+    [ObservableProperty] private string _programsMessage = "";
+
+    public override void Activated()
+    {
+        // «Кнопки», «Приложения», «Серверы» may have changed meanwhile: the option lists come from them.
+        LoadOptions();
+        _ = LoadProgramsAsync();
+    }
+
+    [RelayCommand]
+    private async Task LoadProgramsAsync()
+    {
+        RunningPrograms.Clear();
+        if (!Session.AgentOnline)
+        {
+            ProgramsMessage = Loc.T("Screens_ProgramsOffline");
+            return;
+        }
+        try
+        {
+            var list = await Session.Admin.GetProcessesAsync();
+            foreach (var p in list.Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                         .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
+                         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
+                RunningPrograms.Add(new ProcessChoice(p.Name, p.Title));
+            ProgramsMessage = "";
+        }
+        catch (AdminException e)
+        {
+            ProgramsMessage = e.AgentTooOld ? Loc.T("Agent_TooOld") : e.AgentUnreachable ? Loc.T("Screens_ProgramsOffline") : e.Message;
+        }
+    }
+
+    partial void OnPickedProgramChanged(ProcessChoice? value)
+    {
+        if (value is not null && SelectedScreen is not null) SelectedScreen.ForApp = value.Name;
+    }
+
     partial void OnSelectedScreenChanged(ScreenItem? value)
     {
+        PickedProgram = null;
         SelectedBlock = null;
         DeleteScreenCommand.NotifyCanExecuteChanged();
         MoveScreenUpCommand.NotifyCanExecuteChanged();
@@ -252,6 +327,10 @@ public sealed partial class ScreensViewModel : SectionBase
         OnPropertyChanged(nameof(Clock24));
         OnPropertyChanged(nameof(IsClock));
         OnPropertyChanged(nameof(OptionChoicesTitle));
+        OnPropertyChanged(nameof(IsNotify));
+        OnPropertyChanged(nameof(NotifyMax));
+        OnPropertyChanged(nameof(FlagChoicesTitle));
+        OnPropertyChanged(nameof(OptionsHint));
     }
 
     public bool HasSelection => SelectedBlock is not null;
@@ -417,8 +496,44 @@ public sealed partial class ScreensViewModel : SectionBase
         BlockTypes.Servers => Loc.T("Opts_Servers"),
         BlockTypes.Ai => Loc.T("Opts_Sources"),
         BlockTypes.Media => Loc.T("Opts_Buttons"),
+        BlockTypes.Power => Loc.T("Opts_PowerButtons"),
+        BlockTypes.Keys => Loc.T("Opts_Actions"),
         _ => "",
     };
+
+    /// <summary>On/off parts of «Микшер» and «OBS»: each is a boolean in opts, true when absent.</summary>
+    public ObservableCollection<CheckItem> FlagChoices { get; } = new();
+
+    public string FlagChoicesTitle => SelectedBlock?.Type is BlockTypes.Mixer or BlockTypes.Obs ? Loc.T("Opts_Show") : "";
+
+    /// <summary>A note under the options of the new blocks (what the block needs to work).</summary>
+    public string OptionsHint => SelectedBlock?.Type switch
+    {
+        BlockTypes.Power => Loc.T("Opts_PowerHint"),
+        BlockTypes.Keys => Loc.T("Opts_KeysHint"),
+        BlockTypes.Obs => Loc.T("Opts_ObsHint"),
+        BlockTypes.Notify => Loc.T("Opts_NotifyHint"),
+        _ => "",
+    };
+
+    public bool IsNotify => SelectedBlock?.Type == BlockTypes.Notify;
+
+    /// <summary>«Сколько уведомлений» of the notify block (opts.max).</summary>
+    public string NotifyMax
+    {
+        get => (SelectedBlock?.Model.Opts["max"] is JsonValue v && v.TryGetValue<int>(out int n) ? n : BlockTypes.NotifyDefaultMax).ToString();
+        set
+        {
+            if (!int.TryParse(value, out int n))
+            {
+                OnPropertyChanged();
+                return;
+            }
+            n = Math.Clamp(n, 1, BlockTypes.NotifyMaxLimit);
+            SetOpt("max", n);
+            OnPropertyChanged();
+        }
+    }
 
     private bool GetBool(string key, bool fallback)
     {
@@ -438,6 +553,7 @@ public sealed partial class ScreensViewModel : SectionBase
     private void LoadOptions()
     {
         OptionChoices.Clear();
+        FlagChoices.Clear();
         OptsError = "";
         var b = SelectedBlock;
         if (b is null)
@@ -447,12 +563,27 @@ public sealed partial class ScreensViewModel : SectionBase
         }
         OptsText = b.Model.Opts.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
 
+        var flags = b.Type switch
+        {
+            BlockTypes.Mixer => BlockTypes.MixerParts,
+            BlockTypes.Obs => BlockTypes.ObsParts,
+            _ => Array.Empty<string>(),
+        };
+        foreach (var f in flags)
+        {
+            bool on = b.Model.Opts[f] is not JsonValue fv || !fv.TryGetValue<bool>(out bool fb) || fb;
+            FlagChoices.Add(new CheckItem(f, Loc.T($"Opts_{b.Type}_{f}"), on, c => SetOpt(c.Id, c.IsChecked)));
+        }
+
         (string Key, IEnumerable<(string Id, string Title)> All)? spec = b.Type switch
         {
             BlockTypes.Apps => ("apps", Session.Config.Apps.Select(a => (a.Id, a.Title))),
             BlockTypes.Servers => ("servers", Session.Config.Servers.Select(s => (s.Id, s.Name))),
             BlockTypes.Ai => ("sources", AiSettings.KnownSources.Select(s => (s, Loc.T("Ai_" + s)))),
             BlockTypes.Media => ("buttons", new[] { "prev", "playpause", "next", "stop", "volup", "voldown", "mute" }.Select(s => (s, Loc.T("Media_" + s)))),
+            BlockTypes.Power => ("buttons", BlockTypes.PowerButtons.Select(s => (s, Loc.T("Power_" + s)))),
+            BlockTypes.Keys => ("actions", (Session.Config.Actions ?? new List<ActionEntry>())
+                .Select(a => (a.Id, string.IsNullOrEmpty(a.Title) ? a.Id : a.Title))),
             _ => null,
         };
         if (spec is null) return;
@@ -486,6 +617,7 @@ public sealed partial class ScreensViewModel : SectionBase
             LoadOptions();
             OnPropertyChanged(nameof(ClockWeather));
             OnPropertyChanged(nameof(Clock24));
+            OnPropertyChanged(nameof(NotifyMax));
             Session.NotifyLayoutChanged();
         }
         catch (JsonException e)

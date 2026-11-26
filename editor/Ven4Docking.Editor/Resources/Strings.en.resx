@@ -339,4 +339,198 @@ Download?</value></data>
   <data name="Update_UpToDate" xml:space="preserve"><value>You have the latest version.</value></data>
   <data name="Update_NoReleases" xml:space="preserve"><value>No releases yet — nothing to check.</value></data>
   <data name="Update_Failed" xml:space="preserve"><value>Could not check for updates: {0}</value></data>
+  <data name="Update_Install" xml:space="preserve"><value>Update to {0}</value></data>
+  <data name="Update_Banner" xml:space="preserve"><value>Version {0} is available</value></data>
+  <data name="Update_BannerInstall" xml:space="preserve"><value>Update</value></data>
+  <data name="Update_Hide" xml:space="preserve"><value>Hide until the next start</value></data>
+  <data name="Update_Hint" xml:space="preserve"><value>The installer is downloaded from GitHub, checked against SHA256SUMS and installed silently; the agent and the editor restart by themselves.</value></data>
+  <data name="Update_Connecting" xml:space="preserve"><value>Connecting to GitHub…</value></data>
+  <data name="Update_Downloading" xml:space="preserve"><value>Downloaded {0} of {1} MB</value></data>
+  <data name="Update_DownloadingNoTotal" xml:space="preserve"><value>Downloaded {0} MB</value></data>
+  <data name="Update_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Update_Starting" xml:space="preserve"><value>The installer is running — the editor closes and opens again.</value></data>
+  <data name="Update_AskSave" xml:space="preserve"><value>There are unsaved changes. Save before updating?</value></data>
+  <data name="Update_SaveFailed" xml:space="preserve"><value>The update did not start: saving failed ({0}).</value></data>
+  <data name="Update_Err_Cancelled" xml:space="preserve"><value>The download was cancelled.</value></data>
+  <data name="Update_Err_NoAsset" xml:space="preserve"><value>The release has no required file ({0}). Download the installer from the release page.</value></data>
+  <data name="Update_Err_NoChecksum" xml:space="preserve"><value>SHA256SUMS has no checksum for {0} — an unchecked file is not installed. Download the installer from the release page.</value></data>
+  <data name="Update_Err_BadHost" xml:space="preserve"><value>A release file points outside GitHub ({0}) — the download was stopped.</value></data>
+  <data name="Update_Err_Network" xml:space="preserve"><value>Could not download the update: {0}. Check the internet connection and retry, or open the release page.</value></data>
+  <data name="Update_Err_HashMismatch" xml:space="preserve"><value>The downloaded installer did not match SHA256SUMS and was deleted. Retry later or download it from the release page.</value></data>
+  <data name="Update_Err_Disk" xml:space="preserve"><value>Could not save the installer to the temporary folder: {0}</value></data>
+  <data name="Update_Err_Start" xml:space="preserve"><value>Could not start the installer: {0}</value></data>
+
+  <!-- 1.1: shell -->
+  <data name="Section_Buttons" xml:space="preserve"><value>Buttons</value></data>
+  <data name="Section_Notify" xml:space="preserve"><value>Notifications</value></data>
+  <data name="Agent_TooOld" xml:space="preserve"><value>The agent cannot do this — update Ven4Docking to 1.1.</value></data>
+  <data name="SaveError_ProgramScreens" xml:space="preserve"><value>Not saved: there can be at most {0} program screens.</value></data>
+  <data name="SaveError_NoMainScreen" xml:space="preserve"><value>Not saved: at least one normal screen (not a program screen) is needed.</value></data>
+  <data name="SaveError_Actions" xml:space="preserve"><value>Not saved: check the buttons ({0}).</value></data>
+  <data name="Issue_ProgramScreens" xml:space="preserve"><value>More than {0} program screens: turn the extra ones into normal screens.</value></data>
+  <data name="Issue_NoMainScreen" xml:space="preserve"><value>Every screen is a program screen: the panel has nothing to show normally.</value></data>
+
+  <!-- 1.1: blocks -->
+  <data name="Block_power" xml:space="preserve"><value>Power</value></data>
+  <data name="Block_keys" xml:space="preserve"><value>Buttons</value></data>
+  <data name="Block_mixer" xml:space="preserve"><value>Mixer</value></data>
+  <data name="Block_obs" xml:space="preserve"><value>OBS</value></data>
+  <data name="Block_notify" xml:space="preserve"><value>Notifications</value></data>
+  <data name="Power_lock" xml:space="preserve"><value>Lock</value></data>
+  <data name="Power_sleep" xml:space="preserve"><value>Sleep</value></data>
+  <data name="Power_restart" xml:space="preserve"><value>Restart</value></data>
+  <data name="Power_shutdown" xml:space="preserve"><value>Shut down</value></data>
+  <data name="Opts_PowerButtons" xml:space="preserve"><value>Which buttons (they act after a 2 s hold)</value></data>
+  <data name="Opts_Actions" xml:space="preserve"><value>Which actions (from the «Buttons» section)</value></data>
+  <data name="Opts_Show" xml:space="preserve"><value>What to show</value></data>
+  <data name="Opts_mixer_output" xml:space="preserve"><value>Output device</value></data>
+  <data name="Opts_mixer_mic" xml:space="preserve"><value>Microphone</value></data>
+  <data name="Opts_mixer_apps" xml:space="preserve"><value>App volumes</value></data>
+  <data name="Opts_obs_stream" xml:space="preserve"><value>Stream</value></data>
+  <data name="Opts_obs_record" xml:space="preserve"><value>Recording</value></data>
+  <data name="Opts_obs_scenes" xml:space="preserve"><value>Scenes</value></data>
+  <data name="Opts_obs_audio" xml:space="preserve"><value>Audio sources</value></data>
+  <data name="Opts_obs_stats" xml:space="preserve"><value>Dropped frames and bitrate</value></data>
+  <data name="Opts_NotifyMax" xml:space="preserve"><value>How many notifications</value></data>
+  <data name="Opts_PowerHint" xml:space="preserve"><value>Restart and shutdown start after 10 s — the panel shows «Cancel».</value></data>
+  <data name="Opts_KeysHint" xml:space="preserve"><value>Actions are set up in the «Buttons» section.</value></data>
+  <data name="Opts_ObsHint" xml:space="preserve"><value>OBS address and password are in «Settings» → «OBS».</value></data>
+  <data name="Opts_NotifyHint" xml:space="preserve"><value>Which apps to show and how — in the «Notifications» section.</value></data>
+  <data name="Screens_ForApp" xml:space="preserve"><value>Program screen (exe name, empty — normal)</value></data>
+  <data name="Screens_ForAppHint" xml:space="preserve"><value>For example obs64.exe. Such a screen is not in the swipe order: the panel offers it while the program runs. Empty — a normal screen.</value></data>
+  <data name="Screens_ProgramsRefresh" xml:space="preserve"><value>Refresh the list of running programs</value></data>
+  <data name="Screens_ProgramsPick" xml:space="preserve"><value>Pick from the running programs</value></data>
+  <data name="Screens_ProgramsOffline" xml:space="preserve"><value>The agent is not running — type the exe name.</value></data>
+
+  <!-- 1.1: buttons -->
+  <data name="ActionKind_keys" xml:space="preserve"><value>Key combination</value></data>
+  <data name="ActionKind_text" xml:space="preserve"><value>Text</value></data>
+  <data name="ActionKind_macro" xml:space="preserve"><value>Chain</value></data>
+  <data name="ActionKind_mic" xml:space="preserve"><value>Microphone</value></data>
+  <data name="ActionKind_audioOut" xml:space="preserve"><value>Sound output</value></data>
+  <data name="StepKind_keys" xml:space="preserve"><value>Key combination</value></data>
+  <data name="StepKind_text" xml:space="preserve"><value>Text</value></data>
+  <data name="StepKind_wait" xml:space="preserve"><value>Pause</value></data>
+  <data name="StepKind_launch" xml:space="preserve"><value>Launch an app</value></data>
+  <data name="StepKind_bad" xml:space="preserve"><value>Unknown step</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Press the combination…</value></data>
+  <data name="Hotkey_Empty" xml:space="preserve"><value>not set</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>The panel cannot press this key</value></data>
+  <data name="Hotkey_ToolTip" xml:space="preserve"><value>Click and press the combination on the keyboard.</value></data>
+  <data name="Buttons_Subtitle" xml:space="preserve"><value>Actions for the «Buttons» block: key combinations, ready-made text, chains of steps, microphone and sound output.</value></data>
+  <data name="Buttons_Warning" xml:space="preserve"><value>Key presses do not reach programs run as administrator, and some games with anti-cheat ignore them. The agent runs without administrator rights and will not work around this.</value></data>
+  <data name="Buttons_AddKeys" xml:space="preserve"><value>Key combination</value></data>
+  <data name="Buttons_AddText" xml:space="preserve"><value>Text</value></data>
+  <data name="Buttons_AddMacro" xml:space="preserve"><value>Chain</value></data>
+  <data name="Buttons_AddMic" xml:space="preserve"><value>Microphone</value></data>
+  <data name="Buttons_AddAudioOut" xml:space="preserve"><value>Sound output</value></data>
+  <data name="Buttons_AddDiscord" xml:space="preserve"><value>Discord template</value></data>
+  <data name="Buttons_DiscordHint" xml:space="preserve"><value>Ctrl+Shift+M — microphone, Ctrl+Shift+D — sound. The combinations must match Discord → Settings → Keybinds.</value></data>
+  <data name="Buttons_DiscordAdded" xml:space="preserve"><value>Added «Discord: microphone» (Ctrl+Shift+M) and «Discord: sound» (Ctrl+Shift+D). Check that Discord → Settings → Keybinds has the same combinations.</value></data>
+  <data name="Buttons_DiscordMic" xml:space="preserve"><value>Discord: microphone</value></data>
+  <data name="Buttons_DiscordSound" xml:space="preserve"><value>Discord: sound</value></data>
+  <data name="Buttons_RecordHint" xml:space="preserve"><value>Click the «Combination» field and press the keys.</value></data>
+  <data name="Buttons_ListHint" xml:space="preserve"><value>Drag a row to change the order. Which actions the panel shows is set in the «Buttons» block on a screen.</value></data>
+  <data name="Buttons_Empty" xml:space="preserve"><value>No actions. Add a key combination or the Discord template.</value></data>
+  <data name="Buttons_SelectHint" xml:space="preserve"><value>Select an action to change it.</value></data>
+  <data name="Buttons_Title" xml:space="preserve"><value>Title on the panel</value></data>
+  <data name="Buttons_Keys" xml:space="preserve"><value>Combination</value></data>
+  <data name="Buttons_ClearKeys" xml:space="preserve"><value>Clear</value></data>
+  <data name="Buttons_KeysHint" xml:space="preserve"><value>Modifiers Ctrl, Alt, Shift, Win and one key: a letter, a digit, F1–F24, arrows, Enter, Esc and so on.</value></data>
+  <data name="Buttons_Text" xml:space="preserve"><value>Text the panel types</value></data>
+  <data name="Buttons_TextCounter" xml:space="preserve"><value>{0} of {1} characters</value></data>
+  <data name="Buttons_TextHint" xml:space="preserve"><value>Typed into the window that has the cursor; a line break is Enter.</value></data>
+  <data name="Buttons_Steps" xml:space="preserve"><value>Steps (run in order)</value></data>
+  <data name="Buttons_WaitUnit" xml:space="preserve"><value>ms (1–10000)</value></data>
+  <data name="Buttons_AddStep" xml:space="preserve"><value>Add a step:</value></data>
+  <data name="Buttons_StepsHint" xml:space="preserve"><value>From 1 to 20 steps. «Launch an app» takes a program from the «Apps» section.</value></data>
+  <data name="Buttons_MaxSteps" xml:space="preserve"><value>A chain has at most {0} steps.</value></data>
+  <data name="Buttons_MicHint" xml:space="preserve"><value>Mutes and unmutes the default Windows microphone. The panel button is red while the microphone is muted.</value></data>
+  <data name="Buttons_Devices" xml:space="preserve"><value>Devices to switch between (in turn)</value></data>
+  <data name="Buttons_DevicesHint" xml:space="preserve"><value>Each press makes the next checked device the default output.</value></data>
+  <data name="Buttons_FewDevices" xml:space="preserve"><value>Check at least two devices, otherwise there is nothing to switch between.</value></data>
+  <data name="Buttons_DevicesOffline" xml:space="preserve"><value>The device list appears when the agent runs.</value></data>
+  <data name="Buttons_DevicesNone" xml:space="preserve"><value>The agent found no sound output devices.</value></data>
+  <data name="Buttons_DeviceDefault" xml:space="preserve"><value>{0} (default now)</value></data>
+  <data name="Buttons_DeviceMissing" xml:space="preserve"><value>Not connected: {0}</value></data>
+  <data name="Buttons_BlockHint" xml:space="preserve"><value>To show the button on the phone, check it in a «Buttons» block in the «Screens» section.</value></data>
+  <data name="Buttons_NoKeys" xml:space="preserve"><value>no combination</value></data>
+  <data name="Buttons_NoText" xml:space="preserve"><value>empty text</value></data>
+  <data name="Buttons_StepsCount" xml:space="preserve"><value>steps: {0}</value></data>
+  <data name="Buttons_MicSummary" xml:space="preserve"><value>microphone on/off</value></data>
+  <data name="Buttons_DevicesCount" xml:space="preserve"><value>devices: {0}</value></data>
+  <data name="ActionIssue_badId" xml:space="preserve"><value>Bad id: Latin letters, digits, «-» and «_» only, up to 64 characters.</value></data>
+  <data name="ActionIssue_duplicateId" xml:space="preserve"><value>Another action has the same id.</value></data>
+  <data name="ActionIssue_badKind" xml:space="preserve"><value>Unknown action type.</value></data>
+  <data name="ActionIssue_badKeys" xml:space="preserve"><value>The combination is not set or cannot be pressed.</value></data>
+  <data name="ActionIssue_emptyText" xml:space="preserve"><value>The text is empty.</value></data>
+  <data name="ActionIssue_textTooLong" xml:space="preserve"><value>The text is longer than 2000 characters.</value></data>
+  <data name="ActionIssue_stepCount" xml:space="preserve"><value>A chain must have 1 to 20 steps.</value></data>
+  <data name="ActionIssue_badStep" xml:space="preserve"><value>Unknown step.</value></data>
+  <data name="ActionIssue_badWait" xml:space="preserve"><value>A pause is 1 to 10000 ms.</value></data>
+  <data name="ActionIssue_unknownApp" xml:space="preserve"><value>Pick an app from the «Apps» section.</value></data>
+  <data name="ActionIssue_noDevices" xml:space="preserve"><value>Check the output devices.</value></data>
+  <data name="ActionIssue_steps" xml:space="preserve"><value>Some steps have errors.</value></data>
+
+  <!-- 1.1: notifications -->
+  <data name="Notify_Subtitle" xml:space="preserve"><value>Windows notifications on the phone: from which apps and how much to show.</value></data>
+  <data name="Notify_Enabled" xml:space="preserve"><value>Show notifications on the phone</value></data>
+  <data name="Notify_EnabledHint" xml:space="preserve"><value>Off — the agent does not read notifications at all.</value></data>
+  <data name="Notify_WallCountsOnly" xml:space="preserve"><value>Counters only on the wall</value></data>
+  <data name="Notify_WallCountsOnlyHint" xml:space="preserve"><value>No titles or text whatever an app is set to: handy when others can see the phone.</value></data>
+  <data name="Notify_NightFlash" xml:space="preserve"><value>Light up a new notification at night</value></data>
+  <data name="Notify_NightFlashHint" xml:space="preserve"><value>The panel raises the brightness for 5 seconds.</value></data>
+  <data name="Notify_Access" xml:space="preserve"><value>Notification access in Windows</value></data>
+  <data name="Notify_AccessWhere" xml:space="preserve"><value>It is turned on in «Settings» → «Privacy &amp; security» → «Notifications» → «Notification access».</value></data>
+  <data name="Notify_OpenSettings" xml:space="preserve"><value>Open settings</value></data>
+  <data name="Notify_AccessUnknown" xml:space="preserve"><value>Unknown — the agent is not running or did not answer.</value></data>
+  <data name="Notify_AccessAllowed" xml:space="preserve"><value>Allowed.</value></data>
+  <data name="Notify_AccessDenied" xml:space="preserve"><value>Denied in Windows settings: the panel will show no notifications.</value></data>
+  <data name="Notify_AccessUnspecified" xml:space="preserve"><value>Windows has not asked yet. Open settings and allow access.</value></data>
+  <data name="Notify_AccessOff" xml:space="preserve"><value>The agent does not read notifications now.</value></data>
+  <data name="Notify_Apps" xml:space="preserve"><value>Apps</value></data>
+  <data name="Notify_AppsHint" xml:space="preserve"><value>Apps the agent has seen notifications from since it started. Apps set to «Hide» are not shown on the panel.</value></data>
+  <data name="Notify_NoApps" xml:space="preserve"><value>None yet. The list grows as notifications arrive.</value></data>
+  <data name="Notify_LastSeen" xml:space="preserve"><value>last: {0}</value></data>
+  <data name="Notify_NotSeen" xml:space="preserve"><value>none since the agent started</value></data>
+  <data name="Notify_Offline" xml:space="preserve"><value>The agent is not running: only apps already set in config.json are shown.</value></data>
+  <data name="NotifyMode_hidden" xml:space="preserve"><value>Hide</value></data>
+  <data name="NotifyMode_count" xml:space="preserve"><value>Counter</value></data>
+  <data name="NotifyMode_title" xml:space="preserve"><value>Title</value></data>
+  <data name="NotifyMode_full" xml:space="preserve"><value>Full text</value></data>
+
+  <!-- 1.1: settings -->
+  <data name="Settings_Obs" xml:space="preserve"><value>OBS</value></data>
+  <data name="Settings_ObsHost" xml:space="preserve"><value>Address</value></data>
+  <data name="Settings_ObsPort" xml:space="preserve"><value>Port</value></data>
+  <data name="Settings_ObsPassword" xml:space="preserve"><value>Password</value></data>
+  <data name="Settings_ObsPasswordHint" xml:space="preserve"><value>Stored only encrypted (DPAPI, your Windows account). An empty field keeps the password.</value></data>
+  <data name="Settings_ObsPasswordSet" xml:space="preserve"><value>password set</value></data>
+  <data name="Settings_ObsTest" xml:space="preserve"><value>Test connection</value></data>
+  <data name="Settings_ObsTesting" xml:space="preserve"><value>Testing…</value></data>
+  <data name="Settings_ObsOk" xml:space="preserve"><value>OBS answers, obs-websocket {0}.</value></data>
+  <data name="Settings_ObsFailed" xml:space="preserve"><value>Could not connect: {0}</value></data>
+  <data name="Settings_ObsBadHost" xml:space="preserve"><value>The OBS address is this PC (127.0.0.1, localhost) or a home network address (192.168.x.x, 10.x.x.x and so on): the agent does not connect to OBS over the internet.</value></data>
+  <data name="Settings_ObsHint" xml:space="preserve"><value>Address, port and password are in OBS → «Tools» → «WebSocket Server Settings». Enable the server there too.</value></data>
+  <data name="Settings_ObsBadPort" xml:space="preserve"><value>The OBS port is a number from 1 to 65535.</value></data>
+  <data name="Settings_Wol" xml:space="preserve"><value>Wake on LAN</value></data>
+  <data name="Settings_WolText" xml:space="preserve"><value>The phone can turn the PC on with «Turn on PC» when it does not answer. It needs the MAC of the network card and the broadcast address of the network.</value></data>
+  <data name="Settings_WolMac" xml:space="preserve"><value>MAC address</value></data>
+  <data name="Settings_WolBroadcast" xml:space="preserve"><value>Broadcast</value></data>
+  <data name="Settings_WolAdapter" xml:space="preserve"><value>Adapter: {0}</value></data>
+  <data name="Settings_WolManual" xml:space="preserve"><value>Set by hand.</value></data>
+  <data name="Settings_WolReset" xml:space="preserve"><value>Detect automatically</value></data>
+  <data name="Settings_WolSaved" xml:space="preserve"><value>The address is set by hand and goes to config.json on «Save».</value></data>
+  <data name="Settings_WolWakeOn" xml:space="preserve"><value>Wake on LAN is allowed in Windows.</value></data>
+  <data name="Settings_WolWakeOff" xml:space="preserve"><value>Wake on LAN is off in Windows: «Device Manager» → network adapter → «Power Management» → «Allow this device to wake the computer».</value></data>
+  <data name="Settings_WolWakeUnknown" xml:space="preserve"><value>Could not find out whether Wake on LAN is allowed in Windows.</value></data>
+  <data name="Settings_WolOffline" xml:space="preserve"><value>The agent is not running: the adapter address appears when it runs. You can enter it by hand.</value></data>
+  <data name="Settings_WolNotFound" xml:space="preserve"><value>The agent found no adapter with a network route. Enter the MAC and address by hand.</value></data>
+  <data name="Settings_WolBadMac" xml:space="preserve"><value>A MAC address is six pairs of hex digits, for example AA:BB:CC:DD:EE:FF.</value></data>
+  <data name="Settings_WolBadBroadcast" xml:space="preserve"><value>The broadcast address is IPv4, for example 192.168.1.255.</value></data>
+  <data name="Settings_WolBios" xml:space="preserve"><value>Waking must also be allowed in BIOS/UEFI — the option is usually called «Wake on LAN», «Power On By PCI-E» or similar. A PC usually cannot be woken over Wi-Fi — a cable is needed.</value></data>
+
+  <!-- 1.1: wizard -->
+  <data name="Wizard_Item_installPackages" xml:space="preserve"><value>Launcher updates through the PC</value></data>
+  <data name="Wizard_Manual_InstallPackages" xml:space="preserve"><value>The phone refused to allow this from the PC. Allow it by hand: Settings → Apps → Special access → Install unknown apps → Ven4Docking. Without it the launcher update asks for permission on the phone.</value></data>
 </root>

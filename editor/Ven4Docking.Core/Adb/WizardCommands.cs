@@ -53,7 +53,7 @@ public sealed record WizardStep(string Id, IReadOnlyList<AdbCommand> Commands, I
 /// <summary>
 /// Builds the adb commands of the phone wizard for a given Android version. Version rules come from
 /// docs/research/phone-brands.md §0.3: RUN_ANY_IN_BACKGROUND and set-standby-bucket only on 9+,
-/// locksettings only on 8+, HOME role on 10+, stay_on mask 15 (incl. dock) on 13+.
+/// locksettings only on 8+, HOME role on 10+, stay_on mask 15 (incl. dock) on 13+; REQUEST_INSTALL_PACKAGES app-op on 8+.
 /// </summary>
 public static class WizardCommandBuilder
 {
@@ -61,6 +61,7 @@ public static class WizardCommandBuilder
     public const string Component = Package + "/.MainActivity";
     public const int ScreenTimeoutMs = 30 * 60 * 1000;
     public const string AnimationScale = "0.5";
+    public const string InstallPackagesOp = "REQUEST_INSTALL_PACKAGES";
 
     public static string BackgroundOp(int sdk) => sdk >= AndroidSdk.Android9 ? "RUN_ANY_IN_BACKGROUND" : "RUN_IN_BACKGROUND";
 
@@ -129,6 +130,14 @@ public static class WizardCommandBuilder
             bgChecks.Add(new WizardCheck(AdbCommand.Shell("am", "get-standby-bucket", Package), "10"));
         }
         steps.Add(new WizardStep("background", bg, bgChecks));
+
+        // Launcher updates through the PC (spec 1.1 §1.2): PackageInstaller needs «install unknown apps» for
+        // Ven4Docking, an app-op since 8.0. Without it the update still works after the user allows it on the phone.
+        if (sdk >= AndroidSdk.Android8)
+            steps.Add(new WizardStep("installPackages",
+                new[] { AdbCommand.Shell("cmd", "appops", "set", Package, InstallPackagesOp, "allow") },
+                new[] { new WizardCheck(AdbCommand.Shell("cmd", "appops", "get", Package, InstallPackagesOp), "allow", MatchKind.Contains) },
+                ManualHintKey: "Wizard_Manual_InstallPackages", Optional: true));
 
         // Time zone like the PC. IAlarmManager.setTimeZone is transaction 3; if the shell may not call it the
         // check fails and the UI asks to set the zone by hand.

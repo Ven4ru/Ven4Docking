@@ -35,9 +35,30 @@ public sealed class GridSize
 
 public sealed class LayoutScreen
 {
+    /// <summary>Program screens count towards <see cref="PanelLayout.MaxScreens"/> too (spec 1.1 §4).</summary>
+    public const int MaxProgramScreens = 5;
+
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Screen of a program (spec 1.1 §4): exe name without a path, case-insensitive. Not in the normal swipe order;
+    /// the panel offers it while the program runs. Null for a normal screen.
+    /// </summary>
+    public string? ForApp { get; set; }
+
     public List<LayoutBlock> Blocks { get; set; } = new();
+
+    [JsonIgnore] public bool IsProgramScreen => !string.IsNullOrEmpty(ForApp);
+
+    /// <summary>«C:\…\OBS64.EXE » → «OBS64.EXE»; empty → null (a normal screen).</summary>
+    public static string? NormalizeForApp(string? text)
+    {
+        string t = (text ?? "").Trim().Trim('"').Trim();
+        if (t.Length == 0) return null;
+        t = Path.GetFileName(t.Replace('/', '\\'));
+        return t.Length == 0 ? null : t;
+    }
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? Extra { get; set; }

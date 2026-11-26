@@ -10,13 +10,18 @@ public static class IssueKinds
     public const string Screens = "screens";
     public const string DuplicateId = "duplicateId";
     public const string Grid = "grid";
+    /// <summary>More than <see cref="LayoutScreen.MaxProgramScreens"/> program screens.</summary>
+    public const string ProgramScreens = "programScreens";
+    /// <summary>Every screen is a program screen: nothing to show in the normal swipe order.</summary>
+    public const string NoMainScreen = "noMainScreen";
 }
 
 /// <summary>One problem that blocks saving. <see cref="BlockIds"/> are the blocks to highlight.</summary>
 public sealed record LayoutIssue(string Kind, string? ScreenId, IReadOnlyList<string> BlockIds);
 
 /// <summary>
-/// Same rules as the agent (spec §4): blocks do not overlap and stay inside the grid, 1–10 screens.
+/// Same rules as the agent (spec §4): blocks do not overlap and stay inside the grid, 1–10 screens;
+/// up to 5 of them are program screens (spec 1.1 §4) and at least one is a normal screen.
 /// </summary>
 public static class LayoutValidator
 {
@@ -35,6 +40,12 @@ public static class LayoutValidator
 
         if (layout.Screens.Count is < PanelLayout.MinScreens or > PanelLayout.MaxScreens)
             issues.Add(new LayoutIssue(IssueKinds.Screens, null, Array.Empty<string>()));
+
+        var programScreens = layout.Screens.Where(s => s.IsProgramScreen).ToList();
+        if (programScreens.Count > LayoutScreen.MaxProgramScreens)
+            issues.Add(new LayoutIssue(IssueKinds.ProgramScreens, programScreens[LayoutScreen.MaxProgramScreens].Id, Array.Empty<string>()));
+        if (layout.Screens.Count > 0 && programScreens.Count == layout.Screens.Count)
+            issues.Add(new LayoutIssue(IssueKinds.NoMainScreen, null, Array.Empty<string>()));
 
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var screen in layout.Screens)

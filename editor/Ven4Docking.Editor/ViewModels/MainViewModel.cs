@@ -57,8 +57,10 @@ public sealed partial class MainViewModel : ObservableObject
             new() { Key = "Phones", Glyph = "", ViewModel = Phones },
             new() { Key = "Screens", Glyph = "", ViewModel = Screens },
             new() { Key = "Apps", Glyph = "", ViewModel = new AppsViewModel(session) },
+            new() { Key = "Buttons", Glyph = "", ViewModel = new ButtonsViewModel(session) },
             new() { Key = "Servers", Glyph = "", ViewModel = new ServersViewModel(session) },
             new() { Key = "Ai", Glyph = "", ViewModel = new AiViewModel(session) },
+            new() { Key = "Notify", Glyph = "", ViewModel = new NotifyViewModel(session) },
             new() { Key = "Settings", Glyph = "", ViewModel = new SettingsViewModel(session) },
             new() { Key = "About", Glyph = "", ViewModel = new AboutViewModel(session) },
         };
@@ -116,7 +118,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     public string StorageText => Session.StorageDescription;
 
-    public async Task InitializeAsync()
+    /// <param name="forceUpdateCheck">«--update» from the agent's tray: check even when VEN4DOCKING_NO_UPDATE_CHECK=1.</param>
+    public async Task InitializeAsync(bool forceUpdateCheck = false)
     {
         await Session.LoadAsync();
         _switchingPhone = true;
@@ -128,8 +131,16 @@ public sealed partial class MainViewModel : ObservableObject
         SelectedSection.ViewModel.Activated();
         _statusTimer.Start();
         OnPropertyChanged(nameof(StorageText));
-        if (Environment.GetEnvironmentVariable("VEN4DOCKING_NO_UPDATE_CHECK") != "1")
+        if (forceUpdateCheck || Environment.GetEnvironmentVariable("VEN4DOCKING_NO_UPDATE_CHECK") != "1")
             _ = About.CheckUpdatesCommand.ExecuteAsync(null);
+    }
+
+    /// <summary>«Обновить» on the banner: go to «О программе», where the progress is shown, and start the download.</summary>
+    [RelayCommand]
+    private async Task UpdateFromBanner()
+    {
+        Select("About");
+        if (About.InstallUpdateCommand.CanExecute(null)) await About.InstallUpdateCommand.ExecuteAsync(null);
     }
 
     public AboutViewModel About => (AboutViewModel)Sections.Single(s => s.Key == "About").ViewModel;
@@ -204,9 +215,12 @@ public sealed partial class MainViewModel : ObservableObject
                     IssueKinds.Overlap => Loc.F("SaveError_Overlap", string.Join(", ", r.Blocks ?? Array.Empty<string>())),
                     IssueKinds.Bounds => Loc.F("SaveError_Bounds", string.Join(", ", r.Blocks ?? Array.Empty<string>())),
                     IssueKinds.Screens => Loc.T("SaveError_Screens"),
+                    IssueKinds.ProgramScreens => Loc.F("SaveError_ProgramScreens", LayoutScreen.MaxProgramScreens),
+                    IssueKinds.NoMainScreen => Loc.T("SaveError_NoMainScreen"),
+                    EditorSession.ActionsError => Loc.F("SaveError_Actions", string.Join(", ", ActionTitles(r.Blocks))),
                     _ => Loc.F("SaveError_Other", r.Error),
                 };
-                Select("Screens");
+                Select(r.Error == EditorSession.ActionsError ? "Buttons" : "Screens");
             }
             return r.Ok;
         }
@@ -217,6 +231,10 @@ public sealed partial class MainViewModel : ObservableObject
             return false;
         }
     }
+
+    private IEnumerable<string> ActionTitles(IReadOnlyList<string>? ids) =>
+        (ids ?? Array.Empty<string>()).Select(id =>
+            Session.Config.Actions?.FirstOrDefault(a => a.Id == id) is { Title.Length: > 0 } a ? a.Title : id);
 
     // ---------- firewall (spec §13: «если отказали — агент работает, но телефон не достучится; редактор показывает это») ----------
 

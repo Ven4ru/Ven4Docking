@@ -15,6 +15,9 @@ public sealed class AdminException : Exception
     public HttpStatusCode? Status { get; }
 
     public bool AgentUnreachable => Status is null;
+
+    /// <summary>The agent runs but has no such method: an older version (1.0 answers 404 to the 1.1 admin API).</summary>
+    public bool AgentTooOld => Status is HttpStatusCode.NotFound or HttpStatusCode.MethodNotAllowed;
 }
 
 /// <summary>
@@ -119,6 +122,26 @@ public sealed class AdminClient : IDisposable
         await GetAsync<List<AiSourceInfo>>("admin/ai/sources", ct).ConfigureAwait(false) ?? new List<AiSourceInfo>();
 
     public Task ReloadAsync(CancellationToken ct = default) => SendAsync(HttpMethod.Post, "admin/reload", null, ct);
+
+    // ---- 1.1 (an older agent answers 404: AdminException.AgentTooOld) ----
+
+    public async Task<NotifyAppsResponse> GetNotifyAppsAsync(CancellationToken ct = default) =>
+        await GetAsync<NotifyAppsResponse>("admin/notify/apps", ct).ConfigureAwait(false) ?? new NotifyAppsResponse();
+
+    public async Task<AudioDevicesResponse> GetAudioDevicesAsync(CancellationToken ct = default) =>
+        await GetAsync<AudioDevicesResponse>("admin/audio/devices", ct).ConfigureAwait(false) ?? new AudioDevicesResponse();
+
+    /// <summary>POST /admin/obs/test {host, port, passwordDpapi?}: the password travels encrypted, as in config.json.</summary>
+    public async Task<ObsTestResult> TestObsAsync(string host, int port, string? passwordDpapi, CancellationToken ct = default) =>
+        await SendAsync<ObsTestResult>(HttpMethod.Post, "admin/obs/test", new ObsSettings { Host = host, Port = port, PasswordDpapi = passwordDpapi }, ct)
+            .ConfigureAwait(false)
+        ?? new ObsTestResult { Ok = false, Error = "empty response" };
+
+    public async Task<IReadOnlyList<ProcessInfo>> GetProcessesAsync(CancellationToken ct = default) =>
+        await GetAsync<List<ProcessInfo>>("admin/processes", ct).ConfigureAwait(false) ?? new List<ProcessInfo>();
+
+    public async Task<WolInfo> GetWolAsync(CancellationToken ct = default) =>
+        await GetAsync<WolInfo>("admin/wol", ct).ConfigureAwait(false) ?? new WolInfo();
 
     // ---- plumbing ----
 

@@ -32,7 +32,7 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(CancelEventArgs e)
     {
-        if (DataContext is MainViewModel { Session.IsDirty: true } vm)
+        if (DataContext is MainViewModel { Session.IsDirty: true, Session.ClosingForUpdate: false } vm)
         {
             var r = MessageBox.Show(this, Loc.T("Ask_SaveOnExit"), "Ven4Docking", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
             if (r == MessageBoxResult.Cancel)
