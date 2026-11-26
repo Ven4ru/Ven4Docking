@@ -1,4 +1,5 @@
-//! Tray icon: «Открыть редактор», «Пауза», «Выход». Runs the Win32 message loop on the calling thread.
+//! Tray icon: «Открыть редактор», «Пауза», «Выход», and «Обновить до X.Y.Z» once the update check finds a newer
+//! release. Runs the Win32 message loop on the calling thread.
 
 use crate::state::AppState;
 use std::sync::atomic::Ordering;
@@ -43,26 +44,41 @@ fn open_editor() {
 /// Blocks until «Выход». Returns Err when the tray cannot be created (no shell).
 #[cfg(windows)]
 pub fn run(st: Arc<AppState>) -> Result<(), String> {
-    use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, GetMessageW, TranslateMessage, MSG};
+    use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, GetMessageW, SetTimer, TranslateMessage, MSG};
     let menu = Menu::new();
     let open = MenuItem::new("Открыть редактор", true, None);
     let pause = CheckMenuItem::new("Пауза", true, false, None);
     let exit = MenuItem::new("Выход", true, None);
     menu.append_items(&[&open, &pause, &PredefinedMenuItem::separator(), &exit]).map_err(|e| e.to_string())?;
     let _tray = TrayIconBuilder::new()
-        .with_menu(Box::new(menu))
+        .with_menu(Box::new(menu.clone()))
         .with_tooltip(format!("Ven4Docking {} — порт {}", crate::config::AGENT_VERSION, st.port))
         .with_icon(icon())
         .build()
         .map_err(|e| e.to_string())?;
     let rx = MenuEvent::receiver();
+    let update = MenuItem::new("", true, None);
+    let mut update_shown: Option<String> = None;
     unsafe {
+        // the loop also wakes up every 30 s to show a found update in the menu
+        let _ = SetTimer(None, 0, 30_000, None);
         let mut msg = MSG::default();
         while GetMessageW(&mut msg, None, 0, 0).as_bool() {
             let _ = TranslateMessage(&msg);
             DispatchMessageW(&msg);
+            let avail = st.update.lock().unwrap().available().map(String::from);
+            if avail.is_some() && avail != update_shown {
+                let v = avail.clone().unwrap_or_default();
+                update.set_text(format!("Обновить до {v}"));
+                if update_shown.is_none() && menu.insert(&update, 0).is_err() {
+                    tracing::warn!("tray: cannot add the update item");
+                }
+                update_shown = avail;
+            }
             while let Ok(ev) = rx.try_recv() {
-                if ev.id == open.id() {
+                if ev.id == update.id() {
+                    crate::update::start_updater();
+                } else if ev.id == open.id() {
                     open_editor();
                 } else if ev.id == pause.id() {
                     let p = pause.is_checked();

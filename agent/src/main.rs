@@ -8,7 +8,7 @@
 
 use std::net::SocketAddr;
 use std::sync::Arc;
-use ven4docking_agent::{config, discovery, firewall, http, logging, metrics, platform, poll, state::AppState};
+use ven4docking_agent::{config, discovery, firewall, http, logging, metrics, obs, platform, poll, state::AppState, update};
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -67,6 +67,8 @@ fn main() {
             rt.block_on(async move {
                 st_rt.reconcile_servers();
                 tokio::spawn(discovery::run(st_rt.discovery_port, st_rt.port));
+                tokio::spawn(obs::run(st_rt.clone()));
+                tokio::spawn(update::run(st_rt.clone()));
                 let listener = match tokio::net::TcpListener::bind(("0.0.0.0", st_rt.port)).await {
                     Ok(l) => l,
                     Err(e) => {

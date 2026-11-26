@@ -80,3 +80,58 @@ fn blocks_on_different_screens_may_share_cells() {
     assert!(l.validate().is_ok());
     assert_eq!(l.orientation, "landscape");
 }
+
+// ---------- 1.1: new blocks, program screens, permissions ----------
+
+fn screens(v: serde_json::Value) -> Layout {
+    serde_json::from_value(json!({"version": 1, "grid": {"cols": 8, "rows": 4}, "screens": v})).unwrap()
+}
+
+#[test]
+fn new_blocks_and_program_screens() {
+    let l = screens(json!([
+        {"id": "s1", "name": "Главный", "blocks": [
+            {"id": "b1", "type": "power", "x": 0, "y": 0, "w": 4, "h": 1, "opts": {"buttons": ["lock", "restart"]}},
+            {"id": "b2", "type": "keys", "x": 4, "y": 0, "w": 4, "h": 1, "opts": {"actions": ["mic", "sign"]}},
+            {"id": "b3", "type": "mixer", "x": 0, "y": 1, "w": 3, "h": 2},
+            {"id": "b4", "type": "notify", "x": 3, "y": 1, "w": 3, "h": 2, "opts": {"max": 5}}
+        ]},
+        {"id": "s2", "name": "OBS", "forApp": "OBS64.exe", "blocks": [
+            {"id": "b5", "type": "obs", "x": 0, "y": 0, "w": 4, "h": 2}
+        ]}
+    ]));
+    assert_eq!(l.validate(), Ok(()));
+    assert!(l.power_allowed("lock") && l.power_allowed("restart") && l.power_allowed("cancel"));
+    assert!(!l.power_allowed("sleep") && !l.power_allowed("shutdown") && !l.power_allowed("format"));
+    assert!(l.action_allowed("mic") && l.action_allowed("sign") && !l.action_allowed("out"));
+    assert!(l.has_block("obs") && l.has_block("mixer") && !l.has_block("media"));
+    assert_eq!(l.app_screens(), vec!["OBS64.exe".to_string()]);
+    let back = serde_json::to_value(&l).unwrap();
+    assert_eq!(back["screens"][1]["forApp"], "OBS64.exe");
+    assert!(back["screens"][0].get("forApp").is_none(), "usual screens have no forApp");
+
+    // a power block without opts shows all four; cancel goes with restart/shutdown only
+    let all = screens(json!([{"id": "s1", "blocks": [{"id": "b1", "type": "power", "x": 0, "y": 0, "w": 4, "h": 1}]}]));
+    assert!(["lock", "sleep", "restart", "shutdown", "cancel"].iter().all(|a| all.power_allowed(a)));
+    let lock_only = screens(json!([{"id": "s1", "blocks": [{"id": "b1", "type": "power", "x": 0, "y": 0, "w": 1, "h": 1, "opts": {"buttons": ["lock"]}}]}]));
+    assert!(!lock_only.power_allowed("cancel"));
+    // the classic template has none of the new blocks: nothing is allowed by default
+    let c = Layout::classic();
+    assert!(!c.power_allowed("lock") && !c.action_allowed("mic") && c.app_screens().is_empty());
+}
+
+#[test]
+fn program_screen_limits() {
+    let app = |i: usize| json!({"id": format!("a{i}"), "name": "x", "forApp": format!("app{i}.exe"), "blocks": []});
+    let mut list = vec![json!({"id": "s1", "name": "Главный", "blocks": []})];
+    list.extend((0..5).map(app));
+    assert_eq!(screens(json!(list.clone())).validate(), Ok(()), "five program screens");
+    list.push(app(5));
+    let e = screens(json!(list)).validate().unwrap_err();
+    assert_eq!(e.payload(), json!({"error": "appScreens", "count": 6}));
+    assert_eq!(screens(json!([app(0)])).validate(), Err(LayoutError::AppScreens(1)), "a usual screen is needed");
+    for bad in ["", " ", "C:\\obs\\obs64.exe", "bin/obs64.exe", "obs*.exe"] {
+        let l = screens(json!([{"id": "s1", "blocks": []}, {"id": "s2", "forApp": bad, "blocks": []}]));
+        assert_eq!(l.validate().unwrap_err().payload(), json!({"error": "forApp", "screens": ["s2"]}), "{bad:?}");
+    }
+}

@@ -1,7 +1,7 @@
 //! /admin/* for the editor (127.0.0.1 + X-Admin-Key; checked by the middleware in http/mod.rs).
 
 use super::{err, ok_json, pair, parse_body, St};
-use crate::config::{new_token, valid_id, write_atomic, Config, Server, AGENT_VERSION};
+use crate::config::{new_token, valid_id, write_atomic, Config, ObsCfg, Server, AGENT_VERSION};
 use crate::layout::Layout;
 use crate::state::AppState;
 use axum::body::Bytes;
@@ -25,6 +25,11 @@ pub fn router() -> Router<Arc<AppState>> {
         .route("/pairs/{id}/{action}", post(pair_action))
         .route("/servers/test", post(servers_test))
         .route("/ai/sources", get(ai_sources))
+        .route("/notify/apps", get(notify_apps))
+        .route("/audio/devices", get(audio_devices))
+        .route("/obs/test", post(obs_test))
+        .route("/processes", get(processes))
+        .route("/wol", get(wol))
         .route("/status", get(status))
         .route("/reload", post(reload))
         .fallback(|| async { err(StatusCode::NOT_FOUND, "no such admin api") })
@@ -237,10 +242,12 @@ async fn status(st: St) -> Response {
         block_errors.insert("config".into(), json!(e));
     }
     let firewall = firewall_state(&st).await;
+    let u = st.update.lock().unwrap().clone();
+    let update = json!({"latest": u.latest, "checked": u.checked, "available": u.available().is_some()});
     ok_json(json!({
         "version": AGENT_VERSION, "port": st.port, "cpuPct": cpu, "ramBytes": ram,
         "activePanels": active, "blockErrors": block_errors, "paused": st.paused(),
-        "uptime": st.started.elapsed().as_secs(), "firewall": firewall,
+        "uptime": st.started.elapsed().as_secs(), "firewall": firewall, "update": update,
     }))
 }
 
@@ -272,5 +279,70 @@ async fn reload(st: St) -> Response {
             ok_json(json!({"ok": true}))
         }
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({"error": "badConfig", "detail": e.to_string()}))).into_response(),
+    }
+}
+
+/// Apps that sent notifications since start (names only, never the text).
+async fn notify_apps(st: St) -> Response {
+    let st2 = st.0.clone();
+    match tokio::task::spawn_blocking(move || crate::notify::apps(&st2)).await {
+        Ok(v) => ok_json(v),
+        Err(e) => err(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()),
+    }
+}
+
+/// Output and input devices for `audioOut` in the editor.
+async fn audio_devices() -> Response {
+    let r = tokio::task::spawn_blocking(|| {
+        let _com = crate::platform::Com::mta();
+        crate::metrics::audio::devices()
+    })
+    .await
+    .unwrap_or_else(|e| Err(e.to_string()));
+    match r {
+        Ok(v) => ok_json(v),
+        Err(e) => err(StatusCode::INTERNAL_SERVER_ERROR, &e),
+    }
+}
+
+/// Body: {host, port, passwordDpapi?}; without a password the stored one is used when host and port match.
+async fn obs_test(st: St, body: Bytes) -> Response {
+    let mut cfg: ObsCfg = match parse_body(&body) {
+        Ok(c) => c,
+        Err(r) => return r,
+    };
+    if cfg.password_dpapi.is_empty() {
+        if let Some(old) = st.cfg.read().unwrap().obs.clone() {
+            if old.host == cfg.host && old.port == cfg.port {
+                cfg.password_dpapi = old.password_dpapi;
+            }
+        }
+    }
+    ok_json(crate::obs::test(&cfg).await)
+}
+
+/// Programs with windows, to pick `forApp` of a program screen.
+async fn processes() -> Response {
+    let list = tokio::task::spawn_blocking(crate::platform::windowed_processes).await.unwrap_or_default();
+    ok_json(Value::Array(list.into_iter().map(|(name, title)| json!({"name": name, "title": title})).collect()))
+}
+
+/// Detected adapter for wake-on-LAN (not `config.wol`): {mac, broadcast, adapter, wakeEnabled}.
+async fn wol(st: St) -> Response {
+    let st2 = st.0.clone();
+    let r = tokio::task::spawn_blocking(move || {
+        // a fresh look: the editor shows what Windows has now
+        *st2.wol.lock().unwrap() = None;
+        st2.detected_adapter().map(|a| {
+            let wake = crate::wol::wake_enabled(&a.description);
+            (a, wake)
+        })
+    })
+    .await
+    .ok()
+    .flatten();
+    match r {
+        Some((a, wake)) => ok_json(json!({"mac": a.mac, "broadcast": a.broadcast, "adapter": a.adapter, "wakeEnabled": wake})),
+        None => ok_json(json!({"mac": null, "broadcast": null, "adapter": null, "wakeEnabled": null})),
     }
 }

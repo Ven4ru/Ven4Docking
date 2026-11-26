@@ -2,9 +2,11 @@
 
 use crate::config::{Config, Paths};
 use crate::layout::Layout;
-use crate::metrics::Actions;
+use crate::actions::Actions;
 use crate::http::hello::HelloLimit;
 use crate::http::pair::Pairs;
+use crate::notify::NotifyState;
+use crate::obs::CmdMsg;
 use crate::poll::Demand;
 use crate::servers::Watch;
 use serde_json::Value;
@@ -50,11 +52,23 @@ pub struct AppState {
     pub load_error: Mutex<Option<String>>,
     /// Last firewall check for /admin/status: (when, ok|missing|blocked|unknown).
     pub firewall: Mutex<Option<(Instant, &'static str)>>,
+    /// Notifications: last read, dismissed ids, apps seen since start.
+    pub notify: Mutex<NotifyState>,
+    /// Sound was changed from the panel: the sampler reads it again without waiting 2 s.
+    pub audio_dirty: AtomicBool,
+    /// Commands for the OBS task (obs::run takes the receiver).
+    pub obs_tx: tokio::sync::mpsc::Sender<CmdMsg>,
+    pub obs_rx: Mutex<Option<tokio::sync::mpsc::Receiver<CmdMsg>>>,
+    /// Adapter for wake-on-LAN, detected at most every 10 min.
+    pub wol: Mutex<Option<(Instant, Option<crate::wol::Adapter>)>>,
+    /// Latest release seen by the update check.
+    pub update: Mutex<crate::update::UpdateState>,
 }
 
 impl AppState {
     pub fn new(paths: Paths, cfg: Config, admin_key: String, actions: Box<dyn Actions>) -> AppState {
         let port = cfg.port;
+        let (obs_tx, obs_rx) = tokio::sync::mpsc::channel(8);
         let st = AppState {
             paths,
             port,
@@ -75,6 +89,12 @@ impl AppState {
             started: Instant::now(),
             load_error: Mutex::new(None),
             firewall: Mutex::new(None),
+            notify: Mutex::new(NotifyState::default()),
+            audio_dirty: AtomicBool::new(false),
+            obs_tx,
+            obs_rx: Mutex::new(Some(obs_rx)),
+            wol: Mutex::new(None),
+            update: Mutex::new(Default::default()),
         };
         st.load_layouts();
         st
@@ -124,6 +144,26 @@ impl AppState {
         let cfg = self.cfg.read().unwrap().clone();
         let want = if self.layout_blocks().contains("servers") { cfg.servers.clone() } else { Vec::new() };
         self.watch.reconcile(want, cfg.servers_interval);
+    }
+
+    /// Wake-on-LAN target for the phone: `config.wol`, else the detected adapter (cached for 10 min).
+    pub fn wol_target(&self) -> Option<(String, String)> {
+        if let Some(w) = self.cfg.read().unwrap().wol.clone() {
+            return Some((w.mac, w.broadcast));
+        }
+        self.detected_adapter().map(|a| (a.mac, a.broadcast))
+    }
+
+    pub fn detected_adapter(&self) -> Option<crate::wol::Adapter> {
+        let mut c = self.wol.lock().unwrap();
+        if let Some((t, a)) = c.as_ref() {
+            if t.elapsed() < std::time::Duration::from_secs(600) {
+                return a.clone();
+            }
+        }
+        let a = crate::wol::detect();
+        *c = Some((Instant::now(), a.clone()));
+        a
     }
 
     pub fn save_config(&self) -> Result<(), String> {

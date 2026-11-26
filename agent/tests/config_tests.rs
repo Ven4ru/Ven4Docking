@@ -187,3 +187,96 @@ fn ids_are_checked() {
     assert!(valid_id("p1") && valid_id("my-phone_2"));
     assert!(!valid_id("") && !valid_id("a/b") && !valid_id("..") && !valid_id("a b"));
 }
+
+// ---------- 1.1: actions, obs, notify, wol ----------
+
+#[test]
+fn parses_1_1_spec_example() {
+    let text = r#"{
+      "version": 1,
+      "apps": [{"id": "obs", "title": "OBS", "kind": "exe", "target": "obs64.exe"}],
+      "actions": [
+        {"id": "mute-discord", "title": "Discord: микрофон", "icon": null, "kind": "keys", "keys": "Ctrl+Shift+M"},
+        {"id": "sign", "title": "Подпись", "kind": "text", "text": "С уважением, …"},
+        {"id": "stream-start", "title": "Начать день", "kind": "macro", "steps": [
+          {"launch": "obs"}, {"wait": 3000}, {"keys": "Ctrl+Alt+F9"}]},
+        {"id": "mic", "title": "Микрофон", "kind": "mic"},
+        {"id": "out", "title": "Наушники / колонки", "kind": "audioOut", "devices": ["{0.0.0.00000000}.{a}", "{0.0.0.00000000}.{b}"]}
+      ],
+      "obs": {"host": "127.0.0.1", "port": 4455, "passwordDpapi": "AQAAANCMnd8B"},
+      "notify": {"enabled": false, "wallCountsOnly": false, "nightFlash": true,
+                 "apps": {"TelegramDesktop": "title", "Discord": "full", "Microsoft.Office.OUTLOOK.EXE.15": "count"}},
+      "wol": {"mac": "AA:BB:CC:DD:EE:FF", "broadcast": "192.168.1.255"}
+    }"#;
+    let cfg = Config::parse(text).unwrap();
+    assert_eq!(cfg.actions.len(), 5);
+    assert_eq!(cfg.actions[2].steps[1].wait, Some(3000));
+    assert_eq!(cfg.obs.as_ref().unwrap().port, 4455);
+    assert_eq!(cfg.notify.as_ref().unwrap().apps["Discord"], "full");
+    let back = serde_json::to_value(&cfg).unwrap();
+    assert_eq!(back["actions"][2]["steps"][0], serde_json::json!({"launch": "obs"}), "a step keeps only its field");
+    assert_eq!(back["obs"]["passwordDpapi"], "AQAAANCMnd8B");
+    assert_eq!(back["wol"]["broadcast"], "192.168.1.255");
+    assert_eq!(Config::parse(&back.to_string()).unwrap(), cfg, "round trip");
+    // 1.0 configs stay as they were
+    let plain = serde_json::to_value(Config::parse(r#"{"version":1}"#).unwrap()).unwrap();
+    for k in ["actions", "obs", "notify", "wol"] {
+        assert!(plain.get(k).is_none(), "{k} not written when absent");
+    }
+}
+
+#[test]
+fn bad_1_1_fields_are_rejected() {
+    let base = |extra: &str| format!(r#"{{"version": 1, "apps": [{{"id": "obs", "kind": "exe", "target": "obs64.exe"}}], {extra}}}"#);
+    let bad = [
+        r#""actions": [{"id": "a b", "kind": "mic"}]"#,
+        r#""actions": [{"id": "a", "kind": "mic"}, {"id": "a", "kind": "mic"}]"#,
+        r#""actions": [{"id": "a", "kind": "shell"}]"#,
+        r#""actions": [{"id": "a", "kind": "keys", "keys": "Ctrl+Shift"}]"#,
+        r#""actions": [{"id": "a", "kind": "keys"}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": []}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{"wait": 0}]}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{"wait": 10001}]}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{"launch": "nope"}]}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{"keys": "Ctrl+A", "wait": 5}]}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{}]}]"#,
+        r#""actions": [{"id": "a", "kind": "macro", "steps": [{"keys": "Hyper+A"}]}]"#,
+        r#""notify": {"apps": {"Discord": "everything"}}"#,
+        r#""wol": {"mac": "AA:BB", "broadcast": "192.168.1.255"}"#,
+        r#""wol": {"mac": "AA:BB:CC:DD:EE:FF", "broadcast": "nowhere"}"#,
+        r#""obs": {"host": "8.8.8.8"}"#,
+        r#""obs": {"port": 0}"#,
+        r#""obs": {"passwordDpapi": "%%%"}"#,
+    ];
+    for b in bad {
+        assert!(Config::parse(&base(b)).is_err(), "must fail: {b}");
+    }
+    let long = "я".repeat(2001);
+    assert!(Config::parse(&base(&format!(r#""actions": [{{"id": "a", "kind": "text", "text": "{long}"}}]"#))).is_err());
+    let ok_text = "я".repeat(2000);
+    assert!(Config::parse(&base(&format!(r#""actions": [{{"id": "a", "kind": "text", "text": "{ok_text}"}}]"#))).is_ok(), "2000 characters is fine");
+    let steps: Vec<String> = (0..21).map(|_| r#"{"wait": 1}"#.to_string()).collect();
+    assert!(Config::parse(&base(&format!(r#""actions": [{{"id": "a", "kind": "macro", "steps": [{}]}}]"#, steps.join(",")))).is_err());
+    let steps: Vec<String> = (0..20).map(|_| r#"{"wait": 1}"#.to_string()).collect();
+    assert!(Config::parse(&base(&format!(r#""actions": [{{"id": "a", "kind": "macro", "steps": [{}]}}]"#, steps.join(",")))).is_ok());
+    // an action may share its id with an app
+    assert!(Config::parse(&base(r#""actions": [{"id": "obs", "kind": "mic"}]"#)).is_ok());
+    for host in ["localhost", "127.0.0.1", "192.168.1.10", "::1"] {
+        assert!(Config::parse(&base(&format!(r#""obs": {{"host": "{host}"}}"#))).is_ok(), "{host}");
+    }
+}
+
+#[test]
+fn editor_put_keeps_obs_password() {
+    let old: Config = serde_json::from_value(serde_json::json!({"version": 1, "obs": {"port": 4455, "passwordDpapi": "c2VjcmV0"}})).unwrap();
+    let mut new: Config = serde_json::from_value(serde_json::json!({"version": 1, "obs": {"port": 4456}})).unwrap();
+    new.merge_secrets_from(&old);
+    assert_eq!(new.obs.as_ref().unwrap().password_dpapi, "c2VjcmV0", "empty from the editor = unchanged");
+    assert_eq!(new.obs.as_ref().unwrap().port, 4456);
+    let mut changed: Config = serde_json::from_value(serde_json::json!({"version": 1, "obs": {"passwordDpapi": "bmV3"}})).unwrap();
+    changed.merge_secrets_from(&old);
+    assert_eq!(changed.obs.unwrap().password_dpapi, "bmV3");
+    let mut removed: Config = serde_json::from_value(serde_json::json!({"version": 1})).unwrap();
+    removed.merge_secrets_from(&old);
+    assert!(removed.obs.is_none(), "OBS settings removed in the editor stay removed");
+}

@@ -131,6 +131,112 @@ impl Default for AiCfg {
     }
 }
 
+/// A button of the `keys` block (spec 1.1 §3). Only the fields of its `kind` are used.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Action {
+    pub id: String,
+    #[serde(default)]
+    pub title: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+    /// keys | text | macro | mic | audioOut
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub keys: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub steps: Vec<Step>,
+    /// Core Audio endpoint ids for `audioOut`.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub devices: Vec<String>,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+/// One step of a `macro` action: exactly one of the fields.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Step {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub keys: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    /// ms, 1–10000
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wait: Option<u64>,
+    /// app id from `apps`
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub launch: Option<String>,
+}
+
+pub const ACTION_KINDS: &[&str] = &["keys", "text", "macro", "mic", "audioOut"];
+pub const MAX_ACTIONS: usize = 100;
+pub const MAX_STEPS: usize = 20;
+pub const MAX_WAIT_MS: u64 = 10_000;
+
+/// obs-websocket 5 connection. The password is DPAPI-encrypted by the editor (current user), base64.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsCfg {
+    #[serde(default = "default_obs_host")]
+    pub host: String,
+    #[serde(default = "default_obs_port")]
+    pub port: u16,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub password_dpapi: String,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+fn default_obs_host() -> String {
+    "127.0.0.1".into()
+}
+fn default_obs_port() -> u16 {
+    4455
+}
+
+impl Default for ObsCfg {
+    fn default() -> Self {
+        ObsCfg { host: default_obs_host(), port: default_obs_port(), password_dpapi: String::new(), extra: Map::new() }
+    }
+}
+
+/// Windows notifications on the panel. `apps`: AppUserModelId -> count | title | full; other apps are hidden.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct NotifyCfg {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default)]
+    pub wall_counts_only: bool,
+    #[serde(default = "yes")]
+    pub night_flash: bool,
+    #[serde(default)]
+    pub apps: std::collections::BTreeMap<String, String>,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+impl Default for NotifyCfg {
+    fn default() -> Self {
+        NotifyCfg { enabled: false, wall_counts_only: false, night_flash: true, apps: Default::default(), extra: Map::new() }
+    }
+}
+
+pub const NOTIFY_MODES: &[&str] = &["count", "title", "full"];
+
+/// Wake-on-LAN target given by hand; without it the adapter with the default route is used.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct WolCfg {
+    pub mac: String,
+    pub broadcast: String,
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
@@ -162,6 +268,18 @@ pub struct Config {
     /// layout file) is never given to another phone. Missing in older configs -> derived on first use.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next_phone_id: Option<u64>,
+    /// Buttons of the `keys` block (1.1).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub actions: Vec<Action>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub obs: Option<ObsCfg>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub notify: Option<NotifyCfg>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wol: Option<WolCfg>,
+    /// Daily check of GitHub releases (update.rs).
+    #[serde(default = "yes")]
+    pub update_check: bool,
     #[serde(flatten)]
     pub extra: Map<String, Value>,
 }
@@ -255,7 +373,90 @@ impl Config {
                 return Err(ConfigError::Invalid(format!("bad or duplicate phone id: {}", p.id)));
             }
         }
+        if self.actions.len() > MAX_ACTIONS {
+            return Err(ConfigError::Invalid(format!("more than {MAX_ACTIONS} actions")));
+        }
+        for a in &self.actions {
+            if !valid_id(&a.id) || !seen.insert(("action", a.id.clone())) {
+                return Err(ConfigError::Invalid(format!("bad or duplicate action id: {}", a.id)));
+            }
+            self.validate_action(a).map_err(|e| ConfigError::Invalid(format!("action {}: {e}", a.id)))?;
+        }
+        if let Some(o) = &self.obs {
+            if !obs_host_allowed(&o.host) {
+                return Err(ConfigError::Invalid(format!("obs.host must be this PC or a private network address: {}", o.host)));
+            }
+            if o.port == 0 {
+                return Err(ConfigError::Invalid("obs.port must not be 0".into()));
+            }
+            if !o.password_dpapi.is_empty() && crate::obs::decode_b64(&o.password_dpapi).is_none() {
+                return Err(ConfigError::Invalid("obs.passwordDpapi is not base64".into()));
+            }
+        }
+        if let Some(n) = &self.notify {
+            for (aumid, mode) in &n.apps {
+                if aumid.trim().is_empty() || aumid.len() > 512 {
+                    return Err(ConfigError::Invalid(format!("bad notify app id: {aumid}")));
+                }
+                if !NOTIFY_MODES.contains(&mode.as_str()) {
+                    return Err(ConfigError::Invalid(format!("bad notify mode for {aumid}: {mode}")));
+                }
+            }
+        }
+        if let Some(w) = &self.wol {
+            if crate::wol::parse_mac(&w.mac).is_none() {
+                return Err(ConfigError::Invalid(format!("bad wol.mac: {}", w.mac)));
+            }
+            if w.broadcast.parse::<std::net::Ipv4Addr>().is_err() {
+                return Err(ConfigError::Invalid(format!("bad wol.broadcast: {}", w.broadcast)));
+            }
+        }
         Ok(())
+    }
+
+    fn validate_action(&self, a: &Action) -> Result<(), String> {
+        use crate::actions::keys::{parse_combo, MAX_TEXT};
+        let text_ok = |t: &str| if t.chars().count() > MAX_TEXT { Err(format!("text longer than {MAX_TEXT} characters")) } else { Ok(()) };
+        match a.kind.as_str() {
+            "keys" => parse_combo(a.keys.as_deref().unwrap_or("")).map(|_| ()),
+            "text" => text_ok(a.text.as_deref().unwrap_or("")),
+            "macro" => {
+                if a.steps.is_empty() || a.steps.len() > MAX_STEPS {
+                    return Err(format!("a macro needs 1-{MAX_STEPS} steps"));
+                }
+                for (i, s) in a.steps.iter().enumerate() {
+                    let n = [s.keys.is_some(), s.text.is_some(), s.wait.is_some(), s.launch.is_some()].iter().filter(|x| **x).count();
+                    if n != 1 {
+                        return Err(format!("step {}: exactly one of keys, text, wait, launch", i + 1));
+                    }
+                    if let Some(k) = &s.keys {
+                        parse_combo(k).map_err(|e| format!("step {}: {e}", i + 1))?;
+                    }
+                    if let Some(t) = &s.text {
+                        text_ok(t).map_err(|e| format!("step {}: {e}", i + 1))?;
+                    }
+                    if let Some(w) = s.wait {
+                        if !(1..=MAX_WAIT_MS).contains(&w) {
+                            return Err(format!("step {}: wait must be 1-{MAX_WAIT_MS} ms", i + 1));
+                        }
+                    }
+                    if let Some(id) = &s.launch {
+                        if !self.apps.iter().any(|x| &x.id == id) {
+                            return Err(format!("step {}: unknown app {id}", i + 1));
+                        }
+                    }
+                }
+                Ok(())
+            }
+            "mic" => Ok(()),
+            "audioOut" => {
+                if a.devices.len() > 16 || a.devices.iter().any(|d| d.trim().is_empty() || d.len() > 512) {
+                    return Err("bad device list".into());
+                }
+                Ok(())
+            }
+            k => Err(format!("bad action kind: {k}")),
+        }
     }
 
     pub fn load_or_create(path: &Path) -> Result<Config, ConfigError> {
@@ -308,7 +509,7 @@ impl Config {
     /// /phones/{id}/revoke change it), the editor only edits fields of known phones: a phone paired after
     /// the editor read the config is kept, a phone revoked meanwhile is not brought back. Phones that come
     /// without tokenHash keep the stored one (the editor never sees tokens). The phone id counter never
-    /// goes back.
+    /// goes back. An empty `obs.passwordDpapi` keeps the stored one.
     pub fn merge_secrets_from(&mut self, old: &Config) {
         let mut edited = std::mem::take(&mut self.phones);
         self.phones = old
@@ -329,7 +530,27 @@ impl Config {
             (Some(a), Some(b)) => Some(a.max(b)),
             (a, b) => a.or(b),
         };
+        // the editor sends an empty OBS password when it was not changed
+        if let (Some(new), Some(old)) = (self.obs.as_mut(), old.obs.as_ref()) {
+            if new.password_dpapi.is_empty() {
+                new.password_dpapi = old.password_dpapi.clone();
+            }
+        }
     }
+
+    /// Notification settings (defaults when the config has none: off).
+    pub fn notify_cfg(&self) -> NotifyCfg {
+        self.notify.clone().unwrap_or_default()
+    }
+}
+
+/// OBS may live on this PC or in the private network (plain ws://, never over the internet).
+pub fn obs_host_allowed(host: &str) -> bool {
+    let h = host.trim().trim_start_matches('[').trim_end_matches(']');
+    if h.eq_ignore_ascii_case("localhost") {
+        return true;
+    }
+    h.parse::<std::net::IpAddr>().map(crate::util::is_private).unwrap_or(false)
 }
 
 /// `p12` -> 12; ids of another shape -> None.

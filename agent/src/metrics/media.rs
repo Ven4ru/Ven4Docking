@@ -1,7 +1,7 @@
 //! What is playing (WinRT GlobalSystemMediaTransportControlsSessionManager) with the controls the session
 //! supports; media control through the session itself (TrySkipNext/Previous/TogglePlayPause/Stop), virtual
 //! media keys only without a session and for volume; app launch (ShellExecuteW).
-//! These are the agent's only side effects, behind the `Actions` trait.
+//! Called through the `Actions` trait (crate::actions).
 
 use crate::config::App;
 use serde::Serialize;
@@ -154,13 +154,7 @@ impl Default for Media {
     }
 }
 
-/// Side effects requested by the panel. Tests use a recorder instead of the real one.
-pub trait Actions: Send + Sync {
-    fn launch(&self, app: &App) -> Result<(), String>;
-    fn media(&self, action: &str) -> Result<MediaOutcome, String>;
-}
-
-pub struct WinActions;
+pub use crate::actions::{Actions, RecordActions, WinActions};
 
 #[cfg(windows)]
 fn press_vk(vk: u8) {
@@ -171,61 +165,40 @@ fn press_vk(vk: u8) {
     }
 }
 
+/// Starts an app from the config: ShellExecute for shortcut/exe/url, hidden `cmd /c` for a command.
 #[cfg(windows)]
-impl Actions for WinActions {
-    fn launch(&self, app: &App) -> Result<(), String> {
-        use windows::core::{HSTRING, PCWSTR};
-        use windows::Win32::UI::Shell::ShellExecuteW;
-        use windows::Win32::UI::WindowsAndMessaging::{SW_HIDE, SW_SHOWNORMAL};
-        let (file, params, show) = if app.kind == "command" {
-            ("cmd.exe".to_string(), format!("/c {} {}", app.target, app.args), SW_HIDE)
-        } else {
-            (app.target.clone(), app.args.clone(), SW_SHOWNORMAL)
-        };
-        if file.trim().is_empty() {
-            return Err("пустая цель".into());
-        }
-        let (f, p, verb) = (HSTRING::from(file), HSTRING::from(params.trim()), HSTRING::from("open"));
-        let r = unsafe { ShellExecuteW(None, &verb, &f, &p, PCWSTR::null(), show) };
-        if r.0 as isize > 32 {
-            Ok(())
-        } else {
-            Err(format!("ShellExecute: {}", r.0 as isize))
-        }
+pub fn launch_app(app: &App) -> Result<(), String> {
+    use windows::core::{HSTRING, PCWSTR};
+    use windows::Win32::UI::Shell::ShellExecuteW;
+    use windows::Win32::UI::WindowsAndMessaging::{SW_HIDE, SW_SHOWNORMAL};
+    let (file, params, show) = if app.kind == "command" {
+        ("cmd.exe".to_string(), format!("/c {} {}", app.target, app.args), SW_HIDE)
+    } else {
+        (app.target.clone(), app.args.clone(), SW_SHOWNORMAL)
+    };
+    if file.trim().is_empty() {
+        return Err("пустая цель".into());
     }
-
-    fn media(&self, action: &str) -> Result<MediaOutcome, String> {
-        let vk = media_vk(action).ok_or("unknown action")?;
-        if is_session_action(action) {
-            match win::session_control(action) {
-                Ok(Some(outcome)) => return Ok(outcome),
-                Ok(None) => {} // no session: virtual key below
-                Err(e) => tracing::debug!("media session control failed, using keys: {e}"),
-            }
-        }
-        press_vk(vk);
-        Ok(MediaOutcome::Done)
-    }
-}
-
-/// For tests: records requests, does nothing. Actions listed in `unsupported` report "unsupported".
-#[derive(Default)]
-pub struct RecordActions {
-    pub log: std::sync::Mutex<Vec<String>>,
-    pub unsupported: Vec<String>,
-}
-
-impl Actions for RecordActions {
-    fn launch(&self, app: &App) -> Result<(), String> {
-        self.log.lock().unwrap().push(format!("launch:{}", app.id));
+    let (f, p, verb) = (HSTRING::from(file), HSTRING::from(params.trim()), HSTRING::from("open"));
+    let r = unsafe { ShellExecuteW(None, &verb, &f, &p, PCWSTR::null(), show) };
+    if r.0 as isize > 32 {
         Ok(())
+    } else {
+        Err(format!("ShellExecute: {}", r.0 as isize))
     }
-    fn media(&self, action: &str) -> Result<MediaOutcome, String> {
-        self.log.lock().unwrap().push(format!("media:{action}"));
-        if self.unsupported.iter().any(|a| a == action) {
-            Ok(MediaOutcome::Unsupported)
-        } else {
-            Ok(MediaOutcome::Done)
+}
+
+/// Media control: through the current session when it has one, otherwise (and for volume) a virtual key.
+#[cfg(windows)]
+pub fn media_control(action: &str) -> Result<MediaOutcome, String> {
+    let vk = media_vk(action).ok_or("unknown action")?;
+    if is_session_action(action) {
+        match win::session_control(action) {
+            Ok(Some(outcome)) => return Ok(outcome),
+            Ok(None) => {} // no session: virtual key below
+            Err(e) => tracing::debug!("media session control failed, using keys: {e}"),
         }
     }
+    press_vk(vk);
+    Ok(MediaOutcome::Done)
 }

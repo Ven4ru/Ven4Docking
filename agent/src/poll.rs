@@ -2,7 +2,7 @@
 //! Only blocks somebody needs are polled; with no active panel — CPU/GPU/RAM/net every 10 s, nothing else.
 
 use crate::ai::{unix_now, AiReader, AiRoots};
-use crate::metrics::{cpu::Cpu, disks::Disks, gpu::Gpu, media::Media, mem::Mem, net::Net, procs::Procs};
+use crate::metrics::{audio::Audio, cpu::Cpu, disks::Disks, gpu::Gpu, media::Media, mem::Mem, net::Net, procs::Procs};
 use crate::state::AppState;
 use serde_json::{json, Value};
 use std::collections::{HashMap, HashSet};
@@ -13,8 +13,10 @@ use std::time::{Duration, Instant};
 pub const ACTIVE_WINDOW: Duration = Duration::from_secs(10);
 const TRIM_ABOVE: u64 = 12 * 1024 * 1024;
 
-/// Data blocks the agent can fill.
-pub const DATA_BLOCKS: &[&str] = &["cpu", "gpu", "ram", "disks", "net", "media", "servers", "ai"];
+/// Data blocks the agent can fill. 1.1: `audio` (blocks `mixer` and `keys` may ask by their own names),
+/// `obs`, `notify`, `running` (program screens).
+pub const DATA_BLOCKS: &[&str] =
+    &["cpu", "gpu", "ram", "disks", "net", "media", "servers", "ai", "audio", "mixer", "keys", "obs", "notify", "running"];
 
 /// Response key of a block in /api/v1/state.
 pub fn state_key(block: &str) -> Option<&'static str> {
@@ -27,6 +29,10 @@ pub fn state_key(block: &str) -> Option<&'static str> {
         "media" => "media",
         "servers" => "servers",
         "ai" => "ai",
+        "audio" | "mixer" | "keys" => "audio",
+        "obs" => "obs",
+        "notify" => "notify",
+        "running" => "running",
         _ => return None,
     })
 }
@@ -71,6 +77,13 @@ impl Demand {
         self.inner.lock().unwrap().get(phone).map(|(t, _)| t.elapsed() < ACTIVE_WINDOW).unwrap_or(false)
     }
 
+    /// Something changed on demand (e.g. sound from the panel): poll now.
+    pub fn wake(&self) {
+        if let Some(t) = self.sampler.get() {
+            t.unpark();
+        }
+    }
+
     pub fn set_sampler(&self, t: Thread) {
         let _ = self.sampler.set(t);
     }
@@ -88,6 +101,7 @@ struct Sampler {
     media: Option<Media>,
     ai: Option<AiReader>,
     ai_cfg: Option<crate::config::AiCfg>,
+    audio: Option<Audio>,
     last: HashMap<&'static str, Instant>,
     top: Value,
 }
@@ -164,6 +178,42 @@ impl Sampler {
             let v = serde_json::to_value(list).unwrap_or(Value::Null);
             self.st.set_block("ai", v, None);
         }
+        let wants_audio = ["audio", "mixer", "keys"].iter().any(|k| want.contains(*k));
+        if idle || !wants_audio {
+            self.audio = None;
+        } else {
+            let dirty = self.st.audio_dirty.swap(false, std::sync::atomic::Ordering::Relaxed);
+            let due = self.due("audio", Duration::from_secs(2));
+            if dirty || due {
+                match self.audio.get_or_insert_with(Audio::new).sample() {
+                    Ok(v) => self.st.set_block("audio", v, None),
+                    Err(e) => self.st.set_block("audio", Value::Null, Some(e)),
+                }
+            }
+        }
+        if !idle && want.contains("notify") && self.due("notify", Duration::from_secs(3)) {
+            crate::notify::refresh(&self.st);
+        }
+        if !idle && want.contains("running") && self.due("running", Duration::from_secs(5)) {
+            self.running();
+        }
+    }
+
+    /// Program screens: which `forApp` names of the layouts run now (only those, not the whole process list).
+    fn running(&mut self) {
+        let phones: Vec<String> = self.st.cfg.read().unwrap().phones.iter().map(|p| p.id.clone()).collect();
+        let mut names: Vec<String> = Vec::new();
+        for p in phones {
+            for n in self.st.layout_for(&p).app_screens() {
+                let n = n.to_lowercase();
+                if !names.contains(&n) {
+                    names.push(n);
+                }
+            }
+        }
+        let running = if names.is_empty() { Default::default() } else { crate::platform::process_names() };
+        let v: Vec<Value> = names.into_iter().filter(|n| running.contains(n)).map(Value::from).collect();
+        self.st.set_block("running", Value::Array(v), None);
     }
 }
 
@@ -172,8 +222,11 @@ pub fn spawn_sampler(st: Arc<AppState>) -> std::thread::JoinHandle<()> {
     let st2 = st.clone();
     let h = std::thread::Builder::new()
         .name("sampler".into())
-        .stack_size(256 * 1024)
+        .stack_size(512 * 1024)
         .spawn(move || {
+            // Core Audio and WinRT (media, notifications) for the whole life of the thread
+            #[cfg(windows)]
+            let _com = crate::platform::Com::mta();
             let mut s = Sampler {
                 st: st.clone(),
                 cpu: None,
@@ -185,6 +238,7 @@ pub fn spawn_sampler(st: Arc<AppState>) -> std::thread::JoinHandle<()> {
                 media: None,
                 ai: None,
                 ai_cfg: None,
+                audio: None,
                 last: HashMap::new(),
                 top: Value::Null,
             };
