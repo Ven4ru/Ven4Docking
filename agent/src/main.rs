@@ -4,7 +4,9 @@
 //!        --firewall add|remove: only change the firewall rules «Ven4Docking» for this exe and exit
 //!        (needs elevation; exit code 0 = done). No tray, server or data folder in this mode.
 //! Env: VEN4DOCKING_HOME (data dir), VEN4DOCKING_PORT (override config port),
-//!      VEN4DOCKING_PANEL_DIR, VEN4DOCKING_APK_DIR.
+//!      VEN4DOCKING_PANEL_DIR, VEN4DOCKING_APK_DIR,
+//!      VEN4DOCKING_LISTEN (address to listen on, default 0.0.0.0; 127.0.0.1 for development builds and
+//!      emulators — a loopback listener needs no firewall rule, so Windows shows no «Allow access?» dialog).
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -37,6 +39,10 @@ fn main() {
         cfg.port = p;
     }
     let port = cfg.port;
+    let listen_ip: std::net::IpAddr = std::env::var("VEN4DOCKING_LISTEN")
+        .ok()
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED));
     if !platform::single_instance(port) {
         tracing::warn!("another agent on port {port} is running; exiting");
         return;
@@ -66,17 +72,17 @@ fn main() {
                 .expect("tokio runtime");
             rt.block_on(async move {
                 st_rt.reconcile_servers();
-                tokio::spawn(discovery::run(st_rt.discovery_port, st_rt.port));
+                tokio::spawn(discovery::run(listen_ip, st_rt.discovery_port, st_rt.port));
                 tokio::spawn(obs::run(st_rt.clone()));
                 tokio::spawn(update::run(st_rt.clone()));
-                let listener = match tokio::net::TcpListener::bind(("0.0.0.0", st_rt.port)).await {
+                let listener = match tokio::net::TcpListener::bind((listen_ip, st_rt.port)).await {
                     Ok(l) => l,
                     Err(e) => {
-                        tracing::error!("cannot listen on {}: {e}", st_rt.port);
+                        tracing::error!("cannot listen on {listen_ip}:{}: {e}", st_rt.port);
                         std::process::exit(2);
                     }
                 };
-                tracing::info!("listening on 0.0.0.0:{}", st_rt.port);
+                tracing::info!("listening on {listen_ip}:{}", st_rt.port);
                 let app = http::router(st_rt.clone());
                 if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await {
                     tracing::error!("http server: {e}");

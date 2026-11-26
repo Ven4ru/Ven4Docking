@@ -1,4 +1,4 @@
-//! UDP discovery: request `V4D?1` -> `{"name":"<PC>","port":<http port>,"ver":"1.0.0"}`, private networks only.
+//! UDP discovery: request `V4D?1` -> `{"name":"<PC>","port":<http port>,"ver":"<agent version>"}`, private networks only.
 
 use serde_json::json;
 use std::net::SocketAddr;
@@ -17,8 +17,8 @@ pub fn reply(payload: &[u8], from: SocketAddr, name: &str, port: u16) -> Option<
     Some(json!({"name": name, "port": port, "ver": crate::config::AGENT_VERSION}).to_string().into_bytes())
 }
 
-pub async fn run(udp_port: u16, http_port: u16) {
-    let sock = match tokio::net::UdpSocket::bind(("0.0.0.0", udp_port)).await {
+pub async fn run(bind_ip: std::net::IpAddr, udp_port: u16, http_port: u16) {
+    let sock = match tokio::net::UdpSocket::bind((bind_ip, udp_port)).await {
         Ok(s) => s,
         Err(e) => {
             tracing::error!("discovery: cannot bind UDP {udp_port}: {e}");
