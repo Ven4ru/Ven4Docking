@@ -21,7 +21,7 @@ Ven4Docking превращает старый телефон на Android в п�
 
 - **Агент** (`ven4docking-agent.exe`) — работает в фоне со значком в трее, собирает данные и раздаёт панель телефону. Почти не нагружает ПК: опрашивает только то, что есть на экранах телефона.
 - **Редактор** (`Ven4Docking.exe`) — настройка экранов, блоков, приложений, серверов и мастер подключения телефона. Нужен редко, закрывается полностью.
-- **Лаунчер** на телефоне (`ru.ven4tools.docking`) — показывает панель на весь экран и сам обновляется с ПК.
+- **Лаунчер** на телефоне (`ru.ven4tools.docking`) — показывает панель на весь экран; обновляется с ПК кнопкой в редакторе (раздел «Телефоны»).
 
 ## Требования
 
@@ -57,7 +57,7 @@ Ven4Docking превращает старый телефон на Android в п�
 - **Уведомления** — уведомления Windows на панели только от выбранных приложений; для каждого — счётчик, заголовок или текст целиком, общий режим «на стене только счётчики».
 - **Серверы** — по SSH с вашим ключом из `%USERPROFILE%\.ssh` и проверкой `known_hosts`; «Проверить подключение» объясняет ошибку понятными словами.
 - **Настройки** — тема (как у Ven4Tools), язык (русский/английский), город для погоды, автозапуск агента, порт, OBS, включение по сети.
-- **Обновления** — агент раз в сутки проверяет выпуски на GitHub и сообщает о новой версии; редактор ставит её по кнопке (с проверкой контрольной суммы), а телефон получает новый лаунчер с ПК.
+- **Обновления** — агент раз в сутки проверяет выпуски на GitHub и сообщает о новой версии; редактор ставит её по кнопке (с проверкой контрольной суммы). Новый лаунчер на телефон ставит редактор — кнопка «Обновить лаунчер» в разделе «Телефоны», по кабелю или через отладку по Wi-Fi; сам лаунчер ничего не скачивает и не устанавливает.
 
 ## Приватность
 
@@ -101,6 +101,9 @@ Ven4Docking превращает старый телефон на Android в п�
 Панель пишет «ПК не отвечает», приглушает экран и сама оживает, когда ПК снова в сети и вы вошли в Windows.
 Если роутер выдал ПК новый адрес, телефон сам найдёт его в домашней сети.
 
+**Google Play Защита ругается на лаунчер.**
+Лаунчер ставится не из магазина, поэтому Play Защита может предложить проверить его. Лаунчер 1.1.0 после такой проверки блокировался как «вредоносный» — из-за самообновления (он сам скачивал свой APK с ПК). С 1.1.1 этой функции нет: лаунчер обновляет редактор на ПК по кабелю или через отладку по Wi-Fi. Если предупреждение всё же появится — сверьте отпечаток подписи APK с SHA256SUMS и выпуском на GitHub.
+
 **Почему экран ночью тусклый?**
 Это ночной режим панели (по умолчанию 23:00–07:00). Часы и яркость меняются в редакторе: «Телефоны» → «Ночь и яркость».
 
@@ -126,7 +129,7 @@ Three parts:
 
 - **Agent** (`ven4docking-agent.exe`) — runs in the background with a tray icon, collects data and serves the panel to the phone. Very light: it polls only what the phone's screens show.
 - **Editor** (`Ven4Docking.exe`) — screens, blocks, apps, servers and the phone setup wizard. Needed rarely, closes completely.
-- **Launcher** on the phone (`ru.ven4tools.docking`) — shows the panel full screen and updates itself from the PC.
+- **Launcher** on the phone (`ru.ven4tools.docking`) — shows the panel full screen; updated from the PC with a button in the editor (Phones).
 
 ### Requirements
 
@@ -162,7 +165,7 @@ Uninstall via Settings → Apps. Your settings (`%APPDATA%\Ven4Docking`) are kep
 - **Notifications** — Windows notifications on the panel only from the apps you pick; per app — a counter, the title or the full text, plus a "counters only on the wall" mode.
 - **Servers** — over SSH with your key from `%USERPROFILE%\.ssh` and a `known_hosts` check; "Test connection" explains failures in plain words.
 - **Settings** — theme (as in Ven4Tools), language (Russian/English), weather city, agent autostart, port, OBS, wake on LAN.
-- **Updates** — the agent checks GitHub releases once a day and tells you about a new version; the editor installs it with one button (checksum verified), and the phone gets the new launcher from the PC.
+- **Updates** — the agent checks GitHub releases once a day and tells you about a new version; the editor installs it with one button (checksum verified). The editor also installs the new launcher on the phone — "Update launcher" under Phones, over a cable or wireless debugging; the launcher itself never downloads or installs anything.
 
 ### Privacy
 
@@ -201,6 +204,9 @@ Not supported: its built-in web view (WebView) is too old.
 **What happens when the PC is off?**
 The panel says the PC is not responding, dims the screen and comes back by itself once the PC is on the network and you've signed in to Windows.
 If the router gave the PC a new address, the phone finds it on the home network by itself.
+
+**Google Play Protect warns about the launcher.**
+The launcher is not installed from a store, so Play Protect may offer to scan it. Launcher 1.1.0 was blocked as "harmful" after such a scan — because of its self-update (it downloaded its own APK from the PC). Since 1.1.1 that feature is gone: the editor on the PC updates the launcher over a cable or wireless debugging. If a warning still appears, compare the APK with SHA256SUMS and the GitHub release.
 
 **Why is the screen dim at night?**
 That's the panel's night mode (23:00–07:00 by default). Hours and brightness are set in the editor: Phones → Night and brightness.
