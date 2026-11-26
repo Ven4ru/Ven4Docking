@@ -1,5 +1,6 @@
 // Night / offline dimming (screen brightness through the launcher, CSS opacity as a fallback)
 // and a tiny periodic shift against burn-in. Settings come from the layout (phone settings).
+// flash(ms): a new notification lifts the night dimming for a moment.
 import { hhmm } from './util.js';
 
 const WAKE_MS = 120000;     // a touch wakes the panel for 2 minutes
@@ -8,7 +9,7 @@ const SHIFTS = [[0, 0], [2, 1], [1, 2], [-1, 1]];
 
 export function createNight(shiftEl) {
   let cfg = { night: null, dimWhenPcOffline: true, burnInShift: true };
-  let wakeUntil = 0, pcOffline = false, lastDim = null, shift = 0;
+  let wakeUntil = 0, flashUntil = 0, flashTimer = null, pcOffline = false, lastDim = null, shift = 0;
 
   function inNight(now) {
     const n = cfg.night;
@@ -21,7 +22,8 @@ export function createNight(shiftEl) {
 
   function apply() {
     const night = inNight(new Date());
-    const dim = (night || (pcOffline && cfg.dimWhenPcOffline)) && Date.now() > wakeUntil;
+    const now = Date.now();
+    const dim = (night || (pcOffline && cfg.dimWhenPcOffline)) && now > wakeUntil && now > flashUntil;
     if (dim === lastDim) return;
     lastDim = dim;
     const level = cfg.night && cfg.night.brightness != null ? +cfg.night.brightness : 0.02;
@@ -60,5 +62,12 @@ export function createNight(shiftEl) {
       apply();
     },
     setOffline(v) { if (pcOffline !== v) { pcOffline = v; apply(); } },
+    /** Undims for ms (only matters while dimmed), then the usual rule applies again. */
+    flash(ms) {
+      flashUntil = Date.now() + ms;
+      apply();
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(apply, ms + 50);
+    },
   };
 }

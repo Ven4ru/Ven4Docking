@@ -58,8 +58,10 @@ export function createPager(pagerEl, trackEl, dotsEl, onChange) {
     sx = null; dragging = false;
   }
 
-  // a horizontally scrollable strip (apps) keeps its own swipe
+  // a horizontally scrollable strip (apps) keeps its own swipe, and so do sliders and swipeable
+  // lists (.nodrag: mixer volume, notifications)
   function inStrip(t) {
+    if (t && t.closest && t.closest('.nodrag')) return true;
     const s = t && t.closest ? t.closest('.strip') : null;
     return !!s && s.scrollWidth > s.clientWidth + 2;
   }
@@ -72,7 +74,9 @@ export function createPager(pagerEl, trackEl, dotsEl, onChange) {
   pagerEl.addEventListener('touchcancel', end, true);
 
   let mouseDown = false;
-  pagerEl.addEventListener('mousedown', (e) => { if (e.button === 0) { mouseDown = true; start(e.clientX, e.clientY); } }, true);
+  pagerEl.addEventListener('mousedown', (e) => {
+    if (e.button === 0 && !(e.target && e.target.closest && e.target.closest('.nodrag'))) { mouseDown = true; start(e.clientX, e.clientY); }
+  }, true);
   window.addEventListener('mousemove', (e) => { if (mouseDown) move(e.clientX, e.clientY, e); }, true);
   window.addEventListener('mouseup', () => { if (mouseDown) { mouseDown = false; end(); } }, true);
 

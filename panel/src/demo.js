@@ -33,6 +33,22 @@ export function demoLayout() {
           { id: 'b14', type: 'apps', x: 0, y: 1, w: 8, h: 3, opts: {} },
         ],
       },
+      {
+        id: 's4', name: 'Управление', blocks: [
+          { id: 'b15', type: 'power', x: 0, y: 0, w: 4, h: 1, opts: { buttons: ['lock', 'sleep', 'restart', 'shutdown'] } },
+          { id: 'b16', type: 'keys', x: 4, y: 0, w: 4, h: 1, opts: { actions: ['mute-discord', 'deafen-discord', 'mic', 'out'] } },
+          { id: 'b17', type: 'mixer', x: 0, y: 1, w: 4, h: 3, opts: { output: true, mic: true, apps: true } },
+          { id: 'b18', type: 'notify', x: 4, y: 1, w: 4, h: 3, opts: { max: 5 } },
+        ],
+      },
+      {
+        // program screen: out of the swipe, opened by the plate while OBS is running
+        id: 's5', name: 'OBS', forApp: 'obs64.exe', blocks: [
+          { id: 'b19', type: 'obs', x: 0, y: 0, w: 5, h: 3, opts: { stream: true, record: true, scenes: true, audio: true, stats: true } },
+          { id: 'b20', type: 'mixer', x: 5, y: 0, w: 3, h: 3, opts: { output: false, mic: true, apps: true } },
+          { id: 'b21', type: 'keys', x: 0, y: 3, w: 8, h: 1, opts: { actions: ['stream-start', 'sign', 'mic', 'mute-discord'] } },
+        ],
+      },
     ],
     night: { from: '23:00', to: '07:00', brightness: 0.02 },
     dimWhenPcOffline: true,
@@ -47,7 +63,21 @@ export function demoLayout() {
       { id: 'vscode', title: 'VS Code', icon: '/icons/vscode.png' },
       { id: 'explorer', title: 'Проводник', icon: '/icons/explorer.png' },
     ],
+    actions: [
+      { id: 'mute-discord', title: 'Discord: микрофон', icon: null, kind: 'keys' },
+      { id: 'deafen-discord', title: 'Discord: звук', icon: null, kind: 'keys' },
+      { id: 'sign', title: 'Подпись', icon: null, kind: 'text' },
+      { id: 'stream-start', title: 'Начать день', icon: null, kind: 'macro' },
+      { id: 'mic', title: 'Микрофон', icon: null, kind: 'mic' },
+      { id: 'out', title: 'Наушники / колонки', icon: null, kind: 'audioOut' },
+    ],
+    wol: { mac: '00:11:22:33:44:55', broadcast: '192.168.1.255' },
   };
+}
+
+/** Exe names of the layout's program screens: in the demo every one of them "is running". */
+function forApps(layout) {
+  return ((layout && layout.screens) || []).filter((sc) => sc && sc.forApp).map((sc) => sc.forApp);
 }
 
 const GB = 1073741824;
@@ -57,8 +87,8 @@ function wave(t, period, lo, hi, phase) {
 }
 function r1(v) { return Math.round(v * 10) / 10; }
 
-/** State for the requested block keys (contract names), at Unix time t. */
-export function demoState(blocks, t) {
+/** State for the requested block keys (contract names), at Unix time t; layout gives state.running. */
+export function demoState(blocks, t, layout) {
   const want = {};
   (blocks || []).forEach((b) => { want[b] = true; });
   const s = { time: t, host: 'DEMO-PC', uptime: 822000 + Math.round(t % 100000) };
@@ -112,5 +142,53 @@ export function demoState(blocks, t) {
       { id: 'ollama', name: 'Ollama', t: t - 2, windows: [], model: 'qwen3:8b' },
     ];
   }
+  if (want.audio) {
+    const outputs = [
+      { id: '{0.0.0.00000000}.{demo-speakers}', name: 'Динамики (Realtek Audio)' },
+      { id: '{0.0.0.00000000}.{demo-headset}', name: 'Наушники (HyperX Cloud II)' },
+    ];
+    s.audio = {
+      output: outputs[Math.floor(t / 30) % 2],
+      outputs,
+      mic: { name: 'Микрофон (HyperX Cloud II)', muted: Math.floor(t / 15) % 4 === 3 },
+      apps: [
+        { pid: 4120, name: 'Spotify.exe', title: 'Spotify', volume: 0.62, muted: false },
+        { pid: 7788, name: 'chrome.exe', title: 'Google Chrome', volume: 0.35, muted: false },
+        { pid: 9012, name: 'Discord.exe', title: 'Discord', volume: 0.8, muted: false },
+        { pid: 3344, name: 'obs64.exe', title: 'OBS Studio', volume: 1, muted: true },
+      ],
+    };
+  }
+  if (want.obs) {
+    const live = 4321 + Math.round(t % 100000);
+    s.obs = {
+      connected: true, streaming: true, recording: Math.floor(t / 40) % 2 === 0,
+      streamTime: live, recordTime: Math.round(t % 40),
+      droppedFrames: 12, totalFrames: live * 60, kbps: Math.round(wave(t, 9, 5600, 6200)),
+      scenes: ['Начало', 'Игра', 'Камера', 'Перерыв', 'Конец'], scene: 'Игра',
+      inputs: [
+        { name: 'Микрофон', muted: false, level: r1(wave(t, 1.3, 0.05, 0.8)) },
+        { name: 'Звук рабочего стола', muted: false, level: r1(wave(t, 2.1, 0.2, 0.6)) },
+        { name: 'Discord', muted: true, level: 0 },
+      ],
+    };
+  }
+  if (want.notify) {
+    // a new message every 45 s (at night the panel lifts the brightness for a moment)
+    const k = Math.floor(t / 45);
+    s.notify = {
+      access: 'allowed',
+      items: [
+        { id: 'n' + k, app: 'TelegramDesktop', appName: 'Telegram', icon: '/icons/telegram.png', time: k * 45,
+          title: 'Алексей', text: 'Созвон в 19:00 в силе?', count: 1 },
+        { id: 'discord-1', app: 'Discord', appName: 'Discord', icon: '/icons/discord.png', time: t - 720,
+          title: '#общий', text: 'Мария: выложила запись вчерашнего стрима', count: 3 },
+        { id: 'outlook-1', app: 'Microsoft.Office.OUTLOOK.EXE.15', appName: 'Outlook', time: t - 3900, count: 2 },
+        { id: 'store-1', app: 'Microsoft.WindowsStore', appName: 'Microsoft Store', time: t - 86400,
+          title: 'Обновления установлены', text: 'Обновлено приложений: 4', count: 1 },
+      ],
+    };
+  }
+  if (want.running) s.running = forApps(layout);
   return s;
 }

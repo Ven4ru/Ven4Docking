@@ -103,6 +103,7 @@ const MEDIA = ['playpause', 'next', 'prev', 'stop', 'volup', 'voldown', 'mute'];
 const MEDIA_FLAG = { next: 'canNext', prev: 'canPrev', playpause: 'canPlayPause' };
 const STUB_MEDIA_UNSUPPORTED = (process.env.STUB_MEDIA_UNSUPPORTED || '').split(',').filter(Boolean);
 const REQ_TO_KEY = { gpu: 'gpus' };
+const POWER = ['lock', 'sleep', 'restart', 'shutdown', 'cancel'];
 
 const server = http.createServer(async (req, res) => {
   const ip = req.socket.remoteAddress;
@@ -184,7 +185,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && p === '/api/v1/layout') return send(res, 200, layout);
     if (req.method === 'GET' && p === '/api/v1/state') {
       const want = (url.searchParams.get('blocks') || '').split(',').filter(Boolean);
-      const s = demoState(want, Date.now() / 1000);
+      const s = demoState(want, Date.now() / 1000, layout);
       s.host = 'DEV-STUB';
       s.errors = {};
       want.forEach((b) => {
@@ -208,6 +209,15 @@ const server = http.createServer(async (req, res) => {
       const unsupported = (flag && m && m[flag] === false) || STUB_MEDIA_UNSUPPORTED.includes(b.action);
       log(`media ${b.action} → ${unsupported ? 'unsupported' : 'ok'}`);
       return send(res, 200, unsupported ? { ok: false, reason: 'unsupported' } : { ok: true });
+    }
+    // 1.1: power, actions, mixer, OBS, notifications — logged and answered, nothing is done
+    if (req.method === 'POST' && /^\/api\/v1\/(power|action|audio|obs|notify)$/.test(p)) {
+      const b = await readBody(req);
+      if (!b) return send(res, 400, { error: 'bad json' });
+      log(`${p.slice(8)} ${JSON.stringify(b)}`);
+      if (p === '/api/v1/power' && !POWER.includes(b.action)) return send(res, 400, { error: 'bad action' });
+      const delayed = p === '/api/v1/power' && (b.action === 'restart' || b.action === 'shutdown');
+      return send(res, 200, delayed ? { ok: true, delay: 10 } : { ok: true });
     }
     if (req.method === 'POST' && p === '/api/v1/phone') {
       const b = await readBody(req);
