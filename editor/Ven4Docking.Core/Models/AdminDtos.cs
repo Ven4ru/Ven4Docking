@@ -11,6 +11,10 @@ public sealed class PhoneInfo
     public string? Model { get; set; }
     public string? Android { get; set; }
     public string? Webview { get; set; }
+
+    /// <summary>versionName of the launcher on the phone; absent for launchers that did not report it.</summary>
+    public string? LauncherVersion { get; set; }
+
     public double? Battery { get; set; }
     public double? Temp { get; set; }
     public double? LastSeen { get; set; }

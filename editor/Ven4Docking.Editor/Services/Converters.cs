@@ -16,6 +16,7 @@ public sealed class VisibleWhen : IValueConverter
             bool b => b,
             string s => s.Length > 0,
             int i => i != 0,
+            double d => d > 0,
             _ => true,
         };
         if (parameter as string == "invert") on = !on;

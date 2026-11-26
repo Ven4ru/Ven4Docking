@@ -143,7 +143,7 @@
   <data name="Phone_DimOffline" xml:space="preserve"><value>Dim when the PC does not respond</value></data>
   <data name="Phone_BurnIn" xml:space="preserve"><value>Shift the picture against burn-in</value></data>
   <data name="Cable_Title" xml:space="preserve"><value>A cable is more reliable</value></data>
-  <data name="Cable_Text" xml:space="preserve"><value>With the phone connected by cable, Ven4Docking can always update the launcher and restore settings. Wi-Fi debugging turns off after a reboot or a network change. Without debugging, settings must be changed by hand.</value></data>
+  <data name="Cable_Text" xml:space="preserve"><value>With the phone connected by cable, Ven4Docking can always update the launcher (with the button in «Phones») and restore settings. Wi-Fi debugging turns off after a reboot or a network change. Without debugging, settings must be changed by hand.</value></data>
 
   <data name="Wizard_StepCounter" xml:space="preserve"><value>Step {0} of {1}</value></data>
   <data name="Wizard_Step1_Title" xml:space="preserve"><value>How to connect the phone</value></data>
@@ -218,6 +218,33 @@ Download?</value></data>
   <data name="Wizard_Manual_NoLock" xml:space="preserve"><value>On Android 7 do it by hand: Settings → Security → Screen lock → None.</value></data>
   <data name="Wizard_Manual_TimeZone" xml:space="preserve"><value>The phone did not allow changing the zone from the PC. Set it by hand: Settings → Date and time.</value></data>
   <data name="Wizard_Manual_Generic" xml:space="preserve"><value>Do this by hand in the phone's settings.</value></data>
+  <data name="Launcher_Title" xml:space="preserve"><value>Launcher</value></data>
+  <data name="Launcher_OnPhone" xml:space="preserve"><value>Version on the phone:</value></data>
+  <data name="Launcher_Update" xml:space="preserve"><value>Update the launcher</value></data>
+  <data name="Launcher_UpdateTo" xml:space="preserve"><value>Update the launcher to {0}</value></data>
+  <data name="Launcher_Hint" xml:space="preserve"><value>The launcher is updated from the PC with the button in this section — by cable or over Wi-Fi debugging, as at the first install. The phone itself downloads and installs nothing.</value></data>
+  <data name="Launcher_NoApk" xml:space="preserve"><value>There is no launcher file next to the editor (apk\ven4docking.apk). Reinstall Ven4Docking.</value></data>
+  <data name="Launcher_Searching" xml:space="preserve"><value>Looking for the phone over adb…</value></data>
+  <data name="Launcher_NoDevice" xml:space="preserve"><value>The phone is not visible over adb. Connect it by cable with «USB debugging» on or, on Android 11+, over «Wireless debugging» in the connection wizard, then press the button again.</value></data>
+  <data name="Launcher_OpenWizard" xml:space="preserve"><value>Connect with the wizard</value></data>
+  <data name="Launcher_Unauthorized" xml:space="preserve"><value>The phone should show «Allow USB debugging?» — tap «Allow» and try again.</value></data>
+  <data name="Launcher_ChooseDevice" xml:space="preserve"><value>Several devices are connected — pick the phone and press «Install».</value></data>
+  <data name="Launcher_Install" xml:space="preserve"><value>Install</value></data>
+  <data name="Launcher_Installing" xml:space="preserve"><value>Installing the launcher on {0}…</value></data>
+  <data name="Launcher_Done" xml:space="preserve"><value>Launcher {0} is installed on {1} and started. The card shows the new version once the phone reports in.</value></data>
+  <data name="Launcher_DoneNoVersion" xml:space="preserve"><value>The launcher is installed on {0}, but the phone did not report its version — check that the panel opened.</value></data>
+  <data name="Launcher_Failed" xml:space="preserve"><value>Could not update the launcher: {0} {1}</value></data>
+  <data name="AdbErr_signature" xml:space="preserve"><value>the phone has a launcher with another signature (for example a test build). Remove Ven4Docking from the phone and install it again with the wizard.</value></data>
+  <data name="AdbErr_downgrade" xml:space="preserve"><value>the phone has a newer version than this file.</value></data>
+  <data name="AdbErr_storage" xml:space="preserve"><value>the phone is out of storage.</value></data>
+  <data name="AdbErr_userRestricted" xml:space="preserve"><value>the phone refused installing over USB. On Xiaomi turn on «Install via USB» in Developer options; on other phones confirm the install on the screen.</value></data>
+  <data name="AdbErr_aborted" xml:space="preserve"><value>the install was cancelled on the phone.</value></data>
+  <data name="AdbErr_unauthorized" xml:space="preserve"><value>the phone did not allow debugging from this PC.</value></data>
+  <data name="AdbErr_offline" xml:space="preserve"><value>the phone went offline — reconnect the cable.</value></data>
+  <data name="AdbErr_notFound" xml:space="preserve"><value>the phone was disconnected.</value></data>
+  <data name="AdbErr_timeout" xml:space="preserve"><value>adb did not answer in time.</value></data>
+  <data name="AdbErr_permission" xml:space="preserve"><value>the phone's shell refused the command.</value></data>
+  <data name="AdbErr_other" xml:space="preserve"><value>adb reported an error.</value></data>
   <data name="Wizard_PermissionDenied" xml:space="preserve"><value>The phone refused settings changes from the PC.</value></data>
   <data name="Wizard_CheckFailed" xml:space="preserve"><value>Check failed: expected “{0}”, got “{1}”.</value></data>
   <data name="Wizard_DeniedTitle" xml:space="preserve"><value>The phone's skin blocks settings over adb</value></data>
@@ -529,8 +556,4 @@ Download?</value></data>
   <data name="Settings_WolBadMac" xml:space="preserve"><value>A MAC address is six pairs of hex digits, for example AA:BB:CC:DD:EE:FF.</value></data>
   <data name="Settings_WolBadBroadcast" xml:space="preserve"><value>The broadcast address is IPv4, for example 192.168.1.255.</value></data>
   <data name="Settings_WolBios" xml:space="preserve"><value>Waking must also be allowed in BIOS/UEFI — the option is usually called «Wake on LAN», «Power On By PCI-E» or similar. A PC usually cannot be woken over Wi-Fi — a cable is needed.</value></data>
-
-  <!-- 1.1: wizard -->
-  <data name="Wizard_Item_installPackages" xml:space="preserve"><value>Launcher updates through the PC</value></data>
-  <data name="Wizard_Manual_InstallPackages" xml:space="preserve"><value>The phone refused to allow this from the PC. Allow it by hand: Settings → Apps → Special access → Install unknown apps → Ven4Docking. Without it the launcher update asks for permission on the phone.</value></data>
 </root>

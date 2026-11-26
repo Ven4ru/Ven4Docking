@@ -130,6 +130,55 @@
                             </StackPanel>
                         </Border>
 
+                        <!-- Launcher update over adb: the launcher itself never installs anything. -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="{Binding LauncherUpdateText}" Style="{StaticResource PrimaryButton}" Padding="14,0"
+                                            VerticalAlignment="Top" Visibility="{Binding LauncherUpdateOffered, Converter={StaticResource Vis}}"
+                                            Command="{Binding DataContext.UpdateLauncherCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{l:L Launcher_Title}" Style="{StaticResource H2}"/>
+                                        <TextBlock Style="{StaticResource Hint}">
+                                            <Run Text="{l:L Launcher_OnPhone}"/><Run Text=" "/><Run Text="{Binding LauncherVersion, Mode=OneWay}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DockPanel>
+                                <StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                    <ProgressBar Value="{Binding AdbDownloadProgress}" Maximum="100" Margin="0,10,0,0"
+                                                 Visibility="{Binding AdbDownloadProgress, Converter={StaticResource Vis}}"/>
+                                    <TextBlock Text="{Binding LauncherMessage}" TextWrapping="Wrap" Margin="0,10,0,0"
+                                               Visibility="{Binding LauncherMessage, Converter={StaticResource Vis}}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="Foreground" Value="{DynamicResource StatusInfo}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding LauncherMessageIsError}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource StatusDanger}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Content="{l:L Launcher_OpenWizard}" Command="{Binding OpenWizardCommand}" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                            Visibility="{Binding LauncherNeedsConnection, Converter={StaticResource Vis}}"/>
+                                    <DockPanel Margin="0,8,0,0" Visibility="{Binding HasLauncherDevices, Converter={StaticResource Vis}}">
+                                        <Button DockPanel.Dock="Right" Content="{l:L Launcher_Install}" Command="{Binding InstallToSelectedDeviceCommand}"
+                                                Style="{StaticResource PrimaryButton}" Padding="14,0" Margin="8,0,0,0"/>
+                                        <ComboBox ItemsSource="{Binding LauncherDevices}" SelectedItem="{Binding SelectedLauncherDevice}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock><Run Text="{Binding DisplayName, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Serial, Mode=OneWay}"/></TextBlock>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DockPanel>
+                                </StackPanel>
+                                <TextBlock Text="{l:L Launcher_Hint}" Style="{StaticResource Hint}" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
                         <Border Style="{StaticResource Note}">
                             <StackPanel>
                                 <TextBlock Text="{l:L Cable_Title}" FontWeight="SemiBold"/>

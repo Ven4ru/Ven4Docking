@@ -148,7 +148,7 @@
   <data name="Phone_DimOffline" xml:space="preserve"><value>Приглушать, когда ПК не отвечает</value></data>
   <data name="Phone_BurnIn" xml:space="preserve"><value>Сдвигать изображение против выгорания</value></data>
   <data name="Cable_Title" xml:space="preserve"><value>По кабелю надёжнее</value></data>
-  <data name="Cable_Text" xml:space="preserve"><value>Когда телефон подключён к ПК кабелем, Ven4Docking всегда может обновить лаунчер и вернуть настройки. Wi-Fi-отладка выключается после перезагрузки телефона или смены сети. Без отладки настройки придётся делать вручную.</value></data>
+  <data name="Cable_Text" xml:space="preserve"><value>Когда телефон подключён к ПК кабелем, Ven4Docking всегда может обновить лаунчер (кнопкой в разделе «Телефоны») и вернуть настройки. Wi-Fi-отладка выключается после перезагрузки телефона или смены сети. Без отладки настройки придётся делать вручную.</value></data>
 
   <!-- wizard -->
   <data name="Wizard_StepCounter" xml:space="preserve"><value>Шаг {0} из {1}</value></data>
@@ -224,6 +224,33 @@ https://dl.google.com/android/repository/platform-tools-latest-windows.zip
   <data name="Wizard_Manual_NoLock" xml:space="preserve"><value>На Android 7 это делается вручную: «Настройки» → «Безопасность» → «Блокировка экрана» → «Нет».</value></data>
   <data name="Wizard_Manual_TimeZone" xml:space="preserve"><value>Телефон не дал сменить пояс из ПК. Выставьте его вручную: «Настройки» → «Дата и время».</value></data>
   <data name="Wizard_Manual_Generic" xml:space="preserve"><value>Сделайте это вручную в настройках телефона.</value></data>
+  <data name="Launcher_Title" xml:space="preserve"><value>Лаунчер</value></data>
+  <data name="Launcher_OnPhone" xml:space="preserve"><value>Версия на телефоне:</value></data>
+  <data name="Launcher_Update" xml:space="preserve"><value>Обновить лаунчер</value></data>
+  <data name="Launcher_UpdateTo" xml:space="preserve"><value>Обновить лаунчер до {0}</value></data>
+  <data name="Launcher_Hint" xml:space="preserve"><value>Лаунчер обновляется с ПК кнопкой в этом разделе — по кабелю или через «Отладку по Wi-Fi», как при первой установке. Сам телефон ничего не скачивает и не устанавливает.</value></data>
+  <data name="Launcher_NoApk" xml:space="preserve"><value>Рядом с редактором нет файла лаунчера (apk\ven4docking.apk). Переустановите Ven4Docking.</value></data>
+  <data name="Launcher_Searching" xml:space="preserve"><value>Ищу телефон по adb…</value></data>
+  <data name="Launcher_NoDevice" xml:space="preserve"><value>Телефон не виден по adb. Подключите его кабелем с включённой «Отладкой по USB» или, на Android 11+, через «Отладку по Wi-Fi» в мастере подключения, и нажмите кнопку ещё раз.</value></data>
+  <data name="Launcher_OpenWizard" xml:space="preserve"><value>Подключить через мастер</value></data>
+  <data name="Launcher_Unauthorized" xml:space="preserve"><value>На телефоне должно появиться окно «Разрешить отладку по USB?» — нажмите «Разрешить» и повторите.</value></data>
+  <data name="Launcher_ChooseDevice" xml:space="preserve"><value>К ПК подключено несколько устройств — выберите телефон и нажмите «Установить».</value></data>
+  <data name="Launcher_Install" xml:space="preserve"><value>Установить</value></data>
+  <data name="Launcher_Installing" xml:space="preserve"><value>Устанавливаю лаунчер на {0}…</value></data>
+  <data name="Launcher_Done" xml:space="preserve"><value>Лаунчер {0} установлен на {1} и запущен. Новая версия появится в карточке, когда телефон выйдет на связь.</value></data>
+  <data name="Launcher_DoneNoVersion" xml:space="preserve"><value>Лаунчер установлен на {0}, но телефон не сообщил версию — проверьте, что панель открылась.</value></data>
+  <data name="Launcher_Failed" xml:space="preserve"><value>Не удалось обновить лаунчер: {0} {1}</value></data>
+  <data name="AdbErr_signature" xml:space="preserve"><value>на телефоне стоит лаунчер с другой подписью (например, тестовая сборка). Удалите Ven4Docking на телефоне и поставьте заново через мастер.</value></data>
+  <data name="AdbErr_downgrade" xml:space="preserve"><value>на телефоне версия новее, чем у этого файла.</value></data>
+  <data name="AdbErr_storage" xml:space="preserve"><value>на телефоне не хватает места.</value></data>
+  <data name="AdbErr_userRestricted" xml:space="preserve"><value>телефон запретил установку по USB. На Xiaomi включите «Установка через USB» в разделе «Для разработчиков», на других телефонах подтвердите установку на экране.</value></data>
+  <data name="AdbErr_aborted" xml:space="preserve"><value>установку отменили на телефоне.</value></data>
+  <data name="AdbErr_unauthorized" xml:space="preserve"><value>телефон не разрешил отладку с этого ПК.</value></data>
+  <data name="AdbErr_offline" xml:space="preserve"><value>телефон отключился — переподключите кабель.</value></data>
+  <data name="AdbErr_notFound" xml:space="preserve"><value>телефон отключился.</value></data>
+  <data name="AdbErr_timeout" xml:space="preserve"><value>adb не ответил вовремя.</value></data>
+  <data name="AdbErr_permission" xml:space="preserve"><value>оболочка телефона запретила команду.</value></data>
+  <data name="AdbErr_other" xml:space="preserve"><value>adb сообщил об ошибке.</value></data>
   <data name="Wizard_PermissionDenied" xml:space="preserve"><value>Телефон запретил менять настройки из ПК.</value></data>
   <data name="Wizard_CheckFailed" xml:space="preserve"><value>Проверка не прошла: ожидалось «{0}», получено «{1}».</value></data>
   <data name="Wizard_DeniedTitle" xml:space="preserve"><value>Оболочка телефона запрещает настройки по adb</value></data>
@@ -540,8 +567,4 @@ https://dl.google.com/android/repository/platform-tools-latest-windows.zip
   <data name="Settings_WolBadMac" xml:space="preserve"><value>MAC-адрес — шесть пар шестнадцатеричных цифр, например AA:BB:CC:DD:EE:FF.</value></data>
   <data name="Settings_WolBadBroadcast" xml:space="preserve"><value>Широковещательный адрес — IPv4, например 192.168.1.255.</value></data>
   <data name="Settings_WolBios" xml:space="preserve"><value>Включение должно быть разрешено и в BIOS/UEFI — пункт обычно называется «Wake on LAN», «Power On By PCI-E» или похоже. По Wi-Fi ПК обычно не включается — нужен кабель.</value></data>
-
-  <!-- 1.1: wizard -->
-  <data name="Wizard_Item_installPackages" xml:space="preserve"><value>Установка обновлений лаунчера через ПК</value></data>
-  <data name="Wizard_Manual_InstallPackages" xml:space="preserve"><value>Телефон не дал разрешить это из ПК. Разрешите вручную: «Настройки» → «Приложения» → «Особый доступ» → «Установка неизвестных приложений» → Ven4Docking. Без этого обновление лаунчера попросит разрешение на телефоне.</value></data>
 </root>
