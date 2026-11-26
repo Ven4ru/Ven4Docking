@@ -5,6 +5,7 @@
 ;
 ; Сборка: build.ps1 (локально) или .github/workflows/build.yml:
 ;   makensis /DVERSION=1.0.0 /DSTAGE=<папка с файлами> /DOUTFILE=<путь к Setup.exe> installer\Ven4Docking.nsi
+; Обновление из редактора: Setup.exe /S /RELAUNCH=1 — без вопросов, потом снова запускаются агент и редактор.
 ; STAGE: ven4docking-agent.exe, Ven4Docking.exe + файлы редактора, panel\, apk\ven4docking.apk + latest.json.
 
 Unicode true
@@ -196,6 +197,22 @@ SectionEnd
 Function LaunchApp
   Exec '"$INSTDIR\${AGENT_EXE}"'
   Exec '"$INSTDIR\${EDITOR_EXE}"'
+FunctionEnd
+
+; Тихая установка (/S) — это обновление из редактора: агент, закрытый перед заменой файлов,
+; запускается снова; с /RELAUNCH=1 открывается и редактор (его закрыли ради обновления).
+Function .onInstSuccess
+  ${IfNot} ${Silent}
+    Return
+  ${EndIf}
+  Exec '"$INSTDIR\${AGENT_EXE}"'
+  ${GetParameters} $0
+  ClearErrors
+  ${GetOptions} $0 "/RELAUNCH=" $1
+  ${IfNot} ${Errors}
+  ${AndIf} $1 == "1"
+    Exec '"$INSTDIR\${EDITOR_EXE}"'
+  ${EndIf}
 FunctionEnd
 
 ; ---------------------------------------------------------------------------
