@@ -49,16 +49,22 @@ Ven4Docking превращает старый телефон на Android в п�
 ## Экраны, блоки и приложения
 
 - **Экраны** — у каждого телефона до 10 экранов, сетка 8×4. Перетащите блок из палитры, двигайте и растягивайте его, справа — настройки блока. «Сохранить» — и панель на телефоне перестроится без перезагрузки. Блоки не могут пересекаться — редактор подсветит ошибку.
-- **Блоки:** часы, погода, процессор, видеокарта, память, диски, сеть, нейросети, приложения, медиа, серверы, телефон (заряд и температура). Любой блок можно поставить несколько раз или не ставить совсем.
+- **Блоки:** часы, погода, процессор, видеокарта, память, диски, сеть, нейросети, приложения, медиа, серверы, телефон (заряд и температура), питание, кнопки, микшер, OBS, уведомления. Любой блок можно поставить несколько раз или не ставить совсем.
 - **Приложения** — добавляются из меню «Пуск», как exe-файл, ссылка или команда с параметрами; значки извлекаются сами, порядок меняется перетаскиванием. Телефон может запускать только то, что есть в этом списке.
+- **Кнопки** — сочетания клавиш, заготовленный текст, цепочки шагов (клавиши, текст, паузы, запуск приложения), выключение микрофона и переключение вывода звука (наушники ↔ колонки). Есть готовый шаблон для Discord. Нажатия не доходят до окон, запущенных от имени администратора, и часть игр с античитом их не принимает.
+- **Питание** — блокировка, сон, перезагрузка и выключение; кнопку нужно удерживать 2 секунды, у перезагрузки и выключения есть 10 секунд на отмену. Если ПК выключен, на телефоне есть кнопка «Включить ПК» (Wake-on-LAN: надёжнее по кабелю, включение по сети должно быть разрешено в BIOS/UEFI).
+- **Экраны программ** — экран можно привязать к программе (например, `obs64.exe`): пока она запущена, на панели появляется плашка «открыть». Для OBS есть свой блок: стрим и запись, сцены, звук источников, потерянные кадры (через встроенный в OBS 28+ WebSocket; пароль хранится зашифрованным средствами Windows).
+- **Уведомления** — уведомления Windows на панели только от выбранных приложений; для каждого — счётчик, заголовок или текст целиком, общий режим «на стене только счётчики».
 - **Серверы** — по SSH с вашим ключом из `%USERPROFILE%\.ssh` и проверкой `known_hosts`; «Проверить подключение» объясняет ошибку понятными словами.
-- **Настройки** — тема (как у Ven4Tools), язык (русский/английский), город для погоды, автозапуск агента, порт.
+- **Настройки** — тема (как у Ven4Tools), язык (русский/английский), город для погоды, автозапуск агента, порт, OBS, включение по сети.
+- **Обновления** — агент раз в сутки проверяет выпуски на GitHub и сообщает о новой версии; редактор ставит её по кнопке (с проверкой контрольной суммы), а телефон получает новый лаунчер с ПК.
 
 ## Приватность
 
 - Никакой телеметрии и аналитики.
 - Сеть наружу — только: [open-meteo.com](https://open-meteo.com) (погода и поиск города), GitHub Releases (проверка обновлений), `dl.google.com` (platform-tools, только с согласия), SSH к вашим собственным серверам.
 - Агент отвечает только устройствам из локальной сети; телефон входит по своему токену (на ПК хранится только хеш). API редактора доступен только с самого ПК (`127.0.0.1`) по ключу из `%APPDATA%\Ven4Docking\admin.key`.
+- Уведомления Windows агент читает, только если вы включили это в редакторе (по умолчанию выключено), и отдаёт только привязанным телефонам и только от выбранных приложений; текст — лишь там, где вы это разрешили.
 - Все настройки и журналы — в `%APPDATA%\Ven4Docking` на вашем ПК.
 
 ### Модуль нейросетей
@@ -148,16 +154,22 @@ Uninstall via Settings → Apps. Your settings (`%APPDATA%\Ven4Docking`) are kep
 ### Screens, blocks and apps
 
 - **Screens** — up to 10 per phone, an 8×4 grid. Drag a block from the palette, move and resize it, block settings are on the right. Save — the phone panel rebuilds without reloading. Blocks may not overlap; the editor highlights the problem.
-- **Blocks:** clock, weather, CPU, GPU, memory, disks, network, AI limits, apps, media, servers, phone (battery and temperature). Any block can be used several times or not at all.
+- **Blocks:** clock, weather, CPU, GPU, memory, disks, network, AI limits, apps, media, servers, phone (battery and temperature), power, buttons, mixer, OBS, notifications. Any block can be used several times or not at all.
 - **Apps** — from the Start menu, an exe, a link or a command with arguments; icons are extracted automatically, reorder by dragging. The phone can launch only what is in this list.
+- **Buttons** — key combinations, canned text, step chains (keys, text, pauses, app launch), microphone mute and audio output switching (headphones ↔ speakers). A ready-made Discord template is included. Key presses do not reach windows running as administrator, and some games with anti-cheat ignore them.
+- **Power** — lock, sleep, restart and shut down; hold a button for 2 seconds, restart and shutdown can be cancelled within 10 seconds. When the PC is off, the phone shows "Turn on PC" (Wake-on-LAN: more reliable over a cable, wake on LAN must be enabled in BIOS/UEFI).
+- **Program screens** — a screen can be bound to a program (e.g. `obs64.exe`): while it runs, the panel shows an "open" plate. OBS has its own block: stream and recording, scenes, source audio, dropped frames (through the WebSocket built into OBS 28+; the password is stored encrypted by Windows).
+- **Notifications** — Windows notifications on the panel only from the apps you pick; per app — a counter, the title or the full text, plus a "counters only on the wall" mode.
 - **Servers** — over SSH with your key from `%USERPROFILE%\.ssh` and a `known_hosts` check; "Test connection" explains failures in plain words.
-- **Settings** — theme (as in Ven4Tools), language (Russian/English), weather city, agent autostart, port.
+- **Settings** — theme (as in Ven4Tools), language (Russian/English), weather city, agent autostart, port, OBS, wake on LAN.
+- **Updates** — the agent checks GitHub releases once a day and tells you about a new version; the editor installs it with one button (checksum verified), and the phone gets the new launcher from the PC.
 
 ### Privacy
 
 - No telemetry or analytics.
 - Outgoing network: [open-meteo.com](https://open-meteo.com) (weather, city search), GitHub Releases (update check), `dl.google.com` (platform-tools, only with consent), SSH to your own servers. Nothing else.
 - The agent answers only devices on the local network; a phone signs in with its own token (the PC keeps only a hash). The editor API is reachable only from the PC itself (`127.0.0.1`) with the key in `%APPDATA%\Ven4Docking\admin.key`.
+- The agent reads Windows notifications only if you turn this on in the editor (off by default), and serves them only to paired phones and only from the apps you pick; the text — only where you allowed it.
 - All settings and logs stay in `%APPDATA%\Ven4Docking` on your PC.
 
 **AI module.** The AI block reads **only local files that the official tools write to disk themselves**, plus local account-free APIs: the Claude Code status line (only if you allow it in the editor), Claude Desktop usage history, Codex session logs, models loaded in Ollama and LM Studio. Ven4Docking never reads tokens, cookies or login files and never calls private service endpoints — there is no such code, and an automated test checks it. So it cannot get your account banned. Other tools are shown as "installed, limits unavailable".
