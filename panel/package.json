@@ -1,6 +1,6 @@
 {
   "name": "ven4docking-panel",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Ven4Docking phone panel page (served by the agent, target: Android 7 WebView / Chrome 51)",
   "license": "MIT",

@@ -11,8 +11,8 @@ android {
         applicationId 'ru.ven4tools.docking'
         minSdk 24
         targetSdk 34
-        versionCode 2
-        versionName '1.1.0'
+        versionCode 3
+        versionName '1.1.1'
         // release: agent 8765, discovery 8766
         buildConfigField 'int', 'AGENT_PORT', '8765'
         buildConfigField 'int', 'DISCOVERY_PORT', '8766'
