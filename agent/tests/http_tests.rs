@@ -291,7 +291,7 @@ async fn static_files_and_discovery() {
     let lan: SocketAddr = "192.168.1.9:4000".parse().unwrap();
     let wan: SocketAddr = "8.8.8.8:4000".parse().unwrap();
     let r = reply(b"V4D?1", lan, "PC", 18765).unwrap();
-    assert_eq!(serde_json::from_slice::<Value>(&r).unwrap(), json!({"name": "PC", "port": 18765, "ver": "1.0.0"}));
+    assert_eq!(serde_json::from_slice::<Value>(&r).unwrap(), json!({"name": "PC", "port": 18765, "ver": ven4docking_agent::config::AGENT_VERSION}));
     assert!(reply(b"V4D?1", wan, "PC", 18765).is_none());
     assert!(reply(b"hello", lan, "PC", 18765).is_none());
 }
