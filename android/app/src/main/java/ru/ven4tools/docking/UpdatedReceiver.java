@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/** After the launcher replaced itself: open the panel again (it is the home screen). */
+/** After the editor updated the launcher over adb: open the panel again (it is the home screen). */
 public class UpdatedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context c, Intent i) {

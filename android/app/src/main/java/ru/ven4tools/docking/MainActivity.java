@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
         updatePlate.setIncludeFontPadding(false);
         updatePlate.setPadding(dp(9), dp(2), dp(9), dp(2));
         updatePlate.setVisibility(View.GONE);
-        updatePlate.setOnClickListener(v -> installUpdate(latest));
+        updatePlate.setOnClickListener(v -> explainUpdate(latest));
         setContentView(root);
         // the navigation bar may come back (keyboard, dialogs, an edge swipe): hide it again
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(vis -> {
@@ -384,7 +384,7 @@ public class MainActivity extends Activity {
             ui.post(() -> {
                 latest = found;
                 if (found != null) {
-                    updatePlate.setText("Обновление " + found.version + " · установить");
+                    updatePlate.setText("Есть версия " + found.version + " · обновите на ПК");
                     updatePlate.setVisibility(View.VISIBLE);
                 } else {
                     updatePlate.setVisibility(View.GONE);
@@ -394,25 +394,11 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void installUpdate(final Updater.Latest l) {
+    /** The launcher never installs itself: the editor on the PC updates it over adb. */
+    private void explainUpdate(final Updater.Latest l) {
         if (l == null) return;
-        startInstall(l.url, l.sha256);
-    }
-
-    private void startInstall(final String url, final String sha256) {
-        if (!Updater.canInstall(this)) {
-            Toast.makeText(this, "Разрешите Ven4Docking устанавливать приложения и нажмите ещё раз", Toast.LENGTH_LONG).show();
-            return;
-        }
-        Toast.makeText(this, "Скачиваю обновление…", Toast.LENGTH_SHORT).show();
-        final String base = prefs.baseUrl(), token = prefs.token();
-        io.execute(() -> {
-            try {
-                Updater.install(this, base, token, url, sha256);
-            } catch (Exception e) {
-                ui.post(() -> Toast.makeText(this, "Обновление не скачано: " + e.getMessage(), Toast.LENGTH_LONG).show());
-            }
-        });
+        Toast.makeText(this, "Откройте Ven4Docking на ПК → «Телефоны» → «Обновить лаунчер» (телефон — по кабелю или через отладку по Wi-Fi)",
+                Toast.LENGTH_LONG).show();
     }
 
     private void watchNetwork() {
@@ -566,12 +552,6 @@ public class MainActivity extends Activity {
         /** {"model","android","webview","deviceId"} */
         @JavascriptInterface
         public String info() { return DeviceInfo.info(MainActivity.this, prefs.deviceId()).toString(); }
-
-        /** Installs the launcher APK from the agent (same origin only). */
-        @JavascriptInterface
-        public void openUpdate(final String url) {
-            ui.post(() -> startInstall(url, latest != null && url != null && url.equals(latest.url) ? latest.sha256 : ""));
-        }
 
         /**
          * Bearer token for the page's API calls (extension of the bridge contract). Answered only

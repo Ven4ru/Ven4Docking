@@ -1,16 +1,12 @@
 package ru.ven4tools.docking;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /** Minimal blocking HTTP client for background threads. The token goes only into the header. */
 final class Http {
@@ -56,35 +52,6 @@ final class Http {
             OutputStream os = c.getOutputStream();
             try { os.write(body); } finally { os.close(); }
             return read(c);
-        } finally {
-            c.disconnect();
-        }
-    }
-
-    /** Downloads to a file and returns its SHA-256 (hex). */
-    static String download(String url, String token, File to) throws IOException {
-        HttpURLConnection c = open(url, token);
-        c.setReadTimeout(30000);
-        try {
-            int code = c.getResponseCode();
-            if (code != 200) throw new IOException("HTTP " + code);
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            InputStream in = c.getInputStream();
-            OutputStream out = new FileOutputStream(to);
-            try {
-                byte[] buf = new byte[16384];
-                int n;
-                while ((n = in.read(buf)) > 0) {
-                    out.write(buf, 0, n);
-                    md.update(buf, 0, n);
-                }
-            } finally {
-                out.close();
-                in.close();
-            }
-            return hex(md.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new IOException(e);
         } finally {
             c.disconnect();
         }
