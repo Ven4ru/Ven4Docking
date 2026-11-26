@@ -176,8 +176,9 @@ public class MainActivity extends Activity {
         createWeb();
         root.addView(statusBox, match());
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-        lp.setMargins(dp(130), 0, 0, 0); // to the right of the page dots
+                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.END);
+        // bottom-right corner: the page dots and the panel's «program is running» plate sit bottom-center
+        lp.setMargins(0, 0, dp(10), dp(2));
         root.addView(updatePlate, lp);
         load();
         ui.removeCallbacks(report);
