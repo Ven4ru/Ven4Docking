@@ -32,6 +32,23 @@ final class Prefs {
 
     void saveTypedAddress(String s) { p.edit().putString("typedAddress", s == null ? "" : s.trim()).apply(); }
 
+    /** PC's MAC for Wake on LAN ("AA:BB:CC:DD:EE:FF", from layout.wol), "" when unknown. */
+    String wakeMac() { return p.getString("wakeMac", ""); }
+
+    String wakeBroadcast() { return p.getString("wakeBroadcast", ""); }
+
+    boolean canWake() { return WakeOnLan.parseMac(wakeMac()) != null; }
+
+    /** Keeps a valid MAC (normalized) and the broadcast address; a malformed MAC changes nothing. */
+    boolean saveWake(String mac, String broadcast) {
+        String m = WakeOnLan.normalizeMac(mac);
+        if (m == null) return false;
+        String b = WakeOnLan.parseIpv4(broadcast) != null ? broadcast.trim() : "";
+        if (m.equals(wakeMac()) && b.equals(wakeBroadcast())) return true;
+        p.edit().putString("wakeMac", m).putString("wakeBroadcast", b).apply();
+        return true;
+    }
+
     /** Random id of this phone for /pair/start (not ANDROID_ID: nothing to track across apps). */
     String deviceId() {
         String id = p.getString("deviceId", "");

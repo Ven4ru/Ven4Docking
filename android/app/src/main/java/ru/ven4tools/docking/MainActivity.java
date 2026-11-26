@@ -28,6 +28,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,9 @@ public class MainActivity extends Activity {
     private FrameLayout root;
     private WebView web;
     private TextView status;
+    /** Native "ПК не отвечает" screen: the reason and «Включить ПК» when the PC's MAC is known. */
+    private LinearLayout statusBox;
+    private TextView wakeButton;
     private TextView updatePlate;
     private PairingScreen pairing;
     private boolean failed;
@@ -106,8 +110,25 @@ public class MainActivity extends Activity {
         status.setTextSize(16);
         status.setGravity(Gravity.CENTER);
         status.setPadding(48, 48, 48, 48);
-        status.setBackgroundColor(PairingScreen.BG);
-        status.setVisibility(View.GONE);
+        wakeButton = new TextView(this);
+        wakeButton.setText("Включить ПК");
+        wakeButton.setTextSize(16);
+        wakeButton.setTextColor(Color.rgb(11, 13, 18));
+        wakeButton.setGravity(Gravity.CENTER);
+        GradientDrawable wakeBg = new GradientDrawable();
+        wakeBg.setColor(PairingScreen.ACC);
+        wakeBg.setCornerRadius(dp(22));
+        wakeButton.setBackground(wakeBg);
+        wakeButton.setPadding(dp(26), dp(10), dp(26), dp(10));
+        wakeButton.setVisibility(View.GONE);
+        wakeButton.setOnClickListener(v -> wakePc());
+        statusBox = new LinearLayout(this);
+        statusBox.setOrientation(LinearLayout.VERTICAL);
+        statusBox.setGravity(Gravity.CENTER);
+        statusBox.setBackgroundColor(PairingScreen.BG);
+        statusBox.addView(status, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        statusBox.addView(wakeButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        statusBox.setVisibility(View.GONE);
         // small pill at the bottom edge next to the page dots: sits in the gap below the blocks
         updatePlate = new TextView(this);
         updatePlate.setTextColor(Color.rgb(11, 13, 18));
@@ -153,7 +174,7 @@ public class MainActivity extends Activity {
         Screen.immersive(this);
         root.removeAllViews();
         createWeb();
-        root.addView(status, match());
+        root.addView(statusBox, match());
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         lp.setMargins(dp(130), 0, 0, 0); // to the right of the page dots
@@ -212,7 +233,7 @@ public class MainActivity extends Activity {
                 loading = false;
                 ui.removeCallbacks(loadTimeout);
                 if (!failed) {
-                    status.setVisibility(View.GONE);
+                    statusBox.setVisibility(View.GONE);
                     markOnline();
                 }
             }
@@ -256,10 +277,25 @@ public class MainActivity extends Activity {
         loading = false;
         ui.removeCallbacks(loadTimeout);
         status.setText(why + "\n\nПовтор каждые 5 секунд…");
-        status.setVisibility(View.VISIBLE);
+        wakeButton.setVisibility(prefs.canWake() ? View.VISIBLE : View.GONE);
+        statusBox.setVisibility(View.VISIBLE);
         ui.removeCallbacks(retry);
         ui.postDelayed(retry, RETRY_MS);
         markOffline();
+    }
+
+    // ---------- wake on LAN ----------
+
+    /** Magic packet to the PC (MAC and broadcast address remembered from the panel's layout). */
+    private boolean wakePc() {
+        final String mac = prefs.wakeMac(), broadcast = prefs.wakeBroadcast();
+        if (WakeOnLan.parseMac(mac) == null) return false;
+        io.execute(() -> {
+            final int sent = WakeOnLan.wake(mac, broadcast);
+            ui.post(() -> Toast.makeText(this, sent > 0 ? "Сигнал включения отправлен" : "Не удалось отправить сигнал включения",
+                    Toast.LENGTH_SHORT).show());
+        });
+        return true;
     }
 
     // ---------- re-finding the PC after its address changed ----------
@@ -500,6 +536,26 @@ public class MainActivity extends Activity {
             String base = prefs.baseUrl();
             if (base.isEmpty() || !pageOrigin.equals(Prefs.origin(base))) return;
             ui.post(() -> { if (web == null) return; if (off) markOffline(); else markOnline(); });
+        }
+
+        /** PC's MAC and broadcast address from layout.wol, remembered for «Включить ПК» (paired agent only). */
+        @JavascriptInterface
+        public void setWake(final String mac, final String broadcast) {
+            String base = prefs.baseUrl();
+            if (base.isEmpty() || !pageOrigin.equals(Prefs.origin(base))) return;
+            prefs.saveWake(mac, broadcast);
+        }
+
+        /** Is the PC's MAC known (the panel shows «Включить ПК» on "ПК не отвечает")? */
+        @JavascriptInterface
+        public boolean canWake() { return prefs.canWake(); }
+
+        /** Sends the magic packet; false when the MAC is unknown. */
+        @JavascriptInterface
+        public boolean wake() {
+            String base = prefs.baseUrl();
+            if (base.isEmpty() || !pageOrigin.equals(Prefs.origin(base))) return false;
+            return wakePc();
         }
 
         /** {"level","temp","charging"} */
